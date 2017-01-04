@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.erika.cookbook.Recept">
+    <item android:id="@+id/action_update" android:title="@string/action_update"
+        android:orderInCategory="1" android:showAsAction="ifRoom" android:icon="@drawable/editicon"/>
+    <item android:id="@+id/action_share" android:title="@string/action_share"
+        android:orderInCategory="100" android:showAsAction="ifRoom" android:icon="@drawable/share"/>
+    <item android:id="@+id/action_rate" android:title="@string/action_rate"
+        android:orderInCategory="100" android:showAsAction="ifRoom" android:icon="@drawable/rate" />
+    <item android:id="@+id/action_deleteRecept" android:title="@string/action_deleteRecept"
+        android:orderInCategory="100" android:showAsAction="ifRoom" android:icon="@drawable/recyclebinicon" />
+    <item android:id="@+id/action_shoppingList" android:title="@string/action_shoppingList"
+        android:orderInCategory="100" android:showAsAction="never"/>
+</menu>

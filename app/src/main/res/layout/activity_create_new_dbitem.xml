@@ -1,0 +1,99 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.erika.barcodereader.createNewDBitem">
+
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/EANnumber"
+        android:layout_alignParentTop="true"
+        android:text="EANnumber" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Název produktu:"
+        android:id="@+id/Pname"
+        android:layout_below="@+id/EANnumber"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/hledejEditText"
+        android:gravity="center_vertical" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/hledejEditText"
+        android:layout_below="@+id/EANnumber"
+        android:layout_alignEnd="@+id/EANnumber"
+        android:layout_toEndOf="@+id/Pname" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Druh produktu:"
+        android:id="@+id/Pspec"
+        android:layout_below="@+id/Pname"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/spinner"
+        android:gravity="center_vertical" />
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner"
+        android:layout_below="@+id/hledejEditText"
+        android:layout_alignStart="@+id/hledejEditText"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Výživová hodnota:"
+        android:id="@+id/Pvalue"
+        android:layout_below="@+id/Pspec"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/editText2"
+        android:gravity="center_vertical" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:layout_below="@+id/spinner"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/Pvalue" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Uložit"
+        android:id="@+id/save"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cena:"
+        android:id="@+id/Pprice"
+        android:layout_below="@+id/Pvalue"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/editText3"
+        android:layout_toStartOf="@+id/editText3"
+        android:gravity="center_vertical" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/editText3"
+        android:layout_below="@+id/editText2"
+        android:layout_alignParentEnd="true"
+        android:layout_alignStart="@+id/editText2" />
+
+
+</RelativeLayout>

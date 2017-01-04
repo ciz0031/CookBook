@@ -1,0 +1,14 @@
+<resources>
+    <style name="AppTheme" parent="android:Theme.Material.Light">
+        <item name="android:actionBarStyle">@style/MyActionBarStyle</item>
+    </style>
+    <style name="MyActionBarStyle" parent="android:Widget.Material.Light.ActionBar">
+        <item name="android:background">@color/orange</item>
+        <item name="android:titleTextStyle">@style/textStyle</item>
+    </style>
+    <style name="textStyle" parent="android:TextAppearance.Material.Widget.ActionBar.Title">
+        <item name="android:shadowColor">@color/white</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">0</item>
+    </style>
+</resources>

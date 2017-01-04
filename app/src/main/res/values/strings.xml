@@ -1,0 +1,83 @@
+<resources>
+    <string name="app_name">Kuchařka</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Nastavení</string>
+    <string name="action_timer">Časovač</string>
+    <string name="action_new">Vytvořit nový recept</string>
+    <string name="action_searchByCode">Rozšířené vyhledávání</string>
+    <string name="action_shoppingList">Nákupní seznam</string>
+    <string name="ingredience">Ingredience</string>
+
+    <string name="action_rate">Ohodnotit recept</string>
+    <string name="action_update">Upravit recept</string>
+    <string name="action_dbEANs">Spravovat databázi EANů</string>
+
+    <string name="dialog_message">Opravdu smazat tento recept?</string>
+    <string name="dialog_message_neexistujici_recept">Zadanému názvu receptu neodpovídá žádný záznam v databázi. Vytvořit nový recept?</string>
+    <string name="dialog_title_neexistujici_recept">Neexistující záznam</string>
+    <string name="dialog_title">Smazat</string>
+    <string name="dialog_ok">Ano</string>
+    <string name="dialog_cancel">Ne</string>
+    <string name="no_recipe_found">Žádný recept nenalezen</string>
+    <string name="invalid_string">Nevyfotili jste EAN suroviny!</string>
+    <string name="string_too_short">Nezadali jste název suroviny!</string>
+    <string name="new_item_saved">Nový záznam byl uložen.</string>
+    <string name="item_not_saved">Chyba při ukládání.</string>
+    <string name="item_deleted">Recept byl smazán</string>
+
+    <string name="item1">Přehled</string>
+    <string name="item2">Suroviny</string>
+    <string name="item3">Postup</string>
+
+    <string-array name="kategory_array">
+        <item>Snídaně</item>
+        <item>Oběd</item>
+        <item>Večeře</item>
+        <item>Svačina</item>
+        <item>Zákusky</item>
+        <item>Nápoje</item>
+    </string-array>
+
+    <string-array name="typ_mnozstvi_array">
+        <item>ks</item>
+        <item>g</item>
+        <item>kg</item>
+        <item>špetka</item>
+        <item>lžíce</item>
+        <item>lžička</item>
+        <item>hrnek</item>
+        <item>ml</item>
+        <item>l</item>
+        <item>stroužek</item>
+    </string-array>
+
+    <string name="title_activity_recept">Detail receptu</string>
+    <string name="title_activity_novy_recept">Vytvořit nový recept</string>
+    <string name="title_activity_barcode_reader">Čtečka čárových kódů</string>
+
+    <string name="action_browse">Zobrazit obsah databáze</string>
+    <string name="action_deleteRecept">Smazat recept</string>
+    <string name="action_delete">Smazat položku z DB</string>
+    <string name="action_deleteShoppingList">Smazat celý nákupní seznam</string>
+    <string name="action_share">Sdílet recept</string>
+
+    <string name="scan">Vyfoť EAN</string>
+    <string name="title_activity_create_new_dbitem">Přidání nového EANu do databáze</string>
+    <string name="title_activity_browse_db">Obsah databáze</string>
+
+    <string-array name="type_array">
+        <item>Potravina</item>
+        <item>Elektronika</item>
+        <item>Drogerie</item>
+        <item>Kniha</item>
+        <item>Ostatní</item>
+    </string-array>
+    <string name="title_activity_dbitem">Položka databáze</string>
+    <string name="title_activity_seznam_receptu">Seznam receptů</string>
+    <string name="title_activity_dbrecepty_helper">DBreceptyHelper</string>
+    <string name="title_activity_dbhelper_recepty">DBhelperRecepty</string>
+    <string name="title_activity_nakupni_seznam">Nákupní seznam</string>
+    <string name="title_activity_rozsirene_vyhledavani">Rozšířené vyhledávání</string>
+    <string name="title_activity_eandb_manager">Správce databáze EANů</string>
+</resources>

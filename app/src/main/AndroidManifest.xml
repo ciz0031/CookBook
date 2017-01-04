@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.erika.cookbook">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme"> <!-- AppTheme -->
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Recept"
+            android:label="@string/title_activity_recept"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".NovyRecept"
+            android:label="@string/title_activity_novy_recept"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".SeznamReceptu"
+            android:label="@string/title_activity_seznam_receptu"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".NakupniSeznam"
+            android:label="@string/title_activity_nakupni_seznam"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".RozsireneVyhledavani"
+            android:label="@string/title_activity_rozsirene_vyhledavani"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity
+            android:name=".EANdbManager"
+            android:label="@string/title_activity_eandb_manager"
+            android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".CountdownTimer"></activity>
+    </application>
+
+</manifest>
