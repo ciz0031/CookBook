@@ -46,7 +46,9 @@
             android:name=".EANdbManager"
             android:label="@string/title_activity_eandb_manager"
             android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".CountdownTimer"></activity>
+        <activity android:name=".CountdownTimer"
+            android:label="Časovač"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
