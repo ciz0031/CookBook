@@ -106,7 +106,7 @@ public class recipeSummaryPart extends Fragment{
             public void onClick(View view) {
                 //otevreni aktivity s countdownTimerem (s moznosti spustit odpocet) + poslat hodnotu DobaPeceni
                 Bundle bundle = new Bundle();
-                bundle.putString("doba_peceni", stringDobaPeceni);
+                bundle.putInt("doba_peceni", Integer.valueOf(stringDobaPeceni));
                 Intent countdownTimer = new Intent(getActivity(), CountdownTimer.class);
                 countdownTimer.putExtras(bundle);
                 startActivity(countdownTimer);

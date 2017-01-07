@@ -3,6 +3,7 @@ package com.example.erika.cookbook;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.CountDownTimer;
@@ -14,6 +15,7 @@ import android.util.TimeUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -32,9 +34,9 @@ public class CountdownTimer extends Activity {
     private ImageButton stopButton;
     private RelativeLayout RL;
     private ProgressBar progressBar;
+    private Button addOneMinuteButton;
     MyCountDownTimer myCountDownTimer;
-    String dobaPeceni;
-    int countdownTime;
+    int dobaPeceni;
     public NotificationManager manager;
     public NotificationCompat.Builder builder;
 
@@ -48,8 +50,10 @@ public class CountdownTimer extends Activity {
         startButton = (ImageButton) findViewById(R.id.startButton);
         stopButton = (ImageButton) findViewById(R.id.stopButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        addOneMinuteButton = (Button) findViewById(R.id.addOneMinuteButton);
         stopButton.setVisibility(View.INVISIBLE);
         stopButton.setClickable(false);
+        addOneMinuteButton.setVisibility(View.INVISIBLE);
 
         dobaPeceniTV = new TextView(CountdownTimer.this);
         dobaPeceniTV.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -71,18 +75,16 @@ public class CountdownTimer extends Activity {
         extras = getIntent().getExtras();
         if(extras != null){
             //textView s moznosti pridani 1 minuty k casu
-            dobaPeceni = extras.getString("doba_peceni");
-            if (dobaPeceni != null){
-                dobaPeceniTV.setText(dobaPeceni);
-            }
+            dobaPeceni = extras.getInt("doba_peceni");
+            dobaPeceniTV.setText(String.valueOf(dobaPeceni));
         }else {
-            dobaPeceni = "0";
+            progressBar.setVisibility(View.INVISIBLE);
+            dobaPeceni = 0;
             //timePicker
             dobaPeceniTP = new TimePicker(CountdownTimer.this);
             dobaPeceniTP.setIs24HourView(true);
             dobaPeceniTP.setCurrentHour(0);
             dobaPeceniTP.setCurrentMinute(0);
-            //dobaPeceniTP.setLayoutParams(layoutParams);
             dobaPeceniTP.setTag("timePickDobaPeceni");
             RL.addView(dobaPeceniTP);
         }
@@ -90,18 +92,17 @@ public class CountdownTimer extends Activity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressBar.setVisibility(View.VISIBLE);
+                addOneMinuteButton.setVisibility(View.VISIBLE);
                 //Log.d("dobaPeceni", dobaPeceni);
-                if (dobaPeceni != "0"){
-                    myCountDownTimer = new MyCountDownTimer(Integer.parseInt(dobaPeceni)*60*1000, 1000);
-                    //myCountDownTimer = new MyCountDownTimer(10000, 1000);
-                    progressBar.setMax(Integer.parseInt(dobaPeceni)*60);
-                    //progressBar.setMax(10);
+                if (dobaPeceni != 0){
+                    myCountDownTimer = new MyCountDownTimer(dobaPeceni*60*1000, 1000);
+                    //progressBar.setMax(dobaPeceni*60);
                 }else{
                     int hour = dobaPeceniTP.getCurrentHour();
                     int minutes = dobaPeceniTP.getCurrentMinute();
-                    countdownTime = (hour * 60) + minutes;
-                    myCountDownTimer = new MyCountDownTimer(countdownTime*60*1000, 1000);
-                    progressBar.setMax(countdownTime * 60);
+                    dobaPeceni = (hour * 60) + minutes;
+                    myCountDownTimer = new MyCountDownTimer(dobaPeceni*60*1000, 1000);
                     dobaPeceniTP.setVisibility(View.INVISIBLE);
                 }
                 startButton.setVisibility(View.INVISIBLE);
@@ -109,6 +110,7 @@ public class CountdownTimer extends Activity {
                 stopButton.setVisibility(View.VISIBLE);
                 stopButton.setClickable(true);
 
+                progressBar.setMax(dobaPeceni * 60);
                 myCountDownTimer.start();
             }
         });
@@ -122,6 +124,28 @@ public class CountdownTimer extends Activity {
                 startButton.setVisibility(View.VISIBLE);
                 startButton.setClickable(true);
                 manager.cancelAll();
+            }
+        });
+
+        addOneMinuteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //pridani jedne minuty k casu odpoctu !
+                manager.cancelAll();
+                myCountDownTimer.cancel();
+                startButton.setVisibility(View.INVISIBLE);
+                startButton.setClickable(false);
+                stopButton.setVisibility(View.VISIBLE);
+                stopButton.setClickable(true);
+                String dobaPeceni = dobaPeceniTV.getText().toString();
+                String[] separated = dobaPeceni.split(":");
+                String minute = separated[0];
+                int seconds = Integer.parseInt(separated[1]);
+                int minutes = Integer.parseInt(minute) * 60;//prevedeno na sekundy
+                int dobaPeceniINT = minutes + seconds + 60;//v sekundach
+                progressBar.setMax(dobaPeceniINT);
+                myCountDownTimer = new MyCountDownTimer(dobaPeceniINT*1000, 1000);
+                myCountDownTimer.start();
             }
         });
 
@@ -141,8 +165,8 @@ public class CountdownTimer extends Activity {
 
             progressBar.setProgress(progressBar.getMax()-progress);
 
-            if (dobaPeceni == "0"){//tzn byl zobrazen timePicker, takze neni vytvoren TextView
-                dobaPeceniTV.setText(dobaPeceni);
+            if (dobaPeceni == 0){//tzn byl zobrazen timePicker, takze neni vytvoren TextView
+                dobaPeceniTV.setText(String.valueOf(dobaPeceni));
 
             }
             String minuteSecond = String.format("%02d:%02d",
@@ -150,11 +174,16 @@ public class CountdownTimer extends Activity {
                     TimeUnit.MILLISECONDS.toSeconds(millis)- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
             dobaPeceniTV.setText(minuteSecond);
 
-
+            Log.d("progress", String.valueOf(progress));
             if (progress <= 1){
                 //ring !! vibrate !! :)
                 manager.notify(1, builder.build());
                 Toast.makeText(getApplicationContext(), R.string.done, Toast.LENGTH_LONG).show();
+                stopButton.setVisibility(View.INVISIBLE);
+                startButton.setVisibility(View.VISIBLE);
+                stopButton.setClickable(false);
+                startButton.setClickable(true);
+                dobaPeceniTV.setText("00:00");
             }
         }
         //TODO: funkcni i po zavreni aplikace nebo switchnuti na jinou aktivitu !

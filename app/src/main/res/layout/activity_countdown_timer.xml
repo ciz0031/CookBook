@@ -51,4 +51,13 @@
         android:id="@+id/progressBar"
         android:layout_toStartOf="@+id/startButton"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="+1min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addOneMinuteButton"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/btn_style"/>
 </RelativeLayout>
