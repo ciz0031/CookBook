@@ -12,28 +12,6 @@
     android:theme="@style/AppTheme">
 
 
-    <ImageButton
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/stopButton"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentLeft="false"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/stop" />
-
-    <ImageButton
-        android:text="Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/startButton"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentLeft="false"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/start" />
-
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
@@ -60,4 +38,32 @@
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:background="@drawable/btn_style"/>
+
+    <TimePicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:theme="@style/MyTimePickerStyle"
+        android:id="@+id/timePicker" />
+
+    <ImageButton
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stopButton"
+        android:background="@drawable/stop2"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="37dp" />
+
+    <ImageButton
+        android:text="Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/startButton"
+        android:background="@drawable/start2"
+        android:layout_alignTop="@+id/stopButton"
+        android:layout_alignStart="@+id/stopButton" />
 </RelativeLayout>

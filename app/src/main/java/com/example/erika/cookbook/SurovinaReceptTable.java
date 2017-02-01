@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -38,24 +39,7 @@ public class SurovinaReceptTable {
         db.close();
     }
 
-    public void updateSurovinaRecept(String surovinaOld, String surovinaNew, String recept, String mnozstvi, String typ_mnozstvi){
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("surovina", surovinaNew);
-        cv.put("recept", recept);
-        cv.put("mnozstvi",mnozstvi);
-        cv.put("typ_mnozstvi", typ_mnozstvi);
-        db.update(TABLE_NAME, cv, " surovina = '" + surovinaOld + "' AND recept = '" + recept + "'", null);
-        db.close();
-    }
 
-    public void updateSurovinaReceptNazevReceptu(String novyNazevReceptu, String staryNazevReceptu){
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put("recept", novyNazevReceptu);
-        db.update(TABLE_NAME, cv, " recept = '" + staryNazevReceptu + "'", null);
-        db.close();
-    }
 
     public void deleteSurovinaRecept(String recept){
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
@@ -70,13 +54,30 @@ public class SurovinaReceptTable {
         surovinaRecept.moveToFirst();
         ArrayList<SurovinaReceptO> SurovinaReceptObj = ReadSurovinaRecept(surovinaRecept);
         surovinaRecept.close();
-        db.close();
         return SurovinaReceptObj;
     }
 
-    public ArrayList<SurovinaReceptO> getSurovinaReceptSurovina(String surovina){ //pro vyhledavani receptu podle suroviny
+
+    public ArrayList<SurovinaReceptO> getSurovinaRecepty(String suroviny){ //pro vyhledavani receptů podle surovin
+        String[] items = suroviny.split(", ");
+        String surovina = "";
+        String query = "";
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
-        String query = "select distinct " + COLUMN_RECEPT + " from " + TABLE_NAME + " where " + COLUMN_SUROVINA + " LIKE '" + surovina + "%'";
+        String partOfQuery= " INTERSECT SELECT " + COLUMN_RECEPT + " FROM " + TABLE_NAME + " WHERE " + COLUMN_SUROVINA + " = ";
+
+        if (suroviny.length()>1) {
+            for (String item : items) {
+                Log.d("SUROVINA", item);
+                surovina = surovina + "'" + item + "'" + partOfQuery;
+                //select recept from surovina_recept where surovina = "brambory" intersect select recept from surovina_recept where surovina = "polohrubá mouka"
+            }
+            surovina = surovina.substring(0, surovina.length() - partOfQuery.length());
+            query = "select distinct " + COLUMN_RECEPT + " from " + TABLE_NAME + " where " + COLUMN_SUROVINA + " = " + surovina;
+        }else {
+            surovina = suroviny;
+            query = "select distinct " + COLUMN_RECEPT + " from " + TABLE_NAME + " where " + COLUMN_SUROVINA + " LIKE '" + surovina + "%'";
+        }
+
         Cursor surovinaRecept = db.rawQuery(query, null);
         surovinaRecept.moveToFirst();
         ArrayList<SurovinaReceptO> SurovinaReceptObj = new ArrayList<SurovinaReceptO>();
@@ -87,7 +88,6 @@ public class SurovinaReceptTable {
             surovinaRecept.moveToNext();
         }
         surovinaRecept.close();
-        db.close();
         return SurovinaReceptObj;
     }
 
@@ -105,8 +105,7 @@ public class SurovinaReceptTable {
             surovinaRecept.moveToNext();
         }
 
-        surovinaRecept.close();
-        db.close();
+        //surovinaRecept.close();
         return SurovinaReceptObj;
     }
 

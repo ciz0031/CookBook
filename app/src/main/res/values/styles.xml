@@ -1,10 +1,17 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Material.Light">
         <item name="android:actionBarStyle">@style/MyActionBarStyle</item>
+        <item name="android:timePickerStyle">@style/MyTimePickerStyle</item>
     </style>
     <style name="MyActionBarStyle" parent="android:Widget.Material.Light.ActionBar">
         <item name="android:background">@color/orange</item>
         <item name="android:titleTextStyle">@style/textStyle</item>
+    </style>
+    <style name="MyTimePickerStyle" parent="android:Widget.Material.TimePicker">
+        <item name="android:colorPrimary">@color/orange</item>
+        <item name="android:colorAccent">@color/orange</item>
+        <item name="android:colorPrimaryDark">@color/orange</item>
+
     </style>
     <style name="textStyle" parent="android:TextAppearance.Material.Widget.ActionBar.Title">
         <item name="android:shadowColor">@color/white</item>

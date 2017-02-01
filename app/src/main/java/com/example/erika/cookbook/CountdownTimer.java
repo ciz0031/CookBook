@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -71,10 +72,12 @@ public class CountdownTimer extends Activity {
         builder.setSound(alarmSound);
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        dobaPeceniTP = new TimePicker(CountdownTimer.this);
+        dobaPeceniTP = (TimePicker) findViewById(R.id.timePicker);
         dobaPeceniTP.setIs24HourView(true);
+
         dobaPeceniTP.setTag("timePickDobaPeceni");
-        RL.addView(dobaPeceniTP);
+        //dobaPeceniTP.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        //RL.addView(dobaPeceniTP);
 
         dobaPeceniTP.setVisibility(View.INVISIBLE);
 
@@ -90,6 +93,15 @@ public class CountdownTimer extends Activity {
             Log.d("service", "service running!");
         }else if (isMyServiceRunning(MyService.class) == false){
             Log.d("service", "service not running!");
+            if (extras == null && progressBar.getVisibility() != View.VISIBLE){
+                dobaPeceniTV.setText("00:00");
+                stopButton.setVisibility(View.INVISIBLE);
+                stopButton.setClickable(false);
+                startButton.setVisibility(View.VISIBLE);
+                startButton.setClickable(true);
+                addOneMinuteButton.setVisibility(View.VISIBLE);
+                addOneMinuteButton.setClickable(true);
+            }
             extras = getIntent().getExtras();
             if(extras != null){
                 //textView s moznosti pridani 1 minuty k casu
@@ -101,7 +113,7 @@ public class CountdownTimer extends Activity {
                 dobaPeceniTP.setVisibility(View.VISIBLE);
                 dobaPeceni = 0;
                 dobaPeceniTP.setCurrentHour(0);
-                dobaPeceniTP.setCurrentMinute(0);
+                dobaPeceniTP.setCurrentMinute(1);
 
             }
         }
@@ -153,7 +165,7 @@ public class CountdownTimer extends Activity {
                     progressBar.setVisibility(View.INVISIBLE);
                     dobaPeceniTP.setVisibility(View.VISIBLE);
                     dobaPeceniTP.setCurrentHour(0);
-                    dobaPeceniTP.setCurrentMinute(0);
+                    dobaPeceniTP.setCurrentMinute(1);
 
                     addOneMinuteButton.setVisibility(View.INVISIBLE);
                     addOneMinuteButton.setClickable(false);

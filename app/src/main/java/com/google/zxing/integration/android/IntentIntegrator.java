@@ -337,6 +337,7 @@ public class IntentIntegrator {
     if (requestCode == REQUEST_CODE) {
       if (resultCode == Activity.RESULT_OK) {
         String contents = intent.getStringExtra("SCAN_RESULT");
+        int position = intent.getIntExtra("IDtextView", 0);
         String formatName = intent.getStringExtra("SCAN_RESULT_FORMAT");
         byte[] rawBytes = intent.getByteArrayExtra("SCAN_RESULT_BYTES");
         int intentOrientation = intent.getIntExtra("SCAN_RESULT_ORIENTATION", Integer.MIN_VALUE);
@@ -346,7 +347,7 @@ public class IntentIntegrator {
                                 formatName,
                                 rawBytes,
                                 orientation,
-                                errorCorrectionLevel);
+                                errorCorrectionLevel, position);
       }
       return new IntentResult();
     }

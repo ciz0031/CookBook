@@ -28,21 +28,24 @@ public final class IntentResult {
   private final byte[] rawBytes;
   private final Integer orientation;
   private final String errorCorrectionLevel;
+  private final Integer position;
 
   IntentResult() {
-    this(null, null, null, null, null);
+    this(null, null, null, null, null, null);
   }
 
   IntentResult(String contents,
                String formatName,
                byte[] rawBytes,
                Integer orientation,
-               String errorCorrectionLevel) {
+               String errorCorrectionLevel,
+               Integer position) {
     this.contents = contents;
     this.formatName = formatName;
     this.rawBytes = rawBytes;
     this.orientation = orientation;
     this.errorCorrectionLevel = errorCorrectionLevel;
+    this.position = position;
   }
 
   /**
@@ -50,6 +53,9 @@ public final class IntentResult {
    */
   public String getContents() {
     return contents;
+  }
+  public int getPosition(){
+    return position;
   }
 
   /**
@@ -89,6 +95,7 @@ public final class IntentResult {
     dialogText.append("Raw bytes: (").append(rawBytesLength).append(" bytes)\n");
     dialogText.append("Orientation: ").append(orientation).append('\n');
     dialogText.append("EC level: ").append(errorCorrectionLevel).append('\n');
+    dialogText.append("ID: ").append(position).append('\n');
     return dialogText.toString();
   }
 

@@ -119,7 +119,7 @@ public class MyService extends Service {
                 notificationIntent, 0);
 
         return new Notification.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_stat_onesignal_default)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setContentIntent(pendingIntent).getNotification();

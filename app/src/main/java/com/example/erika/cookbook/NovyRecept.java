@@ -178,6 +178,10 @@ public class NovyRecept extends Activity {
                                     Toast.makeText(getApplicationContext(), "Recept není kompletní, je potřeba vyplnit všechna políčka :).", Toast.LENGTH_SHORT).show();
                                 } else {
                                     int ID_receptu = Integer.parseInt(receptID.getString(receptID.getColumnIndex(DBrecepty.COLUMN_ID)));
+                                    Cursor staryNazevReceptuCursor = DBrecepty.getRecept(ID_receptu);
+                                    staryNazevReceptuCursor.moveToFirst();
+                                    String staryNazevReceptu = staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_NAZEV_RECEPTU));
+
                                     ReceptO recept = new ReceptO();
                                     recept.ID_receptu = ID_receptu;
                                     recept.nazev_receptu = nazev_receptu.getText().toString();
@@ -189,17 +193,15 @@ public class NovyRecept extends Activity {
                                     recept.ID_kategorie = (kategorie.getSelectedItemPosition() + 1);
                                     recept.ID_podkategorie = podkat;
                                     recept.pocet_porci = Integer.parseInt(pocet_porci.getText().toString());
-                                    DBrecepty.updateRecept(recept);
+                                    DBrecepty.deleteRecept(String.valueOf(ID_receptu));
+                                    DBrecepty.insertRecept(recept);
+                                    //DBrecepty.updateRecept(recept);
 
                                     //zmena nazvu receptu musi ovlivnit taky nazev receptu v surovinaReceptArrayList !
-                                    Cursor staryNazevReceptuCursor = DBrecepty.getRecept(ID_receptu);
-                                    staryNazevReceptuCursor.moveToFirst();
-                                    String staryNazevReceptu = staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_NAZEV_RECEPTU));
-                                    DBsurovinaRecept.updateSurovinaReceptNazevReceptu(nazev_receptu.getText().toString(), staryNazevReceptu);
-
-                                    //reseno pres podminku z duvodu moznosti neexistence zadne ingredience v receptu
-                                    //coz je vlastne blbost, protoze kontroluju zadanost vsech udaju pri vlozeni noveho receptu do DB (ale v DB jsou chyby)...
-                                    DBsurovinaRecept.deleteSurovinaRecept(nazev_receptu.getText().toString());
+                                    //Cursor staryNazevReceptuCursor = DBrecepty.getRecept(ID_receptu);
+                                    //staryNazevReceptuCursor.moveToFirst();
+                                    //String staryNazevReceptu = staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_NAZEV_RECEPTU));
+                                    DBsurovinaRecept.deleteSurovinaRecept(staryNazevReceptu);
                                     if (totalEditTexts < 1 || containerLayout.getChildCount() == 0){
                                         Toast.makeText(getApplicationContext(), "Recept není kompletní, je potřeba vyplnit všechna políčka :).", Toast.LENGTH_SHORT).show();
                                     }else {

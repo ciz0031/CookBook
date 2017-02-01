@@ -26,14 +26,6 @@ public class ReceptyTable {
     public static String COLUMN_FOTO = "foto";
     public static String COLUMN_POCET_PORCI = "pocet_porci";
 
-    public static String SQL_SELECT = "SELECT * FROM " + TABLE_NAME;
-    public static String SQL_SELECT_ID = "SELECT * FROM " + TABLE_NAME + " WHERE _id = @ID";
-    public static String SQL_INSERT = "INSERT INTO " + TABLE_NAME + "(nazev_receptu, postup, doba_pripravy, doba_peceni, stupne, prilohy, ID_kategorie, ID_podkategorie, foto, pocet_porci) " +
-            "VALUES (@nazev_receptu, @postup, @doba_pripravy, @doba_peceni, @stupne, @prilohy, @ID_kategorie, @ID_podkategorie, @foto, @pocet_porci)";
-    public static String SQL_DELETE_ID = "DELETE FROM " + TABLE_NAME + " WHERE _id = @ID";
-    public static String SQL_UPDATE = "UPDATE " + TABLE_NAME + " SET nazev_receptu = @nazev_receptu, postup = @postup, doba_pripravy = @doba_pripravy, " +
-            "doba_peceni = @doba_peceni, stupne = @stupne, prilohy = @prilohy, ID_kategorie = @ID_kategorie, ID_podkategorie = @ID_podkategorie, foto =  @foto, pocet_porci = @pocet_porci" +
-            "WHERE _id = @ID";
 
     public ReceptyTable(Context context) {
         this.context = context;
