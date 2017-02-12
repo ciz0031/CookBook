@@ -42,17 +42,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private ListView vyhledaneReceptyListView;
     private String receptProVyhledani;
     private ArrayList al;
-    private ReceptyTable DBrecepty;
-    private DBreceptyHelper DBreceptyHelper;
     public ProgressDialog progressDialog;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         al = new ArrayList();
-        DBrecepty = new ReceptyTable(MainActivity.this);
-        DBreceptyHelper = new DBreceptyHelper(MainActivity.this);
 
         snidane = (ImageButton) findViewById(R.id.snidane);
         obed = (ImageButton) findViewById(R.id.obed);
@@ -136,6 +131,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         else if (id== R.id.action_dbEANs){
             Intent EANdbManager = new Intent(getApplicationContext(), EANdbManager.class);
             startActivity(EANdbManager);
+        }
+        else if (id== R.id.action_favourites){
+            Intent favourites = new Intent(getApplicationContext(), Favourites.class);
+            startActivity(favourites);
         }
         return super.onOptionsItemSelected(item);
     }

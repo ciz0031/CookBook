@@ -193,6 +193,7 @@ public class NovyRecept extends Activity {
                                     recept.ID_kategorie = (kategorie.getSelectedItemPosition() + 1);
                                     recept.ID_podkategorie = podkat;
                                     recept.pocet_porci = Integer.parseInt(pocet_porci.getText().toString());
+                                    recept.oblibeny = 0;
                                     DBrecepty.deleteRecept(String.valueOf(ID_receptu));
                                     DBrecepty.insertRecept(recept);
                                     //DBrecepty.updateRecept(recept);
@@ -273,6 +274,7 @@ public class NovyRecept extends Activity {
                                 recept.ID_kategorie = (kategorie.getSelectedItemPosition() + 1);
                                 recept.ID_podkategorie = podkat;
                                 recept.pocet_porci = Integer.parseInt(pocet_porci.getText().toString());
+                                recept.oblibeny = 0;
                                 DBrecepty.insertRecept(recept);
 
                                 for (int i = 1; i <= totalEditTexts; i++) {

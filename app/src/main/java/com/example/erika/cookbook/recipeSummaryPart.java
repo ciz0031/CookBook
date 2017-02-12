@@ -13,13 +13,18 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -28,13 +33,14 @@ import java.util.ArrayList;
  */
 public class recipeSummaryPart extends Fragment{
     private TextView TVpocetPorci, TVdobaPripravy, TVdobaPeceni, TVstupne, TVkategorie, TVnazev_receptu;
-    private String stringPocetPorci, stringDobaPripravy, stringDobaPeceni, stringStupne, stringPodkategorie, stringKategorie, nazev_receptu;
+    private String stringPocetPorci, stringDobaPripravy, stringDobaPeceni, stringStupne, stringPodkategorie,
+            stringKategorie, nazev_receptu;
     private ReceptyTable DBrecepty;
     private DBreceptyHelper DBhelper;
     private int ID_receptu,ID_podkategorie, ID_kategorie;
     private Cursor recept, podkategorie, kategorie;
     private ImageButton timerImageButton;
-
+    private RatingBar hodnoceni;
     final Handler handler = new Handler();
     public ProgressDialog progressDialog;
 
@@ -47,6 +53,7 @@ public class recipeSummaryPart extends Fragment{
         TVstupne = (TextView) v.findViewById(R.id.stupne);
         TVkategorie = (TextView) v.findViewById(R.id.kategorie);
         timerImageButton = (ImageButton) v.findViewById(R.id.timerImageButton);
+        hodnoceni = (RatingBar) v.findViewById(R.id.ratingBar);
         //TVnazev_receptu = (TextView) v.findViewById(R.id.nazev_receptuTV);
 
         return v;
@@ -57,6 +64,7 @@ public class recipeSummaryPart extends Fragment{
         super.onCreate(savedInstanceState);
         DBrecepty = new ReceptyTable(getActivity());
         DBhelper = new DBreceptyHelper(getActivity());
+
 
 
         Bundle extras = getActivity().getIntent().getExtras();
@@ -94,12 +102,14 @@ public class recipeSummaryPart extends Fragment{
         stringDobaPripravy = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_DOBA_PRIPRAVY));
         stringDobaPeceni = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_DOBA_PECENI));
         stringStupne = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_STUPNE));
+        hodnoceni.setRating(Integer.parseInt(recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_HODNOCENI))));
         recept.close();
 
         TVpocetPorci.setText(stringPocetPorci);
         TVdobaPripravy.setText(stringDobaPripravy);
         TVdobaPeceni.setText(stringDobaPeceni);
         TVstupne.setText("(na " + stringStupne + " °C)");
+
 
         timerImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,8 +124,30 @@ public class recipeSummaryPart extends Fragment{
         });
 
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        LongOperationsThreadRecept longOperationsThreadRecept = new LongOperationsThreadRecept();
+        longOperationsThreadRecept.execute("acc_to_name");
+        /*try {
+            // check if any view exists on current view
+            TVnazev_receptu = (TextView) findViewById(R.id.nazev_receptuTV);
+        }catch (Exception e){
+            // Button was not found
+            // It means, your button doesn't exist on the "current" view
+            // It was freed from the memory, therefore stop of activity was performed
+            // In this case I restart my app
+
+            Intent i = new Intent();
+            i.setClass(getApplicationContext(), MainActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        }*/
+    }
+
 
     private class LongOperationsThreadRecept extends AsyncTask<String, Void, Cursor> {
+        DBreceptyHelper DBreceptyHelper = new DBreceptyHelper(getActivity());
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -131,6 +163,7 @@ public class recipeSummaryPart extends Fragment{
             recept.moveToFirst();
             setReceptProperties(recept);
 
+
             //Ingredience - nacteni z DB a vypsani do nove vytvorenych views - pomoci asynctask
             //LongOperationsThread MyLongOperations = new LongOperationsThread();
             //MyLongOperations.execute(stringNazevReceptu);
@@ -141,6 +174,13 @@ public class recipeSummaryPart extends Fragment{
         protected Cursor doInBackground(String... strings) {
 
             handler.postDelayed(pdRunnable, 500);
+            try {
+                DBreceptyHelper.createDataBase();
+                Log.d("DB", "database created");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            DBreceptyHelper.openDataBase();
 
             String method = strings[0];
             if (method.equals("acc_to_name")){

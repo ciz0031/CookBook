@@ -117,7 +117,7 @@ public class MyService extends Service {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
-
+        //TODO: vyřešit zobrazování ikonky běžícího časovače
         return new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_stat_onesignal_default)
                 .setContentTitle(title)

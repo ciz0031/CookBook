@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,9 @@ public class ReceptyTable {
     public static String COLUMN_ID_PODKATEGORIE = "ID_podkategorie";
     public static String COLUMN_FOTO = "foto";
     public static String COLUMN_POCET_PORCI = "pocet_porci";
-
+    public static String COLUMN_OBLIBENY = "oblibeny";
+    public static String COLUMN_HODNOCENI = "hodnoceni";
+    public static String COLUMN_KOMENTAR = "komentar";
 
     public ReceptyTable(Context context) {
         this.context = context;
@@ -47,6 +50,9 @@ public class ReceptyTable {
         contentValues.put("ID_podkategorie", ReceptO.ID_podkategorie);
         contentValues.put("foto", ReceptO.foto);
         contentValues.put("pocet_porci", ReceptO.pocet_porci);
+        contentValues.put("oblibeny", ReceptO.oblibeny);
+        contentValues.put("hodnoceni", ReceptO.hodnoceni);
+        contentValues.put("komentar", ReceptO.komentar);
         db.insert(TABLE_NAME, null, contentValues);
         db.close();
         return true;
@@ -67,8 +73,33 @@ public class ReceptyTable {
         data.put("ID_podkategorie", ReceptO.ID_podkategorie);
         data.put("foto", ReceptO.foto);
         data.put("pocet_porci", ReceptO.pocet_porci);
+        data.put("oblibeny", ReceptO.oblibeny);
+        data.put("hodnoceni", ReceptO.hodnoceni);
+        data.put("komentar", ReceptO.komentar);
         db.update(TABLE_NAME, data, "_id = " + ReceptO.ID_receptu, null);
         db.close();
+    }
+
+    public void updateRecipe_setFavourite(String nazev_receptu, int oblibeny){
+        DBrecepty = new DBreceptyHelper(context);
+        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        String query = "update " + TABLE_NAME + " set " + COLUMN_OBLIBENY + " = " + oblibeny + " where " +
+                COLUMN_NAZEV_RECEPTU + " = '" + nazev_receptu + "'";
+        Log.d("query", query);
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        c.close();
+    }
+
+    public void updateRecipe_setRating(String nazev_receptu, int rating, String komentar){
+        DBrecepty = new DBreceptyHelper(context);
+        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        String query = "update " + TABLE_NAME + " set " + COLUMN_HODNOCENI + " = " + rating + ", " +
+                COLUMN_KOMENTAR + " = '" + komentar + "' where " + COLUMN_NAZEV_RECEPTU + " = '" + nazev_receptu + "'";
+        Log.d("query", query);
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        c.close();
     }
 
     public static ArrayList<ReceptO> getReceptyFromDB(int ID_kategorie){ //podle kategorie
@@ -107,6 +138,18 @@ public class ReceptyTable {
         return ReceptO;
     }
 
+    public static ArrayList<ReceptO> getFavouriteRecipe(){ //podle nazvu receptu
+        DBrecepty = new DBreceptyHelper(context);
+        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        String query = "select * from recept where " + COLUMN_OBLIBENY + " = 1";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
+        cursor.close();
+        db.close();
+        return ReceptO;
+    }
+
     private static ArrayList<ReceptO> ReadRecepty(Cursor cursor)
     {
         ArrayList<ReceptO> ReceptyO = new ArrayList<ReceptO>();
@@ -125,6 +168,9 @@ public class ReceptyTable {
             //ReceptO.ID_podkategorie = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_PODKATEGORIE));
             //ReceptO.foto = cursor.getString(cursor.getColumnIndex(COLUMN_FOTO));
             ReceptO.pocet_porci = cursor.getInt(cursor.getColumnIndex(COLUMN_POCET_PORCI));
+            ReceptO.oblibeny = cursor.getInt(cursor.getColumnIndex(COLUMN_OBLIBENY));
+            ReceptO.hodnoceni = cursor.getInt(cursor.getColumnIndex(COLUMN_HODNOCENI));
+            ReceptO.komentar = cursor.getString(cursor.getColumnIndex(COLUMN_KOMENTAR));
             ReceptyO.add(ReceptO);
             cursor.moveToNext();
         }

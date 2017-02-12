@@ -74,8 +74,6 @@ public class SeznamReceptu extends Activity {
                 progressDialog.dismiss();
             }
 
-            //TODO: tam, kde jsou podkategorie seradit recepty podle nich + vypsat vzdy odrazku o jakou podkategorii se jedna ..
-
             for(ReceptO rec : arrayList){//foreach
                 al.add(rec.nazev_receptu);
             }

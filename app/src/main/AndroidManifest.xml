@@ -23,33 +23,43 @@
         <activity
             android:name=".Recept"
             android:label="@string/title_activity_recept"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            />
         <activity
             android:name=".NovyRecept"
             android:label="@string/title_activity_novy_recept"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SeznamReceptu"
             android:label="@string/title_activity_seznam_receptu"
             android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".NakupniSeznam"
             android:label="@string/title_activity_nakupni_seznam"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".RozsireneVyhledavani"
             android:label="@string/title_activity_rozsirene_vyhledavani"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".EANdbManager"
             android:label="@string/title_activity_eandb_manager"
-            android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".CountdownTimer"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".CountdownTimer"
             android:label="Časovač"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+
         <service android:name=".MyService" />
+
+        <activity android:name=".HodnoceniReceptu"
+            android:label="@string/action_rate"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".Favourites"
+            android:label="@string/title_activity_favourites"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

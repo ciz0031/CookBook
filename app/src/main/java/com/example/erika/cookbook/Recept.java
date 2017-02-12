@@ -2,49 +2,46 @@ package com.example.erika.cookbook;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
+
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
 public class Recept extends FragmentActivity {
-    private TextView TWpocetPorci, TWpostup, TWdobaPripravy, TWdobaPeceni, TWstupne, TVingredience, TVprilohy, TVnazev_receptu, TVkategorie;
-    private ImageButton nakupniSeznamB, minusArrowB, plusArrowB;
-    private LinearLayout ingredienceLL, surovinaLL;
-    private String stringPocetPorci, stringPostup, stringDobaPripravy, stringDobaPeceni, stringStupne, stringPodkategorie, stringPrilohy, stringNazevReceptu = "", nazev_receptu, stringKategorie;
+    private TextView TVnazev_receptu;
+    private String stringNazevReceptu = "", nazev_receptu;
     private ReceptyTable DBrecepty;
     private SurovinaReceptTable DBsurovina_recept;
-    private DBreceptyHelper DBreceptyHelper;
-    private int ID_receptu,ID_podkategorie, ID_kategorie;
-    private Cursor recept, podkategorie, kategorie;
-
-    private int pocetSurovin = 0;
-    private static final float INGREDIENCE_DP_WIDTH = 30.0f;
-    private static final float INGREDIENCE_DP_HEIGHT = 30.0f;
-    private int INGREDIENCE_PX_WIDTH;
-    private int INGREDIENCE_PX_HEIGHT;
-    private ArrayList<Float> mnozstviIngredience;
+    private int ID_receptu;
+    private Cursor recept;
+    private CheckBox oblibenyReceptChB;
 
     final Handler handler = new Handler();
     public ProgressDialog progressDialog;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +51,9 @@ public class Recept extends FragmentActivity {
         TVnazev_receptu = (TextView) findViewById(R.id.nazev_receptuTV);
         DBrecepty = new ReceptyTable(this);
         DBsurovina_recept = new SurovinaReceptTable(this);
+        oblibenyReceptChB = (CheckBox) findViewById(R.id.oblibenyReceptChB);
 
-        LongOperationsThreadRecept MyThreadRecept = new LongOperationsThreadRecept();
+        final LongOperationsThreadRecept MyThreadRecept = new LongOperationsThreadRecept();
         if(extras != null) {
             ID_receptu = extras.getInt("id_receptu");
             nazev_receptu = extras.getString("nazev_receptu");
@@ -75,12 +73,35 @@ public class Recept extends FragmentActivity {
             transaction.replace(R.id.sample_content_fragment, fragment);
             transaction.commit();
         }
+
+        oblibenyReceptChB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked){
+                    //uprava receptu na oblibeny = 1
+                    Log.d("oblibeny","1");
+                    DBrecepty.updateRecipe_setFavourite(nazev_receptu, 1);
+                }else {
+                    //oblibeny = 0
+                    Log.d("oblibeny","0");
+                    DBrecepty.updateRecipe_setFavourite(nazev_receptu, 0);
+                }
+            }
+        });
+
     }
 
     private void setReceptName(Cursor recept){
         stringNazevReceptu = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_NAZEV_RECEPTU));
+        String isFavourite = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_OBLIBENY));
         TVnazev_receptu.setText(stringNazevReceptu);
-        recept.close();
+        Log.d("isFavourite", isFavourite);
+        if (isFavourite.equals("1")){
+            oblibenyReceptChB.setChecked(true);
+        }else {
+            oblibenyReceptChB.setChecked(false);
+        }
+        //recept.close();
     }
 
     @Override
@@ -98,7 +119,11 @@ public class Recept extends FragmentActivity {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_rate) {
-            //TODO: hodnoceni receptu
+            Intent hodnoceni = new Intent(getApplicationContext(), HodnoceniReceptu.class);
+            Bundle recept = new Bundle();
+            recept.putString("nazev_receptu", nazev_receptu);
+            hodnoceni.putExtras(recept);
+            startActivity(hodnoceni);
             return true;
         }
         else if (id == R.id.action_update){
@@ -149,15 +174,87 @@ public class Recept extends FragmentActivity {
             startActivity(nakupniSeznam);
         }
         else if (id == R.id.action_share){
-            //TODO:sdílení receptu
+            shareIntentSpecificApps();
         }
         return super.onOptionsItemSelected(item);
     }
 
+    public void shareIntentSpecificApps() {
+        List<Intent> intentShareList = new ArrayList<Intent>();
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        List<ResolveInfo> resolveInfoList = getPackageManager().queryIntentActivities(shareIntent, 0);
+
+        for (ResolveInfo resInfo : resolveInfoList) {
+            String packageName = resInfo.activityInfo.packageName;
+            String name = resInfo.activityInfo.name;
+
+            if (packageName.contains("com.facebook") ||
+                    packageName.contains("com.twitter.android") ||
+                    packageName.contains("com.google.android.apps.plus") ||
+                    packageName.contains("mms") ||
+                    packageName.contains("com.google.android.talk") ||
+                    packageName.contains("com.google.android.gm")) {
+
+                if (name.contains("com.twitter.android.DMActivity")) {
+                    continue;
+                }
+
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(packageName, name));
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Recept - " + nazev_receptu);
+
+                intent.putExtra(Intent.EXTRA_TEXT, nazev_receptu + "\n\n" + ingredientsOfRecipe(recept) +
+                        "\n\n" + contentOfRecipe(recept));
+                intentShareList.add(intent);
+            }
+        }
+
+        if (intentShareList.isEmpty()) {
+            Toast.makeText(Recept.this, "Nenalezeny žádné aplikace, pomocí kterých lze recept sdílet", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent chooserIntent = Intent.createChooser(intentShareList.remove(0), "Sdílej recept pomocí ...");
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentShareList.toArray(new Parcelable[]{}));
+            startActivity(chooserIntent);
+        }
+    }
+
+    public String ingredientsOfRecipe(Cursor recept){
+        recept.moveToFirst();
+        String pocetPorci = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_POCET_PORCI));
+        String ingredientsOfRecipe = "Recept je na " + pocetPorci + " porce." + "\n\n" + "Ingredience: ";
+
+        final ArrayList<SurovinaReceptO> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(nazev_receptu);
+        for (SurovinaReceptO surovinaReceptObj : ALsurovinaRecept){
+            ingredientsOfRecipe = ingredientsOfRecipe + "\n" +
+                    surovinaReceptObj.mnozstvi + surovinaReceptObj.typ_mnozstvi + " " + surovinaReceptObj.surovina;
+        }
+
+
+        return ingredientsOfRecipe;
+    }
+
+    public String contentOfRecipe(Cursor recept) {
+        recept.moveToFirst();
+        String postup = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_POSTUP));
+        String dobaPeceni = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_DOBA_PECENI));
+        String dobaPripravy = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_DOBA_PRIPRAVY));
+        String prilohy = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_PRILOHY));
+        String stupne = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_STUPNE));
+
+        String contentOfRecipe = "Příprava: " + dobaPripravy + "min \n" + "Tepelná úprava: " +
+                dobaPeceni + "min (na " + stupne + "°C)\n\n" + "Postup: \n" + postup +"\n" + "Přílohy: " + prilohy;
+        return contentOfRecipe;
+    }
     @Override
     protected void onResume() {
         super.onResume();
-        try {
+        LongOperationsThreadRecept longOperationsThreadRecept = new LongOperationsThreadRecept();
+        longOperationsThreadRecept.execute("acc_to_name");
+        /*try {
             // check if any view exists on current view
             TVnazev_receptu = (TextView) findViewById(R.id.nazev_receptuTV);
         }catch (Exception e){
@@ -165,11 +262,12 @@ public class Recept extends FragmentActivity {
             // It means, your button doesn't exist on the "current" view
             // It was freed from the memory, therefore stop of activity was performed
             // In this case I restart my app
+
             Intent i = new Intent();
             i.setClass(getApplicationContext(), MainActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
-        }
+        }*/
     }
 
 
@@ -190,12 +288,6 @@ public class Recept extends FragmentActivity {
 
             recept.moveToFirst();
             setReceptName(recept);
-
-            //Ingredience - nacteni z DB a vypsani do nove vytvorenych views - pomoci asynctask
-            //LongOperationsThread MyLongOperations = new LongOperationsThread();
-            //MyLongOperations.execute(stringNazevReceptu);
-
-
         }
 
         @Override

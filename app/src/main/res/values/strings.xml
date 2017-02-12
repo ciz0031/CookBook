@@ -12,6 +12,7 @@
     <string name="action_rate">Ohodnotit recept</string>
     <string name="action_update">Upravit recept</string>
     <string name="action_dbEANs">Spravovat databázi EANů</string>
+    <string name="action_favourites">Zobrazit oblíbené recepty</string>
 
     <string name="dialog_message">Opravdu smazat tento recept?</string>
     <string name="dialog_message_neexistujici_recept">Zadanému názvu receptu neodpovídá žádný záznam v databázi. Vytvořit nový recept?</string>
@@ -81,4 +82,5 @@
     <string name="title_activity_nakupni_seznam">Nákupní seznam</string>
     <string name="title_activity_rozsirene_vyhledavani">Rozšířené vyhledávání</string>
     <string name="title_activity_eandb_manager">Správce databáze EANů</string>
+    <string name="title_activity_favourites">Oblíbené recepty</string>
 </resources>

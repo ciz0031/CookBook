@@ -74,7 +74,6 @@ public class NakupniSeznam extends Activity {
             pridatPolozkuDoSeznamu(null);
         }
     }
-    //TODO: mozna by se hodilo nepouzivat sharedPreferences ale neco perzistetnejsiho ... ?
     private void loadSavedPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         int sizeOfSharedPref = sharedPreferences.getAll().size();
