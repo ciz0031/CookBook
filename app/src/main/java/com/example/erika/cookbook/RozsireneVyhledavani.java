@@ -267,7 +267,7 @@ public class RozsireneVyhledavani extends Activity {
                                     startActivity(intent);
                                 }
                             });
-                            DBrecepty.close();
+                            //DBrecepty.close();
                         }
 
                 }

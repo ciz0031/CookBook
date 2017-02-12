@@ -158,8 +158,8 @@ public class Recept extends FragmentActivity {
                     DBrecepty.deleteRecept(ID_receptu);
                     //Log.d("nazev receptu pro smazani", nazev_receptu);
                     DBsurovina_recept.deleteSurovinaRecept(nazev_receptu);
-                    DBrecepty.close();
-                    DBsurovina_recept.close();
+                    //DBrecepty.close();
+                    //DBsurovina_recept.close();
 
                     Toast.makeText(getApplicationContext(), R.string.item_deleted + " (" + nazev_receptu + ").", Toast.LENGTH_SHORT).show();
                     Intent mainActivity = new Intent(Recept.this, MainActivity.class);

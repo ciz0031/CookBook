@@ -54,7 +54,7 @@ public class ReceptyTable {
         contentValues.put("hodnoceni", ReceptO.hodnoceni);
         contentValues.put("komentar", ReceptO.komentar);
         db.insert(TABLE_NAME, null, contentValues);
-        db.close();
+        //db.close();
         return true;
     }
 
@@ -77,7 +77,7 @@ public class ReceptyTable {
         data.put("hodnoceni", ReceptO.hodnoceni);
         data.put("komentar", ReceptO.komentar);
         db.update(TABLE_NAME, data, "_id = " + ReceptO.ID_receptu, null);
-        db.close();
+        //db.close();
     }
 
     public void updateRecipe_setFavourite(String nazev_receptu, int oblibeny){
@@ -110,21 +110,11 @@ public class ReceptyTable {
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
         cursor.close();
-        db.close();
+        //db.close();
         return ReceptO;
     }
 
-    public static ArrayList<ReceptO> getAllData(){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
-        String query = "select * from recept";
-        Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToFirst();
-        ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
-        cursor.close();
-        db.close();
-        return ReceptO;
-    }
+
 
     public static ArrayList<ReceptO> getReceptPodleNazvu(String nazev_receptu){ //podle nazvu receptu
         DBrecepty = new DBreceptyHelper(context);
@@ -134,7 +124,7 @@ public class ReceptyTable {
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
         cursor.close();
-        db.close();
+        //db.close();
         return ReceptO;
     }
 
@@ -146,7 +136,7 @@ public class ReceptyTable {
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
         cursor.close();
-        db.close();
+        //db.close();
         return ReceptO;
     }
 

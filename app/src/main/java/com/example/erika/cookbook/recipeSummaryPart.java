@@ -44,6 +44,8 @@ public class recipeSummaryPart extends Fragment{
     final Handler handler = new Handler();
     public ProgressDialog progressDialog;
 
+    DBreceptyHelper DBreceptyHelper = new DBreceptyHelper(getActivity());
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.recipe_summary_layout, container, false);
@@ -93,7 +95,7 @@ public class recipeSummaryPart extends Fragment{
             podkategorie.moveToFirst();
             stringPodkategorie = podkategorie.getString(podkategorie.getColumnIndex(DBreceptyHelper.COLUMN_NAZEV_PODKATEGORIE));
             podkategorie.close();
-            DBhelper.close();
+            //DBhelper.close();
             TVkategorie.setText(stringKategorie + ", " + stringPodkategorie);
         }else
             TVkategorie.setText(stringKategorie);
@@ -103,7 +105,7 @@ public class recipeSummaryPart extends Fragment{
         stringDobaPeceni = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_DOBA_PECENI));
         stringStupne = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_STUPNE));
         hodnoceni.setRating(Integer.parseInt(recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_HODNOCENI))));
-        recept.close();
+        //recept.close();
 
         TVpocetPorci.setText(stringPocetPorci);
         TVdobaPripravy.setText(stringDobaPripravy);
@@ -124,30 +126,14 @@ public class recipeSummaryPart extends Fragment{
         });
 
     }
+
     @Override
     public void onResume() {
         super.onResume();
-        LongOperationsThreadRecept longOperationsThreadRecept = new LongOperationsThreadRecept();
-        longOperationsThreadRecept.execute("acc_to_name");
-        /*try {
-            // check if any view exists on current view
-            TVnazev_receptu = (TextView) findViewById(R.id.nazev_receptuTV);
-        }catch (Exception e){
-            // Button was not found
-            // It means, your button doesn't exist on the "current" view
-            // It was freed from the memory, therefore stop of activity was performed
-            // In this case I restart my app
-
-            Intent i = new Intent();
-            i.setClass(getApplicationContext(), MainActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
-        }*/
+        this.onCreate(null);
     }
-
-
     private class LongOperationsThreadRecept extends AsyncTask<String, Void, Cursor> {
-        DBreceptyHelper DBreceptyHelper = new DBreceptyHelper(getActivity());
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -174,13 +160,13 @@ public class recipeSummaryPart extends Fragment{
         protected Cursor doInBackground(String... strings) {
 
             handler.postDelayed(pdRunnable, 500);
-            try {
+            /*try {
                 DBreceptyHelper.createDataBase();
-                Log.d("DB", "database created");
+                Log.d("DB recipeSummPart", "database created");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            DBreceptyHelper.openDataBase();
+            DBreceptyHelper.openDataBase();*/
 
             String method = strings[0];
             if (method.equals("acc_to_name")){
