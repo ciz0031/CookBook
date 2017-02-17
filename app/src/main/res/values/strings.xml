@@ -79,8 +79,8 @@
     </string-array>
 
     <string-array name="radit_podle_array">
-        <item>Abecedy</item>
-        <item>Hodnocení</item>
+        <item>Podle abecedy</item>
+        <item>Podle hodnocení receptů</item>
     </string-array>
 
     <string-array name="hodnoty_radit_podle_array">
