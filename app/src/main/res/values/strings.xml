@@ -54,6 +54,8 @@
         <item>stroužek</item>
     </string-array>
 
+
+
     <string name="title_activity_recept">Detail receptu</string>
     <string name="title_activity_novy_recept">Vytvořit nový recept</string>
     <string name="title_activity_barcode_reader">Čtečka čárových kódů</string>
@@ -75,6 +77,17 @@
         <item>Kniha</item>
         <item>Ostatní</item>
     </string-array>
+
+    <string-array name="radit_podle_array">
+        <item>Abecedy</item>
+        <item>Hodnocení</item>
+    </string-array>
+
+    <string-array name="hodnoty_radit_podle_array">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
     <string name="title_activity_dbitem">Položka databáze</string>
     <string name="title_activity_seznam_receptu">Seznam receptů</string>
     <string name="title_activity_dbrecepty_helper">DBreceptyHelper</string>
@@ -83,4 +96,5 @@
     <string name="title_activity_rozsirene_vyhledavani">Rozšířené vyhledávání</string>
     <string name="title_activity_eandb_manager">Správce databáze EANů</string>
     <string name="title_activity_favourites">Oblíbené recepty</string>
+    <string name="title_activity_settings">Nastavení aplikace</string>
 </resources>

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.CharArrayBuffer;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,8 +80,12 @@ public class SeznamReceptu extends Activity {
                 al.add(rec.nazev_receptu);
             }
 
-            Collator collator = Collator.getInstance(new Locale("pt"));
-            Collections.sort(al, collator);
+            SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            String razeniReceptu = SP.getString("razeniReceptu","1");
+            if (razeniReceptu.equals("1")) {
+                Collator collator = Collator.getInstance(new Locale("pt"));
+                Collections.sort(al, collator);
+            }
 
 
             final ArrayAdapter arrayAdapter = new ArrayAdapter(SeznamReceptu.this,android.R.layout.simple_list_item_1, al);
@@ -103,10 +109,16 @@ public class SeznamReceptu extends Activity {
         @Override
         protected ArrayList<ReceptO> doInBackground(Integer... ints) {
             handler.postDelayed(pdRunnable, 500);
+            SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            String razeniReceptu = SP.getString("razeniReceptu","1");
+            if (razeniReceptu.equals("1")) {//razeni podle abecedy - default
+                ArrayList<ReceptO> arrayList = receptyTable.getReceptyFromDB(ints[0], razeniReceptu);
+                return arrayList;
+            }else{ //razeni podle hodnoceni
+                ArrayList<ReceptO> arrayList = receptyTable.getReceptyFromDB(ints[0], razeniReceptu);
+                return arrayList;
+            }
 
-            final ArrayList<ReceptO> arrayList = receptyTable.getReceptyFromDB(ints[0]);
-
-            return arrayList;
         }
         final Runnable pdRunnable = new Runnable() {
             @Override

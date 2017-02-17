@@ -60,6 +60,9 @@
         <activity android:name=".Favourites"
             android:label="@string/title_activity_favourites"
             android:parentActivityName=".MainActivity"></activity>
+        <activity android:name=".Settings"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

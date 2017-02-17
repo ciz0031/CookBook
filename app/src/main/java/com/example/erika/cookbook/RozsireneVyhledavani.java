@@ -165,8 +165,8 @@ public class RozsireneVyhledavani extends Activity {
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 
         String scanContent = scanningResult.getContents();
-        int positionID = scanningResult.getPosition();
-        Log.d("positionID extras", positionID+"");
+//        int positionID = scanningResult.getPosition();
+      //  Log.d("positionID extras", positionID+"");
         if (scanContent != null) {
             if(scanContent.length() > 0){
                 LongOperationsThreadEANs MyLongOperations = new LongOperationsThreadEANs();

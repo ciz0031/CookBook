@@ -7,15 +7,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.util.TimeUtils;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -32,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CountdownTimer extends Activity {
     private Bundle extras;
-    private TextView dobaPeceniTV;
+    public TextView dobaPeceniTV;
     private TimePicker dobaPeceniTP;
     private ImageButton startButton;
     private ImageButton stopButton;
@@ -93,7 +98,7 @@ public class CountdownTimer extends Activity {
             Log.d("service", "service running!");
         }else if (isMyServiceRunning(MyService.class) == false){
             Log.d("service", "service not running!");
-            if (extras == null && progressBar.getVisibility() != View.VISIBLE){
+            if (progressBar.getVisibility() != View.VISIBLE){
                 dobaPeceniTV.setText("00:00");
                 stopButton.setVisibility(View.INVISIBLE);
                 stopButton.setClickable(false);
@@ -102,6 +107,7 @@ public class CountdownTimer extends Activity {
                 addOneMinuteButton.setVisibility(View.VISIBLE);
                 addOneMinuteButton.setClickable(true);
             }
+
             extras = getIntent().getExtras();
             if(extras != null){
                 //textView s moznosti pridani 1 minuty k casu
@@ -177,6 +183,7 @@ public class CountdownTimer extends Activity {
                     addOneMinuteButton.setVisibility(View.INVISIBLE);
                     addOneMinuteButton.setClickable(false);
                 }
+
             }
         });
 
@@ -214,17 +221,43 @@ public class CountdownTimer extends Activity {
     };
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_countdown_timer, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id== R.id.action_settings){
+            Intent Settings = new Intent(this, Settings.class);
+            startActivity(Settings);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onBackPressed() {
         super.onBackPressed();
         //registerReceiver(broadcastReceiver, new IntentFilter(MyService.str_receiver));
-        Log.d("back button", "back button pressed");
     }
 
     @Override
     public void onResume() {
         super.onResume();
         registerReceiver(broadcastReceiver, new IntentFilter(MyService.str_receiver));
-        Log.d("receiver", "Registered broacast receiver-onresume");
+        if (isMyServiceRunning(MyService.class)==false) {
+            stopButton.setVisibility(View.INVISIBLE);
+            startButton.setVisibility(View.VISIBLE);
+            stopButton.setClickable(false);
+            startButton.setClickable(true);
+            progressBar.setProgress(progressBar.getMax());
+
+        }
+        if (progressBar.getVisibility() == View.VISIBLE) {
+            dobaPeceniTV.setText("00:00");
+        }
+
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -241,14 +274,13 @@ public class CountdownTimer extends Activity {
     public void onPause() {
         super.onPause();
         unregisterReceiver(broadcastReceiver);
-        Log.d("receiver", "Unregistered broacast receiver-onpause");
+        //registerReceiver(broadcastReceiver, new IntentFilter(MyService.str_receiver));
     }
 
     @Override
     public void onStop() {
         try {
             unregisterReceiver(broadcastReceiver);
-            Log.d("receiver", "Unregistered broacast receiver-onstop");
         } catch (Exception e) {
             // Receiver was probably already stopped in onPause()
         }
@@ -266,7 +298,7 @@ public class CountdownTimer extends Activity {
     public void updateGUI(Intent intent) {
         if (intent.getExtras() != null) {
             long millis = intent.getLongExtra("countdown", 0);
-            int done = intent.getIntExtra("done", 0);
+            long done = intent.getLongExtra("done", 1);
             int progress = (int) (millis/1000);
             progressBar.setProgress(progressBar.getMax()-progress);
 
@@ -282,20 +314,20 @@ public class CountdownTimer extends Activity {
             Log.d("progress", String.valueOf(progress));
             if (progress <= 1){
                 //ring !! vibrate !! :)
-                //manager.notify(1, builder.build());
-
-                stopButton.setVisibility(View.INVISIBLE);
-                startButton.setVisibility(View.VISIBLE);
-                stopButton.setClickable(false);
-                startButton.setClickable(true);
+                //dobaPeceniTV.setText("00:00");
+                SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                boolean nekonecnePrehravani = SP.getBoolean("nekonecnePrehravani", false);
+                if (nekonecnePrehravani == false) {
+                    stopButton.setVisibility(View.INVISIBLE);
+                    startButton.setVisibility(View.VISIBLE);
+                    stopButton.setClickable(false);
+                    startButton.setClickable(true);
+                }
+            }
+            if (done == 0){
                 dobaPeceniTV.setText("00:00");
-//                stopService(new Intent(this, MyService.class));
             }
 
-            if (done != 0) {
-                dobaPeceniTV.setText("00:00");
-            }
-            //Log.i(TAG, "Countdown seconds remaining: " +  millisUntilFinished / 1000);
         }
     }
 

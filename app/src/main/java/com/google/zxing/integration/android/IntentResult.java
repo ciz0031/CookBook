@@ -28,7 +28,7 @@ public final class IntentResult {
   private final byte[] rawBytes;
   private final Integer orientation;
   private final String errorCorrectionLevel;
-  private final Integer position;
+  //private final Integer position;
 
   IntentResult() {
     this(null, null, null, null, null, null);
@@ -45,7 +45,7 @@ public final class IntentResult {
     this.rawBytes = rawBytes;
     this.orientation = orientation;
     this.errorCorrectionLevel = errorCorrectionLevel;
-    this.position = position;
+    //this.position = position;
   }
 
   /**
@@ -54,9 +54,9 @@ public final class IntentResult {
   public String getContents() {
     return contents;
   }
-  public int getPosition(){
+  /*public int getPosition(){
     return position;
-  }
+  }*/
 
   /**
    * @return name of format, like "QR_CODE", "UPC_A". See {@code BarcodeFormat} for more format names.
@@ -95,7 +95,7 @@ public final class IntentResult {
     dialogText.append("Raw bytes: (").append(rawBytesLength).append(" bytes)\n");
     dialogText.append("Orientation: ").append(orientation).append('\n');
     dialogText.append("EC level: ").append(errorCorrectionLevel).append('\n');
-    dialogText.append("ID: ").append(position).append('\n');
+    //dialogText.append("ID: ").append(position).append('\n');
     return dialogText.toString();
   }
 

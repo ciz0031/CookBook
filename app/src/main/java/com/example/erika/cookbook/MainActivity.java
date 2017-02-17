@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -136,6 +138,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Intent favourites = new Intent(getApplicationContext(), Favourites.class);
             startActivity(favourites);
         }
+        else if (id== R.id.action_settings){
+            Intent Settings = new Intent(this, Settings.class);
+            startActivity(Settings);
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -241,9 +247,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
             DBreceptyHelper.openDataBase();
 
-            final ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0]);
+            //final ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0]);
 
-            return arrayList;
+            SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            String razeniReceptu = SP.getString("razeniReceptu","1");
+            if (razeniReceptu.equals("1")) {//razeni podle abecedy - default
+                ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0], razeniReceptu);
+                return arrayList;
+            }else{ //razeni podle hodnoceni
+                ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0], razeniReceptu);
+                return arrayList;
+            }
 
         }
 
@@ -286,8 +300,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
 
                 //seradit recepty podle nazvu, nehlede na diakritiku
-                Collator collator = Collator.getInstance(new Locale("pt"));
-                Collections.sort(al, collator);
+                SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                String razeniReceptu = SP.getString("razeniReceptu","1");
+                if (razeniReceptu.equals("1")) {
+                    Collator collator = Collator.getInstance(new Locale("pt"));
+                    Collections.sort(al, collator);
+                }
 
                 final ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, al);
                 vyhledaneReceptyListView = new ListView(MainActivity.this);

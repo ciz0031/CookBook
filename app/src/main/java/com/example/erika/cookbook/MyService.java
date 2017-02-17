@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,8 +17,10 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Timer;
 
 /**
@@ -60,7 +63,7 @@ public class MyService extends Service {
                     notificationIntent, 0);
 
             final Notification notification = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.mipmap.ic_stat_onesignal_default)
                     .setContentTitle("Kuchařka")
                     .setContentText("Běží odpočet času...")
                     .setContentIntent(pendingIntent).build();
@@ -70,38 +73,57 @@ public class MyService extends Service {
                 public void onTick(long millisUntilFinished) {
                     receiver.putExtra("countdown", millisUntilFinished);
                     sendBroadcast(receiver);
+
                 }
 
                 @Override
                 public void onFinish() {
                     Log.d("countdowntimer finished", "ding dong");
                     builder = new NotificationCompat.Builder(MyService.this);
-                    long[] pattern = {500,500,500,500,500,500,500,500,500};
-                    builder.setVibrate(pattern);
+
+                    SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                    boolean vibrace = SP.getBoolean("vibrovat",true);
+                    boolean nekonecnePrehravani = SP.getBoolean("nekonecnePrehravani", false);
+                    String vyzvaneni = SP.getString("vyzvaneni", "content://settings/system/notification_sound");
+
+                    if (vibrace == true) {
+                        long[] pattern = {500, 500, 500, 500, 500, 500, 500, 500, 500};
+                        builder.setVibrate(pattern);
+                    }
                     builder.setStyle(new NotificationCompat.InboxStyle());
-                    Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    Uri alarmSound = Uri.parse(vyzvaneni);
+                    builder.setSound(alarmSound);
+                    Notification myNotification = builder.build();
+                    if (nekonecnePrehravani == true) {
+                        myNotification.flags |= Notification.FLAG_INSISTENT;
+                        builder.setAutoCancel(true);
+                    }else {
+                        myNotification.flags |= Notification.FLAG_AUTO_CANCEL | Notification.FLAG_ONLY_ALERT_ONCE;
+                    }
                     builder.setSound(alarmSound);
                     manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    manager.notify(1, builder.build());
+
+                    manager.notify(1, myNotification);
                     Toast.makeText(getApplicationContext(), R.string.done, Toast.LENGTH_LONG).show();
                     //updateNotification();
                     Thread closeActivity = new Thread(new Runnable() {
                         @Override
                         public void run() {
                             try {
-                                Thread.sleep(5000);
+                                Thread.sleep(2000);
                                 stopSelf();
                             } catch (Exception e) {
                                 e.getLocalizedMessage();
                             }
                         }
                     });
-                    closeActivity.start();
+                    if (nekonecnePrehravani == false)
+                        closeActivity.run();
+                    timer.cancel();
+
                 }
             };
             timer.start();
-
-
 
             startForeground(1337, notification);
         }
@@ -117,24 +139,11 @@ public class MyService extends Service {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);
-        //TODO: vyřešit zobrazování ikonky běžícího časovače
         return new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_stat_onesignal_default)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setContentIntent(pendingIntent).getNotification();
-    }
-
-    /**
-     * This is the method that can be called to update the Notification
-     */
-    private void updateNotification() {
-        String text = "Odpočet hotov!";
-
-        Notification notification = getMyActivityNotification(text);
-
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(1337, notification);
     }
 
 

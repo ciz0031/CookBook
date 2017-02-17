@@ -208,7 +208,7 @@ public class Recept extends FragmentActivity {
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Recept - " + nazev_receptu);
 
                 intent.putExtra(Intent.EXTRA_TEXT, nazev_receptu + "\n\n" + ingredientsOfRecipe(recept) +
-                        "\n\n" + contentOfRecipe(recept));
+                        "\n\n" + contentOfRecipe(recept) + "\n\n" + evaluationOfRecipe(recept));
                 intentShareList.add(intent);
             }
         }
@@ -246,8 +246,17 @@ public class Recept extends FragmentActivity {
         String stupne = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_STUPNE));
 
         String contentOfRecipe = "Příprava: " + dobaPripravy + "min \n" + "Tepelná úprava: " +
-                dobaPeceni + "min (na " + stupne + "°C)\n\n" + "Postup: \n" + postup +"\n" + "Přílohy: " + prilohy;
+                dobaPeceni + "min (na " + stupne + "°C)\n\n" + "Postup: \n " + postup +"\n" + "Přílohy: " + prilohy;
         return contentOfRecipe;
+    }
+
+    public String evaluationOfRecipe(Cursor recept){
+        recept.moveToFirst();
+        String evaluationOfRecipe = "";
+        int hodnoceni = recept.getInt(recept.getColumnIndex(DBrecepty.COLUMN_HODNOCENI));
+        String komentar = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_KOMENTAR));
+        evaluationOfRecipe = "Moje hodnocení receptu: \n Počet hvězdiček: " + hodnoceni + "\n Komentář: " + komentar;
+        return evaluationOfRecipe;
     }
     @Override
     protected void onResume() {
