@@ -4,8 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -38,7 +42,6 @@ public class ReceptyTable {
         DBrecepty = new DBreceptyHelper(context);
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
 
-        String foto = "";
         ContentValues contentValues = new ContentValues();
         contentValues.put("nazev_receptu", ReceptO.nazev_receptu);
         contentValues.put("postup", ReceptO.postup);
@@ -54,7 +57,6 @@ public class ReceptyTable {
         contentValues.put("hodnoceni", ReceptO.hodnoceni);
         contentValues.put("komentar", ReceptO.komentar);
         db.insert(TABLE_NAME, null, contentValues);
-        //db.close();
         return true;
     }
 
@@ -77,7 +79,6 @@ public class ReceptyTable {
         data.put("hodnoceni", ReceptO.hodnoceni);
         data.put("komentar", ReceptO.komentar);
         db.update(TABLE_NAME, data, "_id = " + ReceptO.ID_receptu, null);
-        //db.close();
     }
 
     public void updateRecipe_setFavourite(String nazev_receptu, int oblibeny){
@@ -85,7 +86,6 @@ public class ReceptyTable {
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
         String query = "update " + TABLE_NAME + " set " + COLUMN_OBLIBENY + " = " + oblibeny + " where " +
                 COLUMN_NAZEV_RECEPTU + " = '" + nazev_receptu + "'";
-        Log.d("query", query);
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         c.close();
@@ -96,7 +96,6 @@ public class ReceptyTable {
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
         String query = "update " + TABLE_NAME + " set " + COLUMN_HODNOCENI + " = " + rating + ", " +
                 COLUMN_KOMENTAR + " = '" + komentar + "' where " + COLUMN_NAZEV_RECEPTU + " = '" + nazev_receptu + "'";
-        Log.d("query", query);
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         c.close();
@@ -115,11 +114,27 @@ public class ReceptyTable {
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
         cursor.close();
-        //db.close();
         return ReceptO;
     }
 
+    public void insertImagePath(String recept, String image) {
+        DBrecepty = new DBreceptyHelper(context);
+        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        String query = "update " + TABLE_NAME + " set " + COLUMN_FOTO + " = '" + image + "' where " + COLUMN_NAZEV_RECEPTU +
+                " = '" + recept + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        Log.d("INSERT IMAGE", query);
+        cursor.moveToFirst();
+        cursor.close();
+    }
 
+    public Cursor getImagePath(int id_receptu) {
+        DBrecepty = new DBreceptyHelper(context);
+        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        String query = "select " + COLUMN_FOTO + " from " + TABLE_NAME + " where " + COLUMN_ID + " = " + id_receptu;
+        Cursor cur = db.rawQuery(query, null);
+        return cur;
+    }
 
     public static ArrayList<ReceptO> getReceptPodleNazvu(String nazev_receptu, String razeni){ //podle nazvu receptu
         DBrecepty = new DBreceptyHelper(context);
@@ -139,7 +154,7 @@ public class ReceptyTable {
         return ReceptO;
     }
 
-    public static ArrayList<ReceptO> getFavouriteRecipe(){ //podle nazvu receptu
+    public static ArrayList<ReceptO> getFavouriteRecipe(){ //podle oblibenosti receptu
         DBrecepty = new DBreceptyHelper(context);
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
         String query = "select * from recept where " + COLUMN_OBLIBENY + " = 1";
@@ -147,7 +162,6 @@ public class ReceptyTable {
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
         cursor.close();
-        //db.close();
         return ReceptO;
     }
 
@@ -167,7 +181,7 @@ public class ReceptyTable {
             ReceptO.prilohy = cursor.getString(cursor.getColumnIndex(COLUMN_PRILOHY));
             ReceptO.ID_kategorie = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_KATEGORIE));
             //ReceptO.ID_podkategorie = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_PODKATEGORIE));
-            //ReceptO.foto = cursor.getString(cursor.getColumnIndex(COLUMN_FOTO));
+            ReceptO.foto = cursor.getString(cursor.getColumnIndex(COLUMN_FOTO));
             ReceptO.pocet_porci = cursor.getInt(cursor.getColumnIndex(COLUMN_POCET_PORCI));
             ReceptO.oblibeny = cursor.getInt(cursor.getColumnIndex(COLUMN_OBLIBENY));
             ReceptO.hodnoceni = cursor.getInt(cursor.getColumnIndex(COLUMN_HODNOCENI));

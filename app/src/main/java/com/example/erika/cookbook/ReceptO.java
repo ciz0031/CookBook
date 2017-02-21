@@ -1,5 +1,7 @@
 package com.example.erika.cookbook;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Erika on 10. 9. 2016.
  */

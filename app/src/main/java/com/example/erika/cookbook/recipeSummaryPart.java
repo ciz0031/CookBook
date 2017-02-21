@@ -5,7 +5,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,11 +23,16 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 
@@ -38,9 +46,10 @@ public class recipeSummaryPart extends Fragment{
     private ReceptyTable DBrecepty;
     private DBreceptyHelper DBhelper;
     private int ID_receptu,ID_podkategorie, ID_kategorie;
-    private Cursor recept, podkategorie, kategorie;
+    private Cursor recept, podkategorie, kategorie, image;
     private ImageButton timerImageButton;
     private RatingBar hodnoceni;
+    private ImageView foto;
     final Handler handler = new Handler();
     public ProgressDialog progressDialog;
 
@@ -56,6 +65,7 @@ public class recipeSummaryPart extends Fragment{
         TVkategorie = (TextView) v.findViewById(R.id.kategorie);
         timerImageButton = (ImageButton) v.findViewById(R.id.timerImageButton);
         hodnoceni = (RatingBar) v.findViewById(R.id.ratingBar);
+        foto = (ImageView) v.findViewById(R.id.imageViewFoto);
         //TVnazev_receptu = (TextView) v.findViewById(R.id.nazev_receptuTV);
 
         return v;
@@ -67,18 +77,18 @@ public class recipeSummaryPart extends Fragment{
         DBrecepty = new ReceptyTable(getActivity());
         DBhelper = new DBreceptyHelper(getActivity());
 
-
-
         Bundle extras = getActivity().getIntent().getExtras();
         nazev_receptu = extras.getString("nazev_receptu");
 
         LongOperationsThreadRecept MyThreadRecept = new LongOperationsThreadRecept();
         MyThreadRecept.execute("acc_to_name");
+
+        LongOperationsThreadGetImage MyThreadGetImage = new LongOperationsThreadGetImage();
+        MyThreadGetImage.execute();
     }
 
     public void setReceptProperties(Cursor recept){
         ID_receptu = Integer.parseInt(recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_ID)));
-//        ID_podkategorie = Integer.parseInt(recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_ID_PODKATEGORIE)));
         String IDpodkategorie = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_ID_PODKATEGORIE));
         ID_kategorie = Integer.parseInt(recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_ID_KATEGORIE)));
         if (IDpodkategorie != null){
@@ -95,7 +105,6 @@ public class recipeSummaryPart extends Fragment{
             podkategorie.moveToFirst();
             stringPodkategorie = podkategorie.getString(podkategorie.getColumnIndex(DBreceptyHelper.COLUMN_NAZEV_PODKATEGORIE));
             podkategorie.close();
-            //DBhelper.close();
             TVkategorie.setText(stringKategorie + ", " + stringPodkategorie);
         }else
             TVkategorie.setText(stringKategorie);
@@ -105,12 +114,12 @@ public class recipeSummaryPart extends Fragment{
         stringDobaPeceni = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_DOBA_PECENI));
         stringStupne = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_STUPNE));
         hodnoceni.setRating(Integer.parseInt(recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_HODNOCENI))));
-        //recept.close();
 
         TVpocetPorci.setText(stringPocetPorci);
         TVdobaPripravy.setText(stringDobaPripravy);
         TVdobaPeceni.setText(stringDobaPeceni);
         TVstupne.setText("(na " + stringStupne + " °C)");
+
 
 
         timerImageButton.setOnClickListener(new View.OnClickListener() {
@@ -124,7 +133,20 @@ public class recipeSummaryPart extends Fragment{
                 startActivity(countdownTimer);
             }
         });
+        recept.close();
+    }
 
+    public void setImage(Cursor image){
+        if (image != null) {
+            String imagePathString = image.getString(image.getColumnIndex(DBrecepty.COLUMN_FOTO));
+            if (imagePathString != null) {
+                Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString);
+                foto.setImageBitmap(imageBitmap);
+            } else {
+                foto.setImageResource(R.drawable.noimagefound);
+            }
+        }
+        image.close();
     }
 
     @Override
@@ -149,24 +171,11 @@ public class recipeSummaryPart extends Fragment{
             recept.moveToFirst();
             setReceptProperties(recept);
 
-
-            //Ingredience - nacteni z DB a vypsani do nove vytvorenych views - pomoci asynctask
-            //LongOperationsThread MyLongOperations = new LongOperationsThread();
-            //MyLongOperations.execute(stringNazevReceptu);
-
         }
 
         @Override
         protected Cursor doInBackground(String... strings) {
-
             handler.postDelayed(pdRunnable, 500);
-            /*try {
-                DBreceptyHelper.createDataBase();
-                Log.d("DB recipeSummPart", "database created");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            DBreceptyHelper.openDataBase();*/
 
             String method = strings[0];
             if (method.equals("acc_to_name")){
@@ -177,6 +186,44 @@ public class recipeSummaryPart extends Fragment{
             }
 
             return recept;
+        }
+        final Runnable pdRunnable = new Runnable() {
+            @Override
+            public void run() {
+                progressDialog = new ProgressDialog(getActivity());
+                progressDialog.setMessage("Loading...");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+        };
+    }
+
+    private class LongOperationsThreadGetImage extends AsyncTask<String, Void, Cursor> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+        @Override
+        protected void onPostExecute(Cursor image) {
+            super.onPostExecute(image);
+            handler.removeCallbacks(pdRunnable);
+            if (progressDialog!=null) {
+                progressDialog.dismiss();
+            }
+
+            image.moveToFirst();
+            setImage(image);
+        }
+
+        @Override
+        protected Cursor doInBackground(String... strings) {
+            handler.postDelayed(pdRunnable, 100);
+            recept = DBrecepty.getReceptAccordingToName(nazev_receptu);
+            recept.moveToFirst();
+            ID_receptu = recept.getInt(recept.getColumnIndex(DBrecepty.COLUMN_ID));
+            image = DBrecepty.getImagePath(ID_receptu);
+            return image;
         }
         final Runnable pdRunnable = new Runnable() {
             @Override
