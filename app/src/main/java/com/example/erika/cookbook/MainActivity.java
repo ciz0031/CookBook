@@ -130,10 +130,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Intent NakupniSeznam = new Intent(getApplicationContext(), NakupniSeznam.class);
             startActivity(NakupniSeznam);
         }
-        else if (id== R.id.action_dbEANs){
-            Intent EANdbManager = new Intent(getApplicationContext(), EANdbManager.class);
-            startActivity(EANdbManager);
-        }
+
         else if (id== R.id.action_favourites){
             Intent favourites = new Intent(getApplicationContext(), Favourites.class);
             startActivity(favourites);

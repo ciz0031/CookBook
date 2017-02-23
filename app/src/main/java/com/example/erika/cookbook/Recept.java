@@ -228,18 +228,15 @@ public class Recept extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {//-1
-                // Image captured and saved to fileUri specified in the Intent
                 Uri uri = picUri;
-                Toast.makeText(this, "Obrázek byl uložen:\n" + uri, Toast.LENGTH_LONG).show();
-
-                //TODO: tady bude to ulozeni do DB?
+                Toast.makeText(this, "Obrázek byl uložen\n" + uri + "\n do databáze.", Toast.LENGTH_LONG).show();
                 DBrecepty.insertImagePath(nazev_receptu, picUri.getPath());
             } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
                 Toast toast = Toast.makeText(this, "Focení receptu zrušeno.", Toast.LENGTH_SHORT);
                 toast.show();
             } else {
-                // Image capture failed, advise user
+                Toast toast = Toast.makeText(this, "Něco se pokazilo ... :(", Toast.LENGTH_SHORT);
+                toast.show();
             }
         }
     }
