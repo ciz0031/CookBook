@@ -34,9 +34,8 @@ public class NovyRecept extends Activity {
     private SurovinaReceptTable DBsurovinaRecept;
     private EditText nazev_receptu, postup, doba_pripravy, doba_peceni, stupne, prilohy, pocet_porci, surovina, mnozstvi;
     private Spinner kategorie, podkategorie, typ_mnozstvi;
-    private Button ulozit, pridat, odebrat, pridatFoto;
+    private Button ulozit, pridat, odebrat;
     private LinearLayout containerLayout, containerPodkategorie;
-    private ImageView foto;
     int podkat = 0;
     static int totalEditTexts;
     int lastAdded = 0;
@@ -50,10 +49,7 @@ public class NovyRecept extends Activity {
     private int ET_TYP_MNOZSTVI_PX_WIDTH;
     private int ET_SUROVINA_PX_WIDTH;
     private int ET_TYP_MNOZSTVI_PX_HEIGHT = 45;
-    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-    private static final int MEDIA_TYPE_IMAGE = 1;
-    private Uri fileUri;
-    private Uri picUri;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +74,6 @@ public class NovyRecept extends Activity {
         pridat = (Button) findViewById(R.id.pridatPolozkuSeznamuB);
         odebrat = (Button) findViewById(R.id.Bdelete);
         ulozit = (Button) findViewById(R.id.Bsave);
-        pridatFoto = (Button) findViewById(R.id.BpridatFoto);
         doba_pripravy = (EditText)findViewById(R.id.doba_pripravy);
         doba_peceni = (EditText)findViewById(R.id.doba_peceni);
         stupne = (EditText)findViewById(R.id.stupne);
@@ -86,7 +81,6 @@ public class NovyRecept extends Activity {
         pocet_porci = (EditText)findViewById(R.id.pocet_porci);
         containerLayout = (LinearLayout) findViewById(R.id.LL3);
         containerPodkategorie = (LinearLayout) findViewById(R.id.ll08);
-        foto = (ImageView) findViewById(R.id.foto);
 
         odebrat.setVisibility(View.INVISIBLE);
 
@@ -234,7 +228,7 @@ public class NovyRecept extends Activity {
                                         }
 
                                     }
-                                    DBrecepty.close();
+                                    //DBrecepty.close();
                                 }
                             } catch (SQLException ex) {
                                 Toast.makeText(getApplicationContext(), R.string.item_not_saved, Toast.LENGTH_SHORT).show();
@@ -298,7 +292,7 @@ public class NovyRecept extends Activity {
 
                                 }
                                 Toast.makeText(getApplicationContext(), R.string.new_item_saved, Toast.LENGTH_SHORT).show();
-                                DBrecepty.close();
+                                //DBrecepty.close();
                                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                                 startActivity(i);
                             } catch (SQLException exception) {
@@ -374,63 +368,6 @@ public class NovyRecept extends Activity {
                 //doNothing
             }
         });
-        pridatFoto.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent ziskatFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
-                File file = getOutputMediaFile(1);
-                picUri = Uri.fromFile(file);
-                ziskatFoto.putExtra(MediaStore.EXTRA_OUTPUT, picUri); // set the image file name
-                startActivityForResult(ziskatFoto, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-            }
-        });
-    }
-    /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type){
-        return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type){
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Kucharka");
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
-                Log.d("Kucharka", "failed to create directory");
-                return null;
-            }
-        }
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE){
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                    "IMG_"+ timeStamp + ".jpg");
-        } else {
-            return null;
-        }
-
-        return mediaFile;
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {//-1
-                // Image captured and saved to fileUri specified in the Intent
-                Uri uri = picUri;
-                Toast.makeText(this, "Obrázek byl uložen:\n" + uri, Toast.LENGTH_LONG).show();
-
-                //TODO: tady bude to ulozeni do DB?
-                DBrecepty.insertImagePath(nazev_receptu.getText().toString(), picUri.getPath());
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the image capture
-                Toast toast = Toast.makeText(this, "Focení receptu zrušeno.", Toast.LENGTH_SHORT);
-                toast.show();
-            } else {
-                // Image capture failed, advise user
-            }
-        }
     }
 
     private void loadAndFill(SurovinaReceptO surovinaReceptObj){

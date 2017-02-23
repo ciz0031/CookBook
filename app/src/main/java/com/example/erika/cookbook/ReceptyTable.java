@@ -101,7 +101,7 @@ public class ReceptyTable {
         c.close();
     }
 
-    public static ArrayList<ReceptO> getReceptyFromDB(int ID_kategorie, String razeni){ //podle kategorie
+    public static ArrayList<ReceptO> getRecipeFromDB(int ID_kategorie, String razeni){ //podle kategorie
         DBrecepty = new DBreceptyHelper(context);
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
         String query = "";
@@ -109,6 +109,9 @@ public class ReceptyTable {
             query = "select * from recept where ID_kategorie = " + ID_kategorie;
         }else if (razeni.equals("2")){
             query = "select * from recept where ID_kategorie = " + ID_kategorie + " order by " + COLUMN_HODNOCENI + " desc";
+        }else if (razeni.equals("3")){
+            query = "select * from recept where ID_kategorie = " + ID_kategorie + " order by "
+                    + COLUMN_DOBA_PECENI + " + " + COLUMN_DOBA_PRIPRAVY + " asc";
         }
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
@@ -136,14 +139,18 @@ public class ReceptyTable {
         return cur;
     }
 
-    public static ArrayList<ReceptO> getReceptPodleNazvu(String nazev_receptu, String razeni){ //podle nazvu receptu
+    public static ArrayList<ReceptO> getOrderedRecipe(String nazev_receptu, String razeni){ //podle nazvu receptu
         DBrecepty = new DBreceptyHelper(context);
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
         String query = "";
         if (razeni.equals("1")){
             query = "select * from recept where nazev_receptu LIKE '" + nazev_receptu + "%'";
         }else if (razeni.equals("2")){
-            query = "select * from recept where nazev_receptu LIKE '" + nazev_receptu + "%'" + " order by " + COLUMN_HODNOCENI + " desc";
+            query = "select * from recept where nazev_receptu LIKE '" + nazev_receptu + "%'" + " order by "
+                    + COLUMN_HODNOCENI + " desc";
+        }else if (razeni.equals("3")){
+            query = "select * from recept where nazev_receptu LIKE '" + nazev_receptu + "%'" + " order by "
+                    + COLUMN_DOBA_PECENI + " + " + COLUMN_DOBA_PRIPRAVY + " asc";
         }
 
         Cursor cursor = db.rawQuery(query, null);
@@ -158,6 +165,17 @@ public class ReceptyTable {
         DBrecepty = new DBreceptyHelper(context);
         SQLiteDatabase db = DBrecepty.getWritableDatabase();
         String query = "select * from recept where " + COLUMN_OBLIBENY + " = 1";
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+        ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
+        cursor.close();
+        return ReceptO;
+    }
+
+    public static ArrayList<ReceptO> getRecipeAccToTime(){ //podle času přípravy a tepelné úpravy
+        DBrecepty = new DBreceptyHelper(context);
+        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        String query = "select * from recept order by " + COLUMN_DOBA_PECENI + COLUMN_DOBA_PRIPRAVY + " asc";
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);

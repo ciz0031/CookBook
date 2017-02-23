@@ -46,7 +46,6 @@ public class CountdownTimer extends Activity {
     private Button addOneMinuteButton;
     int dobaPeceni, dobaPeceniExtras;
     public NotificationManager manager;
-    public NotificationCompat.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +68,6 @@ public class CountdownTimer extends Activity {
         dobaPeceniTV.setTextSize(35);
         RL.addView(dobaPeceniTV);
 
-        builder = new NotificationCompat.Builder(this);
-        long[] pattern = {500,500,500,500,500,500,500,500,500};
-        builder.setVibrate(pattern);
-        builder.setStyle(new NotificationCompat.InboxStyle());
-        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        builder.setSound(alarmSound);
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         dobaPeceniTP = (TimePicker) findViewById(R.id.timePicker);

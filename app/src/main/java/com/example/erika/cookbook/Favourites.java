@@ -118,7 +118,7 @@ public class Favourites extends Activity {
                         startActivity(intent);
                     }
                 });
-                DBreceptyHelper.close();
+                //DBreceptyHelper.close();
             }
         }
     }

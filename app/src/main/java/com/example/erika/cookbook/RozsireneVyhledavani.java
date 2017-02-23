@@ -36,7 +36,7 @@ public class RozsireneVyhledavani extends Activity {
     private DBeanHelper dbEanHelper;
     private ArrayList al, suroviny;
     private Button hledatButton, pridatSurovinuButton, smazatSurovinuButton;
-    private LinearLayout vyhledaneReceptyLL, hledejLL, surovinaLL, polozkaLL;
+    private LinearLayout vyhledaneReceptyLL, pridatSurovinuLL, surovinaLL, polozkaLL;
     private String surovina;
     private ListView vyhledaneReceptyListView;
     private TextView chyboveHlaseni;
@@ -71,7 +71,7 @@ public class RozsireneVyhledavani extends Activity {
         hledatButton = (Button) findViewById(R.id.hledatButton);
         vyhledaneReceptyLL = (LinearLayout) findViewById(R.id.vyhledaneReceptyLL);
         pridatSurovinuButton = (Button) findViewById(R.id.pridatSurovinuButton);
-        hledejLL = (LinearLayout) findViewById(R.id.hledejLL);
+        pridatSurovinuLL = (LinearLayout) findViewById(R.id.pridatSurovinuLL);
         surovinaLL = (LinearLayout) findViewById(R.id.surovinaLL);
 
         pocetSurovin = 0;
@@ -81,6 +81,13 @@ public class RozsireneVyhledavani extends Activity {
         MyLongOperations.execute();
 
         pridatSurovinuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pridatSurovinu();
+            }
+        });
+
+        pridatSurovinuLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 pridatSurovinu();

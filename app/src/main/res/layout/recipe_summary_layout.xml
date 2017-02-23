@@ -51,7 +51,6 @@
                 android:layout_width="260dp"
                 android:layout_height="160dp"
                 android:id="@+id/imageViewFoto"
-                android:src="@drawable/noimagefound"
                 android:padding="5dp"
                 android:clickable="true"
                 android:layout_gravity="center_horizontal"/>

@@ -65,6 +65,7 @@
     <string name="action_delete">Smazat položku z DB</string>
     <string name="action_deleteShoppingList">Smazat celý nákupní seznam</string>
     <string name="action_share">Sdílet recept</string>
+    <string name="action_photo">Přidat obrázek</string>
 
     <string name="scan">Vyfoť EAN</string>
     <string name="title_activity_create_new_dbitem">Přidání nového EANu do databáze</string>
@@ -81,11 +82,13 @@
     <string-array name="radit_podle_array">
         <item>Podle abecedy</item>
         <item>Podle hodnocení receptů</item>
+        <item>Podle rychlosti přípravy</item>
     </string-array>
 
     <string-array name="hodnoty_radit_podle_array">
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string name="title_activity_dbitem">Položka databáze</string>

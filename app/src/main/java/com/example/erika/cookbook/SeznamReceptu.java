@@ -103,7 +103,7 @@ public class SeznamReceptu extends Activity {
                     startActivity(intent);
                 }
             });
-            receptyTable.close();
+            //receptyTable.close();
         }
 
         @Override
@@ -111,13 +111,8 @@ public class SeznamReceptu extends Activity {
             handler.postDelayed(pdRunnable, 500);
             SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String razeniReceptu = SP.getString("razeniReceptu","1");
-            if (razeniReceptu.equals("1")) {//razeni podle abecedy - default
-                ArrayList<ReceptO> arrayList = receptyTable.getReceptyFromDB(ints[0], razeniReceptu);
-                return arrayList;
-            }else{ //razeni podle hodnoceni
-                ArrayList<ReceptO> arrayList = receptyTable.getReceptyFromDB(ints[0], razeniReceptu);
-                return arrayList;
-            }
+            ArrayList<ReceptO> arrayList = receptyTable.getRecipeFromDB(ints[0], razeniReceptu);
+            return arrayList;
 
         }
         final Runnable pdRunnable = new Runnable() {

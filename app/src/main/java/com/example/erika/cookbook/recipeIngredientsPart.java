@@ -79,7 +79,7 @@ public class recipeIngredientsPart extends Fragment {
         recept.moveToFirst();
         stringPocetPorci = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_POCET_PORCI));
         recept.close();
-        DBrecepty.close();
+        //DBrecepty.close();
 
         TVpocetPorci.setText(stringPocetPorci);
 

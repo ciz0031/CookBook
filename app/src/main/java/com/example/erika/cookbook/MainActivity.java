@@ -251,14 +251,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String razeniReceptu = SP.getString("razeniReceptu","1");
-            if (razeniReceptu.equals("1")) {//razeni podle abecedy - default
-                ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0], razeniReceptu);
-                return arrayList;
-            }else{ //razeni podle hodnoceni
-                ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0], razeniReceptu);
-                return arrayList;
-            }
-
+            ArrayList<ReceptO> arrayList = DBrecepty.getOrderedRecipe(params[0], razeniReceptu);
+            return arrayList;
         }
 
         @Override
@@ -324,7 +318,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         startActivity(intent);
                     }
                 });
-                DBreceptyHelper.close();
+                //DBreceptyHelper.close();
             }
         }
 

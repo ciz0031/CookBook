@@ -8,10 +8,13 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,8 +26,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.support.v4.app.FragmentActivity;
@@ -42,6 +48,11 @@ public class Recept extends FragmentActivity {
 
     final Handler handler = new Handler();
     public ProgressDialog progressDialog;
+
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private static final int MEDIA_TYPE_IMAGE = 1;
+    private Uri fileUri;
+    private Uri picUri;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,6 +137,14 @@ public class Recept extends FragmentActivity {
             startActivity(hodnoceni);
             return true;
         }
+        else if (id == R.id.action_photo){
+            Intent ziskatFoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            fileUri = getOutputMediaFileUri(MEDIA_TYPE_IMAGE); // create a file to save the image
+            File file = getOutputMediaFile(1);
+            picUri = Uri.fromFile(file);
+            ziskatFoto.putExtra(MediaStore.EXTRA_OUTPUT, picUri); // set the image file name
+            startActivityForResult(ziskatFoto, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
         else if (id == R.id.action_update){
             Intent intent = new Intent(getApplicationContext(), NovyRecept.class);
             Bundle dataBundle = new Bundle();
@@ -177,6 +196,52 @@ public class Recept extends FragmentActivity {
             shareIntentSpecificApps();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private static Uri getOutputMediaFileUri(int type){
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    /** Create a File for saving an image or video */
+    private static File getOutputMediaFile(int type){
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Kucharka");
+        if (! mediaStorageDir.exists()){
+            if (! mediaStorageDir.mkdirs()){
+                Log.d("Kucharka", "failed to create directory");
+                return null;
+            }
+        }
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE){
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                    "IMG_"+ timeStamp + ".jpg");
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {//-1
+                // Image captured and saved to fileUri specified in the Intent
+                Uri uri = picUri;
+                Toast.makeText(this, "Obrázek byl uložen:\n" + uri, Toast.LENGTH_LONG).show();
+
+                //TODO: tady bude to ulozeni do DB?
+                DBrecepty.insertImagePath(nazev_receptu, picUri.getPath());
+            } else if (resultCode == RESULT_CANCELED) {
+                // User cancelled the image capture
+                Toast toast = Toast.makeText(this, "Focení receptu zrušeno.", Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                // Image capture failed, advise user
+            }
+        }
     }
 
     public void shareIntentSpecificApps() {

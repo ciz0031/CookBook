@@ -85,6 +85,8 @@ public class recipeSummaryPart extends Fragment{
 
         LongOperationsThreadGetImage MyThreadGetImage = new LongOperationsThreadGetImage();
         MyThreadGetImage.execute();
+
+
     }
 
     public void setReceptProperties(Cursor recept){
@@ -134,6 +136,13 @@ public class recipeSummaryPart extends Fragment{
             }
         });
         recept.close();
+
+        foto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO: zobrazeni obrazku ve vetsim formatu
+            }
+        });
     }
 
     public void setImage(Cursor image){

@@ -361,37 +361,8 @@
                     android:text="°C"
                     android:id="@+id/textView11" />
             </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/ll10"
-                android:weightSum="1"
-                android:layout_marginTop="5dp">
-
-                <Button
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="Přidat fotku"
-                    android:id="@+id/BpridatFoto"
-                    android:background="@drawable/btn_style"
-                    android:shadowColor="#FFFFFF"
-                    android:shadowDx="0"
-                    android:shadowDy="0"
-                    android:shadowRadius="10"
-                    android:textStyle="bold" />
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/foto" />
-
-            </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
