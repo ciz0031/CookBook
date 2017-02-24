@@ -5,8 +5,10 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -24,8 +26,7 @@
         <activity
             android:name=".Recept"
             android:label="@string/title_activity_recept"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".NovyRecept"
             android:label="@string/title_activity_novy_recept"
@@ -55,15 +56,20 @@
 
         <service android:name=".MyService" />
 
-        <activity android:name=".HodnoceniReceptu"
+        <activity
+            android:name=".HodnoceniReceptu"
             android:label="@string/action_rate"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".Favourites"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".Favourites"
             android:label="@string/title_activity_favourites"
-            android:parentActivityName=".MainActivity"></activity>
-        <activity android:name=".Settings"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".Settings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".FullScreenImage"
+            ></activity>
     </application>
 
 </manifest>

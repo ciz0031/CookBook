@@ -361,11 +361,9 @@ public class Recept extends FragmentActivity {
         if (image != null) {
             String imagePathString = image.getString(image.getColumnIndex(DBrecepty.COLUMN_FOTO));
             if (imagePathString != null) {
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                 bmOptions.inJustDecodeBounds = true;
-                //Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString, bmOptions);
+                final Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString, bmOptions);
                 int photoW = bmOptions.outWidth;
                 int photoH = bmOptions.outHeight;
 
@@ -377,15 +375,14 @@ public class Recept extends FragmentActivity {
                 bmOptions.inJustDecodeBounds = false;
                 bmOptions.inSampleSize = scaleFactor;
 
-                Bitmap smallerImageBitmap = BitmapFactory.decodeFile(imagePathString, bmOptions);
-                //smallerImageBitmap.compress(Bitmap.CompressFormat.JPEG, 0, outputStream);
-                //Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(outputStream.toByteArray()));
-
+                final Bitmap smallerImageBitmap = BitmapFactory.decodeFile(imagePathString, bmOptions);
                 foto.setImageBitmap(smallerImageBitmap);
                 foto.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        ///TODO: zobrazeni ve vetsim formatu
+                        Intent intent = new Intent(Recept.this, FullScreenImage.class);
+                        intent.putExtra("image", smallerImageBitmap);
+                        startActivity(intent);
                     }
                 });
             } else {

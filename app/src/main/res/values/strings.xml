@@ -55,7 +55,6 @@
     </string-array>
 
 
-
     <string name="title_activity_recept">Detail receptu</string>
     <string name="title_activity_novy_recept">Vytvořit nový recept</string>
     <string name="title_activity_barcode_reader">Čtečka čárových kódů</string>
