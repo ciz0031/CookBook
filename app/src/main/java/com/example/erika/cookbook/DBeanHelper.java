@@ -27,13 +27,26 @@ public class DBeanHelper extends SQLiteOpenHelper {
 
     public Context context;
     static SQLiteDatabase sqliteDataBase;
+    private static DBeanHelper sInstance = null;
+    private int mOpenCounter = 0;
 
     public static ArrayList<String> arrayList = new ArrayList<String>();
 
-    public DBeanHelper(Context context){
+    private DBeanHelper(Context context){
         super(context, DATABASE_NAME, null, 1);
         this.context = context;
     }
+
+    public static synchronized DBeanHelper getInstance(Context context) {
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new DBeanHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
 
 
     public void createDataBase() throws IOException{
@@ -76,16 +89,20 @@ public class DBeanHelper extends SQLiteOpenHelper {
     }
 
     public void openDataBase() throws SQLException {
-        //Open the database
-        String myPath = DB_PATH + DATABASE_NAME;
-        sqliteDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+        mOpenCounter++;
+        if (mOpenCounter == 1) {
+            //Open the database
+            String myPath = DB_PATH + DATABASE_NAME;
+            sqliteDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+        }
     }
 
     @Override
     public synchronized void close() {
-        if(sqliteDataBase != null)
+        mOpenCounter--;
+        if(mOpenCounter == 0)
             sqliteDataBase.close();
-        super.close();
+        //super.close();
     }
 
     @Override
@@ -99,7 +116,7 @@ public class DBeanHelper extends SQLiteOpenHelper {
 
     public boolean insertSurovinaEAN(int ean, String name)
     {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getInstance(context).getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_EAN, ean);
         contentValues.put(COLUMN_NAME, name);
@@ -109,7 +126,7 @@ public class DBeanHelper extends SQLiteOpenHelper {
     }
 
     public ArrayList<EANsurovinaO> getSurovina(String ean){
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = this.getInstance(context).getReadableDatabase();
         String query = "select * from " + EANS_TABLE_NAME + " where " + COLUMN_EAN + " = " + ean;
         Cursor suroviny =  db.rawQuery(query, null);
         suroviny.moveToFirst();
@@ -117,31 +134,6 @@ public class DBeanHelper extends SQLiteOpenHelper {
         suroviny.close();
         db.close();
         return eanSurovina;
-    }
-
-    public boolean updateSurovinaEAN (int ean, String name)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues data = new ContentValues();
-        data.put(COLUMN_NAME, name);
-        db.update(EANS_TABLE_NAME, data, COLUMN_EAN + "=" + ean, null);
-        db.close();
-        return true;
-    }
-
-
-    public ArrayList<EANsurovinaO> getAllSurovinaEANs()
-    {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select * from " + EANS_TABLE_NAME;
-        Cursor res =  db.rawQuery(query , null );
-        res.moveToFirst();
-
-        ArrayList<EANsurovinaO> EANreceptObj = ReadEANsurovina(res);
-
-        res.close();
-        db.close();
-        return EANreceptObj;
     }
 
     private ArrayList<EANsurovinaO> ReadEANsurovina (Cursor res){

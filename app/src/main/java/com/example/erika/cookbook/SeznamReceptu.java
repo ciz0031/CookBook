@@ -48,8 +48,8 @@ public class SeznamReceptu extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seznam_receptu);
         Bundle extras = getIntent().getExtras();
-        DBrecepty = new DBreceptyHelper(this);
-        receptyTable = new ReceptyTable(this);
+        DBrecepty = DBreceptyHelper.getInstance(this);
+        receptyTable = ReceptyTable.getInstance(this);
         al = new ArrayList();
         if(extras != null)
         {

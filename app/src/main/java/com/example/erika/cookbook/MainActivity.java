@@ -215,8 +215,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<ReceptO>> {
-        ReceptyTable DBrecepty = new ReceptyTable(MainActivity.this);
-        DBreceptyHelper DBreceptyHelper = new DBreceptyHelper(MainActivity.this);
+        ReceptyTable DBrecepty = ReceptyTable.getInstance(MainActivity.this);
+        DBreceptyHelper DBreceptyHelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(MainActivity.this);
         final Handler handler = new Handler();
 
         @Override
@@ -242,7 +242,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            DBreceptyHelper.openDataBase();
+            DBreceptyHelper.getInstance(MainActivity.this).openDataBase();
 
             //final ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0]);
 

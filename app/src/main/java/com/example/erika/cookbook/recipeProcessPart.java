@@ -37,7 +37,7 @@ public class recipeProcessPart extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DBrecepty = new ReceptyTable(getActivity());
+        DBrecepty = ReceptyTable.getInstance(getActivity());
 
         Bundle extras = getActivity().getIntent().getExtras();
         nazev_receptu = extras.getString("nazev_receptu");

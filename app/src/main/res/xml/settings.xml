@@ -9,7 +9,7 @@
             android:key="vyzvaneni"
             android:showSilent="false"
             android:summary="Vyzvánění, které se přehraje při ukončení časovače"
-            android:ringtoneType="all" />
+            android:ringtoneType="notification|alarm" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:title="Vibrovat"

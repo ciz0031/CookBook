@@ -34,13 +34,23 @@ public class ReceptyTable {
     public static String COLUMN_HODNOCENI = "hodnoceni";
     public static String COLUMN_KOMENTAR = "komentar";
 
-    public ReceptyTable(Context context) {
+    private static ReceptyTable sInstance = null;
+
+    private ReceptyTable(Context context) {
         this.context = context;
         //DBrecepty = new DBreceptyHelper(context);
     }
+    public static synchronized ReceptyTable getInstance(Context context) {
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new ReceptyTable(context.getApplicationContext());
+        }
+        return sInstance;
+    }
     public static boolean insertRecept(ReceptO ReceptO){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("nazev_receptu", ReceptO.nazev_receptu);
@@ -60,30 +70,8 @@ public class ReceptyTable {
         return true;
     }
 
-    public void updateRecept(ReceptO ReceptO){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
-        String foto = "";
-        ContentValues data = new ContentValues();
-        data.put("nazev_receptu", ReceptO.nazev_receptu);
-        data.put("postup", ReceptO.postup);
-        data.put("doba_pripravy", ReceptO.doba_pripravy);
-        data.put("doba_peceni", ReceptO.doba_peceni);
-        data.put("stupne", ReceptO.stupne);
-        data.put("prilohy", ReceptO.prilohy);
-        data.put("ID_kategorie", ReceptO.ID_kategorie);
-        data.put("ID_podkategorie", ReceptO.ID_podkategorie);
-        data.put("foto", ReceptO.foto);
-        data.put("pocet_porci", ReceptO.pocet_porci);
-        data.put("oblibeny", ReceptO.oblibeny);
-        data.put("hodnoceni", ReceptO.hodnoceni);
-        data.put("komentar", ReceptO.komentar);
-        db.update(TABLE_NAME, data, "_id = " + ReceptO.ID_receptu, null);
-    }
-
     public void updateRecipe_setFavourite(String nazev_receptu, int oblibeny){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "update " + TABLE_NAME + " set " + COLUMN_OBLIBENY + " = " + oblibeny + " where " +
                 COLUMN_NAZEV_RECEPTU + " = '" + nazev_receptu + "'";
         Cursor c = db.rawQuery(query, null);
@@ -92,8 +80,7 @@ public class ReceptyTable {
     }
 
     public void updateRecipe_setRating(String nazev_receptu, int rating, String komentar){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "update " + TABLE_NAME + " set " + COLUMN_HODNOCENI + " = " + rating + ", " +
                 COLUMN_KOMENTAR + " = '" + komentar + "' where " + COLUMN_NAZEV_RECEPTU + " = '" + nazev_receptu + "'";
         Cursor c = db.rawQuery(query, null);
@@ -102,8 +89,7 @@ public class ReceptyTable {
     }
 
     public static ArrayList<ReceptO> getRecipeFromDB(int ID_kategorie, String razeni){ //podle kategorie
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "";
         if (razeni.equals("1")){
             query = "select * from recept where ID_kategorie = " + ID_kategorie;
@@ -121,8 +107,7 @@ public class ReceptyTable {
     }
 
     public void insertImagePath(String recept, String image) {
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "update " + TABLE_NAME + " set " + COLUMN_FOTO + " = '" + image + "' where " + COLUMN_NAZEV_RECEPTU +
                 " = '" + recept + "'";
         Cursor cursor = db.rawQuery(query, null);
@@ -132,16 +117,14 @@ public class ReceptyTable {
     }
 
     public Cursor getImagePath(int id_receptu) {
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "select " + COLUMN_FOTO + " from " + TABLE_NAME + " where " + COLUMN_ID + " = " + id_receptu;
         Cursor cur = db.rawQuery(query, null);
         return cur;
     }
 
     public static ArrayList<ReceptO> getOrderedRecipe(String nazev_receptu, String razeni){ //podle nazvu receptu
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "";
         if (razeni.equals("1")){
             query = "select * from recept where nazev_receptu LIKE '" + nazev_receptu + "%'";
@@ -157,25 +140,12 @@ public class ReceptyTable {
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
         cursor.close();
-        //db.close();
         return ReceptO;
     }
 
     public static ArrayList<ReceptO> getFavouriteRecipe(){ //podle oblibenosti receptu
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "select * from recept where " + COLUMN_OBLIBENY + " = 1";
-        Cursor cursor = db.rawQuery(query, null);
-        cursor.moveToFirst();
-        ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
-        cursor.close();
-        return ReceptO;
-    }
-
-    public static ArrayList<ReceptO> getRecipeAccToTime(){ //podle času přípravy a tepelné úpravy
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
-        String query = "select * from recept order by " + COLUMN_DOBA_PECENI + COLUMN_DOBA_PRIPRAVY + " asc";
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
         ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
@@ -186,7 +156,6 @@ public class ReceptyTable {
     private static ArrayList<ReceptO> ReadRecepty(Cursor cursor)
     {
         ArrayList<ReceptO> ReceptyO = new ArrayList<ReceptO>();
-
         while (cursor.isAfterLast() == false)
         {
             ReceptO ReceptO = new ReceptO();
@@ -211,26 +180,22 @@ public class ReceptyTable {
     }
 
     public Cursor getRecept(int IDreceptu){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "select * from recept where _id = " + IDreceptu;
         Cursor c = db.rawQuery(query, null);
         return c;
     }
 
     public Cursor getReceptAccordingToName(String nazev_receptu){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "select * from " + TABLE_NAME + " where " + COLUMN_NAZEV_RECEPTU + " ='" + nazev_receptu + "'";
         Cursor c = db.rawQuery(query, null);
         return c;
     }
 
     public void deleteRecept(String IDreceptu){
-        DBrecepty = new DBreceptyHelper(context);
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         db.delete(TABLE_NAME, "_id = " + IDreceptu, null);
-        //db.close();
     }
 
     public void close() { DBrecepty.close(); }

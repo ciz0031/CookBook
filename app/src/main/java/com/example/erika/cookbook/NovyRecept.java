@@ -56,9 +56,9 @@ public class NovyRecept extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_novy_recept);
         this.setTitle("Vytvořit nový recept");
-        DBrecepty = new ReceptyTable(this);
-        DBsurovinaRecept = new SurovinaReceptTable(this);
-        DBreceptyHelper = new DBreceptyHelper(this);
+        DBrecepty = ReceptyTable.getInstance(this);
+        DBsurovinaRecept = SurovinaReceptTable.getInstance(this);
+        DBreceptyHelper = DBreceptyHelper.getInstance(this);
         surovinaReceptArrayList = new ArrayList();
 
         final float scale = getResources().getDisplayMetrics().density;

@@ -79,7 +79,8 @@ public class EANdbManager extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         //retrieve result of scanning - instantiate ZXing object
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        db = new DBeanHelper(this);
+        db = DBeanHelper.getInstance(this);
+        db.openDataBase();
         String scanContent = scanningResult.getContents();
         if (scanContent != null) {
             if(scanContent.length() > 0){
@@ -120,6 +121,7 @@ public class EANdbManager extends Activity {
                 ulozitButton.setClickable(false);
                 ulozitButton.setBackgroundColor(getResources().getColor(R.color.grey));
             }
+            db.getInstance(getApplication()).close();
         }
 
         @Override

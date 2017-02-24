@@ -58,8 +58,8 @@ public class RozsireneVyhledavani extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rozsirene_vyhledavani);
 
-        DBrecepty = new SurovinaReceptTable(this);
-        dbEanHelper = new DBeanHelper(this);
+        DBrecepty = SurovinaReceptTable.getInstance(this);
+        dbEanHelper = DBeanHelper.getInstance(this);
 
         al = new ArrayList();
         suroviny = new ArrayList();

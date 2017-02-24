@@ -19,26 +19,30 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBreceptyHelper extends SQLiteOpenHelper {
-    //The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/com.example.erika.cookbook/databases/";
-
-    // Data Base Name.
     private static final String DATABASE_NAME = "recepty.db";
-    // Data Base Version.
     private static final int DATABASE_VERSION = 1;
-    // Table Names of Data Base.
-    static final String COLUMN_NAZEV_RECEPTU = "nazev_receptu";
-    static final String COLUMN_ID = "_id";
     static final String COLUMN_NAZEV_PODKATEGORIE = "nazev_podkategorie";
     static final String COLUMN_NAZEV_KATEGORIE = "nazev_kategorie";
-    static final String TABLE_RECEPT = "recept";
-    static final String TABLE_SUROVINA_RECEPT = "surovina_recept";
     static final String TABLE_KATEGORIE = "kategorie";
     static final String TABLE_PODKATEGORIE = "podkategorie";
-
-
     public Context context;
     static SQLiteDatabase sqliteDataBase;
+
+    private static DBreceptyHelper sInstance = null;
+    private int mOpenCounter = 0;
+    private static SQLiteOpenHelper mDatabaseHelper;
+
+
+    public static synchronized DBreceptyHelper getInstance(Context context) {
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new DBreceptyHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
 
     /**
      * Constructor
@@ -49,10 +53,9 @@ public class DBreceptyHelper extends SQLiteOpenHelper {
      *                              3. Cursor Factory.
      *                              4. Data Base Version.
      */
-    public DBreceptyHelper(Context context) {
+    private DBreceptyHelper(Context context) {
         super(context, DATABASE_NAME, null ,DATABASE_VERSION);
         this.context = context;
-
     }
 
     /**
@@ -114,34 +117,39 @@ public class DBreceptyHelper extends SQLiteOpenHelper {
      * Then create connection with data base.
      */
     public void openDataBase() throws SQLException{
-        //Open the database
-        String myPath = DB_PATH + DATABASE_NAME;
-        sqliteDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+        mOpenCounter++;
+        if (mOpenCounter == 1){
+            //Open the database
+            String myPath = DB_PATH + DATABASE_NAME;
+            sqliteDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+            //sqliteDataBase = mDatabaseHelper.getWritableDatabase();
+        }
     }
 
     @Override
     public synchronized void close() {
-        if(sqliteDataBase != null)
+        mOpenCounter--;
+        if(mOpenCounter == 0)
             sqliteDataBase.close();
-        super.close();
+        //super.close();
     }
 
     public Cursor getPodkategorie(int id_kategorie){
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getInstance(context).getWritableDatabase();
         String query = "select * from " + TABLE_PODKATEGORIE + " where ID_kategorie = " + id_kategorie;
         Cursor c = db.rawQuery(query, null);
         return c;
     }
 
     public Cursor getPodkategorieName(int id_podkategorie){
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getInstance(context).getWritableDatabase();
         String query = "select * from " + TABLE_PODKATEGORIE + " where _id = " + id_podkategorie;
         Cursor c = db.rawQuery(query, null);
         return c;
     }
 
     public Cursor getKategorieName(int id_kategorie){
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getInstance(context).getWritableDatabase();
         String query = "select * from " + TABLE_KATEGORIE + " where _id = " + id_kategorie;
         Cursor c = db.rawQuery(query, null);
         return c;

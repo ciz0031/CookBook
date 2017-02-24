@@ -57,8 +57,8 @@ public class recipeIngredientsPart extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DBsurovina_recept = new SurovinaReceptTable(getActivity());
-        DBrecepty = new ReceptyTable(getActivity());
+        DBsurovina_recept = SurovinaReceptTable.getInstance(getActivity());
+        DBrecepty = ReceptyTable.getInstance(getActivity());
 
         scale = getResources().getDisplayMetrics().density;
         INGREDIENCE_PX_WIDTH = (int) (INGREDIENCE_DP_WIDTH * scale + 0.5f);

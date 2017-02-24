@@ -33,8 +33,8 @@ public class HodnoceniReceptu extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hodnoceni_receptu);
 
-        DBrecepty = new ReceptyTable(this);
-        DBreceptyHelper = new DBreceptyHelper(this);
+        DBrecepty = ReceptyTable.getInstance(this);
+        DBreceptyHelper = DBreceptyHelper.getInstance(this);
         final LongOperationsThread MyThreadRecept = new LongOperationsThread();
 
         hodnoceni = (RatingBar) findViewById(R.id.ratingBar2);

@@ -21,34 +21,41 @@ public class SurovinaReceptTable {
     public static String COLUMN_TYP = "typ_mnozstvi";
     ArrayList arrayListSurovinaRecept;
 
-    public SurovinaReceptTable(Context context){
+    private static SurovinaReceptTable sInstance = null;
+
+    private SurovinaReceptTable(Context context){
         this.context = context;
-        DBrecepty = new DBreceptyHelper(context);
+        //DBrecepty = new DBreceptyHelper(context);
         arrayListSurovinaRecept = new ArrayList();
     }
 
+    public static synchronized SurovinaReceptTable getInstance(Context context) {
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new SurovinaReceptTable(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
     public void insertSurovinaRecept(SurovinaReceptO SurovinaReceptO){
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("surovina", SurovinaReceptO.surovina);
         cv.put("recept", SurovinaReceptO.nazev_receptu);
         cv.put("mnozstvi", SurovinaReceptO.mnozstvi);
         cv.put("typ_mnozstvi", SurovinaReceptO.typ_mnozstvi);
         db.insert(TABLE_NAME, null, cv);
-
-        db.close();
     }
 
-
-
     public void deleteSurovinaRecept(String recept){
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         db.delete(TABLE_NAME, "recept = '" + recept + "'", null);
-        db.close();
     }
 
     public ArrayList<SurovinaReceptO> getSurovinaRecept(String nazev_receptu){
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "select * from " + TABLE_NAME + " where " + COLUMN_RECEPT + " ='" + nazev_receptu + "'";
         Cursor surovinaRecept = db.rawQuery(query, null);
         surovinaRecept.moveToFirst();
@@ -62,7 +69,7 @@ public class SurovinaReceptTable {
         String[] items = suroviny.split(", ");
         String surovina = "";
         String query = "";
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String partOfQuery= " INTERSECT SELECT " + COLUMN_RECEPT + " FROM " + TABLE_NAME + " WHERE " + COLUMN_SUROVINA + " = ";
 
         if (suroviny.length()>1) {
@@ -92,7 +99,7 @@ public class SurovinaReceptTable {
     }
 
     public ArrayList<SurovinaReceptO> getAllIngredients(){ //vyhledani vsech surovin
-        SQLiteDatabase db = DBrecepty.getWritableDatabase();
+        SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "select distinct " + COLUMN_SUROVINA + " from " + TABLE_NAME;//distinct = bez duplicitnich hodnot
         Cursor surovinaRecept = db.rawQuery(query, null);
         surovinaRecept.moveToFirst();
@@ -104,8 +111,6 @@ public class SurovinaReceptTable {
             SurovinaReceptObj.add(SurovinaRecept);
             surovinaRecept.moveToNext();
         }
-
-        //surovinaRecept.close();
         return SurovinaReceptObj;
     }
 

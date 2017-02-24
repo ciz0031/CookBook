@@ -43,8 +43,8 @@ public class Favourites extends Activity {
         longOperationsThread.execute();
     }
     private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<ReceptO>> {
-        ReceptyTable DBrecepty = new ReceptyTable(Favourites.this);
-        DBreceptyHelper DBreceptyHelper = new DBreceptyHelper(Favourites.this);
+        ReceptyTable DBrecepty = ReceptyTable.getInstance(Favourites.this);
+        DBreceptyHelper DBreceptyHelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(Favourites.this);
         final Handler handler = new Handler();
 
         @Override

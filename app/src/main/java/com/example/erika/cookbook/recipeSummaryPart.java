@@ -30,9 +30,14 @@ import android.widget.TextView;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 
@@ -46,14 +51,12 @@ public class recipeSummaryPart extends Fragment{
     private ReceptyTable DBrecepty;
     private DBreceptyHelper DBhelper;
     private int ID_receptu,ID_podkategorie, ID_kategorie;
-    private Cursor recept, podkategorie, kategorie, image;
+    private Cursor recept, podkategorie, kategorie;
     private ImageButton timerImageButton;
     private RatingBar hodnoceni;
-    private ImageView foto;
     final Handler handler = new Handler();
     public ProgressDialog progressDialog;
-
-    DBreceptyHelper DBreceptyHelper = new DBreceptyHelper(getActivity());
+    private CheckBox oblibenyReceptChB;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
@@ -65,8 +68,7 @@ public class recipeSummaryPart extends Fragment{
         TVkategorie = (TextView) v.findViewById(R.id.kategorie);
         timerImageButton = (ImageButton) v.findViewById(R.id.timerImageButton);
         hodnoceni = (RatingBar) v.findViewById(R.id.ratingBar);
-        foto = (ImageView) v.findViewById(R.id.imageViewFoto);
-        //TVnazev_receptu = (TextView) v.findViewById(R.id.nazev_receptuTV);
+        oblibenyReceptChB = (CheckBox) v.findViewById(R.id.oblibenyReceptChB);
 
         return v;
     }
@@ -74,19 +76,14 @@ public class recipeSummaryPart extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DBrecepty = new ReceptyTable(getActivity());
-        DBhelper = new DBreceptyHelper(getActivity());
+        DBrecepty = ReceptyTable.getInstance(getActivity());
+        DBhelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(getActivity());
 
         Bundle extras = getActivity().getIntent().getExtras();
         nazev_receptu = extras.getString("nazev_receptu");
 
         LongOperationsThreadRecept MyThreadRecept = new LongOperationsThreadRecept();
         MyThreadRecept.execute("acc_to_name");
-
-        LongOperationsThreadGetImage MyThreadGetImage = new LongOperationsThreadGetImage();
-        MyThreadGetImage.execute();
-
-
     }
 
     public void setReceptProperties(Cursor recept){
@@ -99,13 +96,13 @@ public class recipeSummaryPart extends Fragment{
 
         kategorie = DBhelper.getKategorieName(ID_kategorie);
         kategorie.moveToFirst();
-        stringKategorie = kategorie.getString(kategorie.getColumnIndex(DBreceptyHelper.COLUMN_NAZEV_KATEGORIE));
+        stringKategorie = kategorie.getString(kategorie.getColumnIndex(DBhelper.COLUMN_NAZEV_KATEGORIE));
         kategorie.close();
 
         if(ID_podkategorie != 0){
             podkategorie = DBhelper.getPodkategorieName(ID_podkategorie);
             podkategorie.moveToFirst();
-            stringPodkategorie = podkategorie.getString(podkategorie.getColumnIndex(DBreceptyHelper.COLUMN_NAZEV_PODKATEGORIE));
+            stringPodkategorie = podkategorie.getString(podkategorie.getColumnIndex(DBhelper.COLUMN_NAZEV_PODKATEGORIE));
             podkategorie.close();
             TVkategorie.setText(stringKategorie + ", " + stringPodkategorie);
         }else
@@ -135,28 +132,33 @@ public class recipeSummaryPart extends Fragment{
                 startActivity(countdownTimer);
             }
         });
-        recept.close();
 
-        foto.setOnClickListener(new View.OnClickListener() {
+
+        oblibenyReceptChB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                //TODO: zobrazeni obrazku ve vetsim formatu
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked){
+                    //uprava receptu na oblibeny = 1
+                    Log.d("oblibeny","1");
+                    DBrecepty.updateRecipe_setFavourite(nazev_receptu, 1);
+                }else {
+                    //oblibeny = 0
+                    Log.d("oblibeny","0");
+                    DBrecepty.updateRecipe_setFavourite(nazev_receptu, 0);
+                }
             }
         });
+
+        String isFavourite = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_OBLIBENY));
+        if (isFavourite.equals("1")){
+            oblibenyReceptChB.setChecked(true);
+        }else {
+            oblibenyReceptChB.setChecked(false);
+        }
+        recept.close();
     }
 
-    public void setImage(Cursor image){
-        if (image != null) {
-            String imagePathString = image.getString(image.getColumnIndex(DBrecepty.COLUMN_FOTO));
-            if (imagePathString != null) {
-                Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString);
-                foto.setImageBitmap(imageBitmap);
-            } else {
-                foto.setImageResource(R.drawable.noimagefound);
-            }
-        }
-        image.close();
-    }
+
 
     @Override
     public void onResume() {
@@ -207,41 +209,5 @@ public class recipeSummaryPart extends Fragment{
         };
     }
 
-    private class LongOperationsThreadGetImage extends AsyncTask<String, Void, Cursor> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-        @Override
-        protected void onPostExecute(Cursor image) {
-            super.onPostExecute(image);
-            handler.removeCallbacks(pdRunnable);
-            if (progressDialog!=null) {
-                progressDialog.dismiss();
-            }
-
-            image.moveToFirst();
-            setImage(image);
-        }
-
-        @Override
-        protected Cursor doInBackground(String... strings) {
-            handler.postDelayed(pdRunnable, 100);
-            recept = DBrecepty.getReceptAccordingToName(nazev_receptu);
-            recept.moveToFirst();
-            ID_receptu = recept.getInt(recept.getColumnIndex(DBrecepty.COLUMN_ID));
-            image = DBrecepty.getImagePath(ID_receptu);
-            return image;
-        }
-        final Runnable pdRunnable = new Runnable() {
-            @Override
-            public void run() {
-                progressDialog = new ProgressDialog(getActivity());
-                progressDialog.setMessage("Loading...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-            }
-        };
-    }
 }
