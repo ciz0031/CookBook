@@ -3,6 +3,7 @@ package com.example.erika.cookbook;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Window;
@@ -20,10 +21,15 @@ public class FullScreenImage extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_full_screen_image);
 
-        Intent intent = getIntent();
-        Bitmap bitmap = (Bitmap) intent.getParcelableExtra("image");
         ImageView imageView = (ImageView)findViewById(R.id.imageView2);
 
-        imageView.setImageBitmap(bitmap);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null){
+            String imagePath = extras.getString("image");
+            final Bitmap imageBitmap = BitmapFactory.decodeFile(imagePath);
+            imageView.setImageBitmap(imageBitmap);
+        }
+
+
     }
 }

@@ -64,12 +64,23 @@ public class Recept extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recept);
 
-        Bundle extras = getIntent().getExtras();
         TVnazev_receptu = (TextView) findViewById(R.id.nazev_receptuTV);
         DBrecepty = ReceptyTable.getInstance(this);
         DBsurovina_recept = SurovinaReceptTable.getInstance(this);
         foto = (ImageView) findViewById(R.id.imageViewFoto);
 
+        if (savedInstanceState == null) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            SlidingTabsBasicFragment fragment = new SlidingTabsBasicFragment();
+            transaction.replace(R.id.sample_content_fragment, fragment);
+            transaction.commit();
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        Bundle extras = getIntent().getExtras();
         final LongOperationsThreadRecept MyThreadRecept = new LongOperationsThreadRecept();
         if(extras != null) {
             ID_receptu = extras.getInt("id_receptu");
@@ -84,12 +95,8 @@ public class Recept extends FragmentActivity {
             MyThreadGetImage.execute();
         }
 
-        if (savedInstanceState == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            SlidingTabsBasicFragment fragment = new SlidingTabsBasicFragment();
-            transaction.replace(R.id.sample_content_fragment, fragment);
-            transaction.commit();
-        }
+
+        super.onStart();
     }
 
     private void setReceptName(Cursor recept){
@@ -343,8 +350,12 @@ public class Recept extends FragmentActivity {
         String prilohy = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_PRILOHY));
         String stupne = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_STUPNE));
 
+        if (prilohy == null || prilohy == ""){
+            prilohy = "-žádné uložené-";
+        }
+
         String contentOfRecipe = "Příprava: " + dobaPripravy + "min \n" + "Tepelná úprava: " +
-                dobaPeceni + "min (na " + stupne + "°C)\n\n" + "Postup: \n " + postup +"\n" + "Přílohy: " + prilohy;
+                dobaPeceni + "min (na " + stupne + "°C)\n\n" + "Postup: \n " + postup +"\n" + "\nPřílohy: " + prilohy;
         return contentOfRecipe;
     }
 
@@ -353,14 +364,21 @@ public class Recept extends FragmentActivity {
         String evaluationOfRecipe = "";
         int hodnoceni = recept.getInt(recept.getColumnIndex(DBrecepty.COLUMN_HODNOCENI));
         String komentar = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_KOMENTAR));
-        evaluationOfRecipe = "Moje hodnocení receptu: \n Počet hvězdiček: " + hodnoceni + "\n Komentář: " + komentar;
+
+        if (komentar == null || komentar.equals("") || komentar.equals(" ")){
+            komentar = "-žádný uložený-";
+        }
+
+        evaluationOfRecipe = "Mé hodnocení receptu: \n Počet hvězdiček: " + hodnoceni + "\n Komentář: " + komentar;
         return evaluationOfRecipe;
     }
 
     public void setImage(Cursor image){
         if (image != null) {
-            String imagePathString = image.getString(image.getColumnIndex(DBrecepty.COLUMN_FOTO));
+            final String imagePathString = image.getString(image.getColumnIndex(DBrecepty.COLUMN_FOTO));
             if (imagePathString != null) {
+                //final Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString);
+                //final Bitmap scaled = scaleDownBitmap(imageBitmap, 160, getApplicationContext());
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                 bmOptions.inJustDecodeBounds = true;
                 final Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString, bmOptions);
@@ -381,7 +399,7 @@ public class Recept extends FragmentActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(Recept.this, FullScreenImage.class);
-                        intent.putExtra("image", smallerImageBitmap);
+                        intent.putExtra("image", imagePathString);
                         startActivity(intent);
                     }
                 });
@@ -390,6 +408,18 @@ public class Recept extends FragmentActivity {
             }
         }
         image.close();
+    }
+
+    public static Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
+
+        final float densityMultiplier = context.getResources().getDisplayMetrics().density;
+
+        int h= (int) (newHeight*densityMultiplier);
+        int w= (int) (h * photo.getWidth()/((double) photo.getHeight()));
+
+        photo=Bitmap.createScaledBitmap(photo, w, h, true);
+
+        return photo;
     }
 
     @Override
@@ -408,10 +438,12 @@ public class Recept extends FragmentActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            handler.postDelayed(pdRunnable, 500);
         }
         @Override
         protected void onPostExecute(Cursor recept) {
             super.onPostExecute(recept);
+
             handler.removeCallbacks(pdRunnable);
             if (progressDialog!=null) {
                 progressDialog.dismiss();
@@ -424,9 +456,6 @@ public class Recept extends FragmentActivity {
 
         @Override
         protected Cursor doInBackground(String... strings) {
-
-            handler.postDelayed(pdRunnable, 500);
-
             String method = strings[0];
             if (method.equals("acc_to_name")){
                 recept = DBrecepty.getReceptAccordingToName(nazev_receptu);
@@ -452,11 +481,14 @@ public class Recept extends FragmentActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            //pdRunnable.run();
+            handler.postDelayed(pdRunnable, 100);
+
         }
         @Override
         protected void onPostExecute(Cursor image) {
             super.onPostExecute(image);
-            //handler.removeCallbacks(pdRunnable);
+            handler.removeCallbacks(pdRunnable);
             if (progressDialog!=null) {
                 progressDialog.dismiss();
             }
@@ -467,7 +499,7 @@ public class Recept extends FragmentActivity {
 
         @Override
         protected Cursor doInBackground(String... strings) {
-            //handler.postDelayed(pdRunnable, 100);
+            //
             DBrecepty = ReceptyTable.getInstance(Recept.this);
             recept = DBrecepty.getReceptAccordingToName(nazev_receptu);
             recept.moveToFirst();

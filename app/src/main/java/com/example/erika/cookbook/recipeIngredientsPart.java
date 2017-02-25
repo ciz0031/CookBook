@@ -63,18 +63,19 @@ public class recipeIngredientsPart extends Fragment {
         scale = getResources().getDisplayMetrics().density;
         INGREDIENCE_PX_WIDTH = (int) (INGREDIENCE_DP_WIDTH * scale + 0.5f);
         INGREDIENCE_PX_HEIGHT = (int) (INGREDIENCE_DP_HEIGHT * scale + 0.5f);
+    }
 
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
         Bundle extras = getActivity().getIntent().getExtras();
         nazev_receptu = extras.getString("nazev_receptu");
 
         LongOperationsThread longOperationsIngredience = new LongOperationsThread();
         longOperationsIngredience.execute(nazev_receptu);
 
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         recept = DBrecepty.getReceptAccordingToName(nazev_receptu);
         recept.moveToFirst();
         stringPocetPorci = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_POCET_PORCI));
@@ -157,6 +158,7 @@ public class recipeIngredientsPart extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            handler.postDelayed(pdRunnable, 200);
         }
 
         @Override
@@ -198,7 +200,7 @@ public class recipeIngredientsPart extends Fragment {
 
         @Override
         protected ArrayList<SurovinaReceptO> doInBackground(String... strings) {
-            handler.postDelayed(pdRunnable, 200);
+
             final ArrayList<SurovinaReceptO> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(strings[0]);
             return ALsurovinaRecept;
         }

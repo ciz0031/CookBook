@@ -72,6 +72,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         napoje.setOnClickListener(this);
         svacina.setOnClickListener(this);
 
+
+    }
+
+    @Override
+    protected void onStart() {
         hledatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -98,6 +103,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 zobrazitKategorieLL.setVisibility(View.INVISIBLE);
             }
         });
+        super.onStart();
     }
 
     @Override

@@ -79,11 +79,17 @@ public class recipeSummaryPart extends Fragment{
         DBrecepty = ReceptyTable.getInstance(getActivity());
         DBhelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(getActivity());
 
+
+    }
+
+    @Override
+    public void onStart() {
         Bundle extras = getActivity().getIntent().getExtras();
         nazev_receptu = extras.getString("nazev_receptu");
 
         LongOperationsThreadRecept MyThreadRecept = new LongOperationsThreadRecept();
         MyThreadRecept.execute("acc_to_name");
+        super.onStart();
     }
 
     public void setReceptProperties(Cursor recept){
@@ -170,6 +176,7 @@ public class recipeSummaryPart extends Fragment{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            handler.postDelayed(pdRunnable, 500);
         }
         @Override
         protected void onPostExecute(Cursor recept) {
@@ -186,8 +193,6 @@ public class recipeSummaryPart extends Fragment{
 
         @Override
         protected Cursor doInBackground(String... strings) {
-            handler.postDelayed(pdRunnable, 500);
-
             String method = strings[0];
             if (method.equals("acc_to_name")){
                 recept = DBrecepty.getReceptAccordingToName(nazev_receptu);

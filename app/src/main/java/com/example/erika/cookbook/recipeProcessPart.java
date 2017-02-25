@@ -39,12 +39,18 @@ public class recipeProcessPart extends Fragment{
         super.onCreate(savedInstanceState);
         DBrecepty = ReceptyTable.getInstance(getActivity());
 
+
+
+    }
+
+    @Override
+    public void onStart() {
         Bundle extras = getActivity().getIntent().getExtras();
         nazev_receptu = extras.getString("nazev_receptu");
 
         LongOperationsThreadPostup longOperationsThreadPostup = new LongOperationsThreadPostup();
         longOperationsThreadPostup.execute("acc_to_name");
-
+        super.onStart();
     }
 
     public void setReceptProperties(Cursor recept){
@@ -67,6 +73,7 @@ public class recipeProcessPart extends Fragment{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            handler.postDelayed(pdRunnable, 500);
         }
         @Override
         protected void onPostExecute(Cursor recept) {
@@ -78,19 +85,10 @@ public class recipeProcessPart extends Fragment{
 
             recept.moveToFirst();
             setReceptProperties(recept);
-
-            //Ingredience - nacteni z DB a vypsani do nove vytvorenych views - pomoci asynctask
-            //LongOperationsThread MyLongOperations = new LongOperationsThread();
-            //MyLongOperations.execute(stringNazevReceptu);
-
-
         }
 
         @Override
         protected Cursor doInBackground(String... strings) {
-
-            handler.postDelayed(pdRunnable, 500);
-
             String method = strings[0];
             if (method.equals("acc_to_name")){
                 recept = DBrecepty.getReceptAccordingToName(nazev_receptu);
