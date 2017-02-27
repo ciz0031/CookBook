@@ -330,15 +330,20 @@ public class Recept extends FragmentActivity {
     public String ingredientsOfRecipe(Cursor recept){
         recept.moveToFirst();
         String pocetPorci = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_POCET_PORCI));
-        String ingredientsOfRecipe = "Recept je na " + pocetPorci + " porce." + "\n\n" + "Ingredience: ";
+        String ingredientsOfRecipe = "";
+        if (pocetPorci.equals("1")) {
+            ingredientsOfRecipe = "Recept je na " + pocetPorci + " porci." + "\n\n" + "Ingredience: ";
+        } else if (pocetPorci.equals("2") || pocetPorci.equals("3") || pocetPorci.equals("4")) {
+            ingredientsOfRecipe = "Recept je na " + pocetPorci + " porce." + "\n\n" + "Ingredience: ";
+        } else {
+            ingredientsOfRecipe = "Recept je na " + pocetPorci + " porcí." + "\n\n" + "Ingredience: ";
+        }
 
         final ArrayList<SurovinaReceptO> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(nazev_receptu);
         for (SurovinaReceptO surovinaReceptObj : ALsurovinaRecept){
             ingredientsOfRecipe = ingredientsOfRecipe + "\n" +
                     surovinaReceptObj.mnozstvi + surovinaReceptObj.typ_mnozstvi + " " + surovinaReceptObj.surovina;
         }
-
-
         return ingredientsOfRecipe;
     }
 
@@ -367,6 +372,9 @@ public class Recept extends FragmentActivity {
 
         if (komentar == null || komentar.equals("") || komentar.equals(" ")){
             komentar = "-žádný uložený-";
+        }
+        if (hodnoceni == null){
+            hodnoceni = 0;
         }
 
         evaluationOfRecipe = "Mé hodnocení receptu: \n Počet hvězdiček: " + hodnoceni + "\n Komentář: " + komentar;
