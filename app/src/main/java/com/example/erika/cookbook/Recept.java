@@ -330,7 +330,14 @@ public class Recept extends FragmentActivity {
     public String ingredientsOfRecipe(Cursor recept){
         recept.moveToFirst();
         String pocetPorci = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_POCET_PORCI));
-        String ingredientsOfRecipe = "Recept je na " + pocetPorci + " porce." + "\n\n" + "Ingredience: ";
+        String ingredientsOfRecipe = "";
+        if (pocetPorci.equals("1")) {
+            ingredientsOfRecipe = "Recept je na " + pocetPorci + " porci." + "\n\n" + "Ingredience: ";
+        } else if (pocetPorci.equals("2") || pocetPorci.equals("3") || pocetPorci.equals("4")) {
+            ingredientsOfRecipe = "Recept je na " + pocetPorci + " porce." + "\n\n" + "Ingredience: ";
+        } else {
+            ingredientsOfRecipe = "Recept je na " + pocetPorci + " porcí." + "\n\n" + "Ingredience: ";
+        }
 
         final ArrayList<SurovinaReceptO> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(nazev_receptu);
         for (SurovinaReceptO surovinaReceptObj : ALsurovinaRecept){
@@ -354,6 +361,7 @@ public class Recept extends FragmentActivity {
             prilohy = "-žádné uložené-";
         }
 
+
         String contentOfRecipe = "Příprava: " + dobaPripravy + "min \n" + "Tepelná úprava: " +
                 dobaPeceni + "min (na " + stupne + "°C)\n\n" + "Postup: \n " + postup +"\n" + "\nPřílohy: " + prilohy;
         return contentOfRecipe;
@@ -364,12 +372,18 @@ public class Recept extends FragmentActivity {
         String evaluationOfRecipe = "";
         int hodnoceni = recept.getInt(recept.getColumnIndex(DBrecepty.COLUMN_HODNOCENI));
         String komentar = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_KOMENTAR));
+        int oblibeny = recept.getInt(recept.getColumnIndex(DBrecepty.COLUMN_OBLIBENY));
 
         if (komentar == null || komentar.equals("") || komentar.equals(" ")){
             komentar = "-žádný uložený-";
         }
 
         evaluationOfRecipe = "Mé hodnocení receptu: \n Počet hvězdiček: " + hodnoceni + "\n Komentář: " + komentar;
+
+        if (oblibeny == 1){
+            evaluationOfRecipe = evaluationOfRecipe + "\n\n" + "Tento recept patří k mým oblíbeným. Vyzkoušejte ho také!";
+        }
+
         return evaluationOfRecipe;
     }
 
