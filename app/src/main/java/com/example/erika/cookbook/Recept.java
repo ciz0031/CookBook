@@ -338,8 +338,6 @@ public class Recept extends FragmentActivity {
             ingredientsOfRecipe = ingredientsOfRecipe + "\n" +
                     surovinaReceptObj.mnozstvi + surovinaReceptObj.typ_mnozstvi + " " + surovinaReceptObj.surovina;
         }
-
-
         return ingredientsOfRecipe;
     }
 
@@ -371,6 +369,7 @@ public class Recept extends FragmentActivity {
         if (komentar == null || komentar.equals("") || komentar.equals(" ")){
             komentar = "-žádný uložený-";
         }
+
         evaluationOfRecipe = "Mé hodnocení receptu: \n Počet hvězdiček: " + hodnoceni + "\n Komentář: " + komentar;
         if (oblibeny == 1){
             evaluationOfRecipe = evaluationOfRecipe + "\n\n" + "Tento recept patří k mým oblíbeným. Vyzkoušejte ho také!";
