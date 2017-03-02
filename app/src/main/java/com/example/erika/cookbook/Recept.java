@@ -256,16 +256,10 @@ public class Recept extends FragmentActivity {
     }
 
     private void onSelectFromGalleryResult(Intent data) {
-        Bitmap bm = null;
         if (data != null) {
-            try {
-                bm = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-                Uri selectedImageURI = data.getData();
-                File destination = new File(Environment.getExternalStorageDirectory() + "/DCIM/Camera" + File.separator + getRealPathFromURI(selectedImageURI));
-                picUri = Uri.fromFile(destination);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Uri selectedImageURI = data.getData();
+            File destination = new File(Environment.getExternalStorageDirectory() + "/DCIM/Camera" + File.separator + getRealPathFromURI(selectedImageURI));
+            picUri = Uri.fromFile(destination);
         }
     }
 
@@ -377,13 +371,10 @@ public class Recept extends FragmentActivity {
         if (komentar == null || komentar.equals("") || komentar.equals(" ")){
             komentar = "-žádný uložený-";
         }
-
         evaluationOfRecipe = "Mé hodnocení receptu: \n Počet hvězdiček: " + hodnoceni + "\n Komentář: " + komentar;
-
         if (oblibeny == 1){
             evaluationOfRecipe = evaluationOfRecipe + "\n\n" + "Tento recept patří k mým oblíbeným. Vyzkoušejte ho také!";
         }
-
         return evaluationOfRecipe;
     }
 
@@ -391,11 +382,8 @@ public class Recept extends FragmentActivity {
         if (image != null) {
             final String imagePathString = image.getString(image.getColumnIndex(DBrecepty.COLUMN_FOTO));
             if (imagePathString != null) {
-                //final Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString);
-                //final Bitmap scaled = scaleDownBitmap(imageBitmap, 160, getApplicationContext());
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                 bmOptions.inJustDecodeBounds = true;
-                final Bitmap imageBitmap = BitmapFactory.decodeFile(imagePathString, bmOptions);
                 int photoW = bmOptions.outWidth;
                 int photoH = bmOptions.outHeight;
 
@@ -408,32 +396,24 @@ public class Recept extends FragmentActivity {
                 bmOptions.inSampleSize = scaleFactor;
 
                 final Bitmap smallerImageBitmap = BitmapFactory.decodeFile(imagePathString, bmOptions);
-                foto.setImageBitmap(smallerImageBitmap);
-                foto.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(Recept.this, FullScreenImage.class);
-                        intent.putExtra("image", imagePathString);
-                        startActivity(intent);
-                    }
-                });
-            } else {
+                if (smallerImageBitmap == null){
+                    foto.setImageResource(R.drawable.noimagefound);
+                }else {
+                    foto.setImageBitmap(smallerImageBitmap);
+                    foto.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(Recept.this, FullScreenImage.class);
+                            intent.putExtra("image", imagePathString);
+                            startActivity(intent);
+                        }
+                    });
+                }
+            }else {
                 foto.setImageResource(R.drawable.noimagefound);
             }
         }
         image.close();
-    }
-
-    public static Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
-
-        final float densityMultiplier = context.getResources().getDisplayMetrics().density;
-
-        int h= (int) (newHeight*densityMultiplier);
-        int w= (int) (h * photo.getWidth()/((double) photo.getHeight()));
-
-        photo=Bitmap.createScaledBitmap(photo, w, h, true);
-
-        return photo;
     }
 
     @Override
@@ -444,8 +424,6 @@ public class Recept extends FragmentActivity {
 
         LongOperationsThreadGetImage MyThreadGetImage = new LongOperationsThreadGetImage();
         MyThreadGetImage.execute();
-
-
     }
 
     private class LongOperationsThreadRecept extends AsyncTask<String, Void, Cursor> {

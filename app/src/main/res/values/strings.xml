@@ -3,6 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Nastavení</string>
+    <string name="action_add">Přidat další časovač</string>
     <string name="action_timer">Časovač</string>
     <string name="action_new">Vytvořit nový recept</string>
     <string name="action_searchByCode">Rozšířené vyhledávání</string>

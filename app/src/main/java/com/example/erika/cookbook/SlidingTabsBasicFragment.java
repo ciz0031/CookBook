@@ -45,21 +45,12 @@ public class SlidingTabsBasicFragment extends Fragment{
         public Fragment getItem(int position) {
             switch (position){
                 case 0: {
-                    /*view = getActivity().getLayoutInflater().inflate(R.layout.recipe_summary_layout, container, false);
-                    container.addView(view);
-                    return view;*/
                     return new recipeSummaryPart();
                 }
                 case 1: {
-                    /*view = getActivity().getLayoutInflater().inflate(R.layout.recipe_ingredients_layout, container, false);
-                    container.addView(view);
-                    return view;*/
                     return new recipeIngredientsPart();
                 }
                 case 2: {
-                    /*view = getActivity().getLayoutInflater().inflate(R.layout.recipe_process_layout, container, false);
-                    container.addView(view);
-                    return view;*/
                     return new recipeProcessPart();
                 }
                 default:
