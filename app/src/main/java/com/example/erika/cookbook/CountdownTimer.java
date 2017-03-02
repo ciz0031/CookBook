@@ -92,7 +92,7 @@ public class CountdownTimer extends Activity {
         }else if (isMyServiceRunning(MyService.class) == false){
             Log.d("service", "service not running!");
             if (progressBar.getVisibility() != View.VISIBLE){
-                dobaPeceniTV.setText("00:00");
+                dobaPeceniTV.setText("00:00:00");
                 stopButton.setVisibility(View.INVISIBLE);
                 stopButton.setClickable(false);
                 startButton.setVisibility(View.VISIBLE);
@@ -103,10 +103,20 @@ public class CountdownTimer extends Activity {
 
             extras = getIntent().getExtras();
             if(extras != null){
-                //textView s moznosti pridani 1 minuty k casu
                 dobaPeceniExtras = extras.getInt("doba_peceni");
                 dobaPeceni = dobaPeceniExtras;
-                dobaPeceniTV.setText(String.valueOf(dobaPeceni));
+                /*dobaPeceniTV.setText(String.valueOf(dobaPeceni)+"min");
+                progressBar.setMax(dobaPeceniExtras);
+                progressBar.setProgress(0);*/
+                dobaPeceniTP.setVisibility(View.VISIBLE);
+                int hour = dobaPeceni / 60;
+                int minutes = dobaPeceni % 60;
+                Log.d("hours:minutes", hour+":"+minutes);
+
+                dobaPeceniTP.setCurrentHour(hour);
+                dobaPeceniTP.setCurrentMinute(minutes);
+                progressBar.setVisibility(View.INVISIBLE);
+                dobaPeceniTV.setVisibility(View.INVISIBLE);
             }else {
                 progressBar.setVisibility(View.INVISIBLE);
                 dobaPeceniTP.setVisibility(View.VISIBLE);
@@ -128,16 +138,11 @@ public class CountdownTimer extends Activity {
                 dobaPeceniTV.setVisibility(View.VISIBLE);
                 //Log.d("dobaPeceni", dobaPeceni);
                 Bundle dataDobaPeceni = new Bundle();
-                if (dobaPeceniExtras != 0){
-                    dataDobaPeceni.putInt("doba_peceni", dobaPeceni*60*1000);
-                }else{
-                    int hour = dobaPeceniTP.getCurrentHour();
-                    int minutes = dobaPeceniTP.getCurrentMinute();
-                    dobaPeceni = (hour * 60) + minutes;
-                    dataDobaPeceni.putInt("doba_peceni", dobaPeceni*60*1000);
-                    dobaPeceniTP.setVisibility(View.INVISIBLE);
-                }
-                Log.d("dobaPeceni", String.valueOf(dobaPeceni));
+                int hour = dobaPeceniTP.getCurrentHour();
+                int minutes = dobaPeceniTP.getCurrentMinute();
+                dobaPeceni = (hour * 60) + minutes;
+                dataDobaPeceni.putInt("doba_peceni", dobaPeceni*60*1000);
+                dobaPeceniTP.setVisibility(View.INVISIBLE);
                 startButton.setVisibility(View.INVISIBLE);
                 startButton.setClickable(false);
                 stopButton.setVisibility(View.VISIBLE);
@@ -165,14 +170,15 @@ public class CountdownTimer extends Activity {
                     dobaPeceniTP.setVisibility(View.VISIBLE);
                     dobaPeceniTP.setCurrentHour(0);
                     dobaPeceniTP.setCurrentMinute(1);
-
                     addOneMinuteButton.setVisibility(View.INVISIBLE);
                     addOneMinuteButton.setClickable(false);
                 }else if (dobaPeceniExtras != 0){
                     progressBar.setVisibility(View.INVISIBLE);
                     dobaPeceniTP.setVisibility(View.VISIBLE);
-                    dobaPeceniTP.setCurrentHour(0);
-                    dobaPeceniTP.setCurrentMinute(dobaPeceni);
+                    int hour = dobaPeceni / 60;
+                    int minutes = dobaPeceni % 60;
+                    dobaPeceniTP.setCurrentHour(hour);
+                    dobaPeceniTP.setCurrentMinute(minutes);
                     addOneMinuteButton.setVisibility(View.INVISIBLE);
                     addOneMinuteButton.setClickable(false);
                 }
@@ -192,10 +198,10 @@ public class CountdownTimer extends Activity {
                 stopButton.setClickable(true);
                 String dobaPeceni = dobaPeceniTV.getText().toString();
                 String[] separated = dobaPeceni.split(":");
-                String minute = separated[0];
-                int seconds = Integer.parseInt(separated[1]);
-                int minutes = Integer.parseInt(minute) * 60;//prevedeno na sekundy
-                int dobaPeceniINT = minutes + seconds + 60;//v sekundach
+                int seconds = Integer.parseInt(separated[2]);
+                int minutes = Integer.parseInt(separated[1]) * 60;//prevedeno na sekundy
+                int hours = Integer.parseInt(separated[0]) * 60 * 60;//sekunkdy
+                int dobaPeceniINT = hours + minutes + seconds + 60;//v sekundach
                 progressBar.setMax(dobaPeceniINT);
                 Bundle dataDobaPeceni = new Bundle();
                 dataDobaPeceni.putInt("doba_peceni", dobaPeceniINT*1000);
@@ -245,10 +251,16 @@ public class CountdownTimer extends Activity {
             stopButton.setClickable(false);
             startButton.setClickable(true);
             progressBar.setProgress(progressBar.getMax());
+            int hour = dobaPeceni / 60;
+            int minutes = dobaPeceni % 60;
+            dobaPeceniTP.setCurrentHour(hour);
+            dobaPeceniTP.setCurrentMinute(minutes);
 
+        }else if (isMyServiceRunning(MyService.class)==true){
+            dobaPeceniTP.setVisibility(View.INVISIBLE);
         }
         if (progressBar.getVisibility() == View.VISIBLE) {
-            dobaPeceniTV.setText("00:00");
+            dobaPeceniTV.setText("00:00:00");
         }
 
     }
@@ -279,19 +291,10 @@ public class CountdownTimer extends Activity {
         }
         super.onStop();
     }
-    /*@Override
-    public void onDestroy() {
-        stopService(new Intent(this, MyService.class));
-        serviceRunning =false;
-        Log.d("service", "stop service called");
-        //Log.i(TAG, "Stopped service");
-        super.onDestroy();
-    }*/
 
     public void updateGUI(Intent intent) {
         if (intent.getExtras() != null) {
             long millis = intent.getLongExtra("countdown", 0);
-            long done = intent.getLongExtra("done", 1);
             int progress = (int) (millis/1000);
             progressBar.setProgress(progressBar.getMax()-progress);
 
@@ -299,15 +302,13 @@ public class CountdownTimer extends Activity {
                 dobaPeceniTV.setText(String.valueOf(dobaPeceni));
 
             }
-            String minuteSecond = String.format("%02d:%02d",
+            String minuteSecond = String.format("%02d:%02d:%02d",
+                    TimeUnit.MILLISECONDS.toHours(millis),
                     TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
                     TimeUnit.MILLISECONDS.toSeconds(millis)- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
             dobaPeceniTV.setText(minuteSecond);
 
-            Log.d("progress", String.valueOf(progress));
             if (progress <= 1){
-                //ring !! vibrate !! :)
-                //dobaPeceniTV.setText("00:00");
                 SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
                 boolean nekonecnePrehravani = SP.getBoolean("nekonecnePrehravani", false);
                 if (nekonecnePrehravani == false) {
@@ -317,10 +318,6 @@ public class CountdownTimer extends Activity {
                     startButton.setClickable(true);
                 }
             }
-            if (done == 0){
-                dobaPeceniTV.setText("00:00");
-            }
-
         }
     }
 

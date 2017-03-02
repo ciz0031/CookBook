@@ -78,8 +78,6 @@ public class recipeSummaryPart extends Fragment{
         super.onCreate(savedInstanceState);
         DBrecepty = ReceptyTable.getInstance(getActivity());
         DBhelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(getActivity());
-
-
     }
 
     @Override

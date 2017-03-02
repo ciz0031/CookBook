@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Nastavení časovače">
+    <PreferenceCategory android:title="Nastavení časovače"
+        android:layout="@android:layout/preference_category"
+        >
 
         <RingtonePreference
             android:defaultValue="content://settings/system/notification_sound"
@@ -14,14 +18,17 @@
             android:defaultValue="true"
             android:title="Vibrovat"
             android:key="vibrovat"
-            android:summary="Vibrovat po vypršení stanovené doby časovače" />
+            android:summary="Vibrovat po vypršení stanovené doby časovače"
+            />
         <CheckBoxPreference
             android:defaultValue="false"
             android:title="Nekonečné přehrávání"
             android:key="nekonecnePrehravani"
-            android:summary="Přehrávat vyzvánění dokud jej sám nevypnu" />
+            android:summary="Přehrávat vyzvánění dokud jej sám nevypnu"
+            />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Globální nastavení receptů">
+    <PreferenceCategory android:title="Globální nastavení receptů"
+        android:layout="@android:layout/preference_category">
 
     </PreferenceCategory>
     <ListPreference
