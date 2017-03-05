@@ -67,9 +67,9 @@
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"/>
-        <activity android:name=".FullScreenImage"
-            ></activity>
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".FullScreenImage" />
+        <activity android:name=".ListOfTimers"></activity>
     </application>
 
 </manifest>

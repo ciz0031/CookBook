@@ -125,7 +125,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             startActivity(NovyRecept);
         }
         else if (id == R.id.action_timer) {//casovac
-            Intent Casovac = new Intent(getApplicationContext(), CountdownTimer.class);
+            Intent Casovac = new Intent(getApplicationContext(), ListOfTimers.class);
             startActivity(Casovac);
         }
         else if (id == R.id.action_search) {//rozsirene vyhledavani - podle potravin

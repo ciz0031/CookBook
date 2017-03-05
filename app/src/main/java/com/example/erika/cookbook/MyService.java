@@ -32,14 +32,12 @@ public class MyService extends Service {
     CountDownTimer timer = null;
     int dobaPeceni;
     public static String str_receiver = "com.example.erika.cookbook.receiver";
-    //Intent mIntent = new Intent(this, MyService.class);
     Intent receiver;
     public NotificationManager manager;
     public NotificationCompat.Builder builder;
     @Override
     public void onCreate() {
         super.onCreate();
-        //extras = mIntent.getExtras();
         receiver = new Intent(str_receiver);
     }
 
@@ -54,7 +52,7 @@ public class MyService extends Service {
         super.onStartCommand(intent, flags, startId);
         extras = intent.getExtras();
         if (extras != null){
-            Log.d("Extras delivered", String.valueOf(extras.getInt("doba_peceni")));
+            //Log.d("Extras delivered", String.valueOf(extras.getInt("doba_peceni")));
             dobaPeceni = extras.getInt("doba_peceni");
 
             Intent notificationIntent = new Intent(this, CountdownTimer.class);

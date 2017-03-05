@@ -45,12 +45,10 @@ public class recipeIngredientsPart extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.recipe_ingredients_layout, container, false);
-
         ingredienceLL = (LinearLayout) v.findViewById(R.id.ingredienceLL);
         minusArrowB = (ImageButton) v.findViewById(R.id.minusArrowB);
         plusArrowB = (ImageButton) v.findViewById(R.id.plusArrowB);
         TVpocetPorci = (TextView) v.findViewById(R.id.pocet_porci);
-
         return v;
     }
 
@@ -65,8 +63,6 @@ public class recipeIngredientsPart extends Fragment {
         INGREDIENCE_PX_HEIGHT = (int) (INGREDIENCE_DP_HEIGHT * scale + 0.5f);
     }
 
-
-
     @Override
     public void onStart() {
         super.onStart();
@@ -80,10 +76,8 @@ public class recipeIngredientsPart extends Fragment {
         recept.moveToFirst();
         stringPocetPorci = recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_POCET_PORCI));
         recept.close();
-        //DBrecepty.close();
 
         TVpocetPorci.setText(stringPocetPorci);
-
         plusArrowB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,7 +91,6 @@ public class recipeIngredientsPart extends Fragment {
             @Override
             public void onClick(View view) {
                 if (TVpocetPorci.getText().toString() == "1") {
-                    //doNothing
                     //pokud se pocet porci dostane na hodnotu 1, nelze uz pocet porci odebrat
                 } else {
                     TVpocetPorci.setText(String.valueOf(Integer.parseInt(TVpocetPorci.getText().toString()) - 1));

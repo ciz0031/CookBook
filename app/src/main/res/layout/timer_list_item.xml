@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/tvProduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Název časovače"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:textColor="@color/black" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvTimeRemaining"
+            android:layout_width="172dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Čas: "
+            android:layout_weight="34.64"
+            android:textColor="@color/almostBlack" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            app:srcCompat="@drawable/ic_action_play_arrow"
+            android:id="@+id/startB"
+            android:layout_weight="0.22"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/ic_action_pause"
+            android:id="@+id/pauseB"
+            android:layout_weight="0.32"
+            android:background="@android:color/transparent" />
+
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/ic_action_stop"
+            android:id="@+id/stopB"
+            android:layout_weight="1"
+            android:background="@android:color/transparent" />
+    </LinearLayout>
+
+</LinearLayout>
