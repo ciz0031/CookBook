@@ -51,7 +51,7 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".CountdownTimer"
-            android:label="Časovač"
+            android:label="@string/title_activity_timer"
             android:screenOrientation="portrait" />
 
         <service android:name=".MyService" />
@@ -69,7 +69,9 @@
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".FullScreenImage" />
-        <activity android:name=".ListOfTimers"></activity>
+        <activity android:name=".ListOfTimers"
+            android:label="@string/title_activity_listOfTimers"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

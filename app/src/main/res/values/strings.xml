@@ -100,4 +100,6 @@
     <string name="title_activity_eandb_manager">Správce databáze EANů</string>
     <string name="title_activity_favourites">Oblíbené recepty</string>
     <string name="title_activity_settings">Nastavení aplikace</string>
+    <string name="title_activity_listOfTimers">Seznam časovačů</string>
+    <string name="title_activity_timer">Nový časovač</string>
 </resources>

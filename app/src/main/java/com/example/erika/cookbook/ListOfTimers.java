@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -23,37 +25,47 @@ import java.util.TimerTask;
 
 public class ListOfTimers extends Activity {
     private ListView listOfTimersLV;
-    private LinearLayout pridatCasovacLL;
-    private Button pridatCasovacB;
     private ArrayList<Timers> listOfTimers;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_of_timers);
         listOfTimersLV = (ListView) findViewById(R.id.listOfTimersLV);
-        pridatCasovacLL = (LinearLayout) findViewById(R.id.pridatCasovacLL);
-        pridatCasovacB = (Button) findViewById(R.id.pridatCasovacButton);
+        Bundle extras = getIntent().getExtras();
 
         listOfTimers = new ArrayList<>();
         listOfTimers.add(new Timers("2 minuty", (2 * 60 * 1000), false));//2minuty
         listOfTimers.add(new Timers("10 minut", (10 * 60 * 1000), false));//10minut
+        if (extras != null){
+            String nazev = extras.getString("nazev");
+            int doba = extras.getInt("doba_peceni");
+            listOfTimers.add(new Timers(nazev, doba, false));
+        }
         listOfTimersLV.setAdapter(new CountdownAdapter(ListOfTimers.this, listOfTimers));
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_countdown_timer, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id== R.id.action_settings){
+            Intent Settings = new Intent(this, Settings.class);
+            startActivity(Settings);
+        } else if (id == R.id.action_add){
+            createNewTimer();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onStart() {
-        pridatCasovacB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNewTimer();
-            }
-        });
-        pridatCasovacLL.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNewTimer();
-            }
-        });
+
         super.onStart();
     }
 
@@ -65,8 +77,12 @@ public class ListOfTimers extends Activity {
     private class Timers {
         String name;
         long originalTime;
+        long timeWhenDone;
+        long timeToCountWhenPaused;
         long timeWithCurrent;
         boolean isRunning = false;
+        boolean isPaused = false;
+        boolean wasPaused = false;
 
         public Timers(String name, long originalTime, boolean isRunning) {
             this.name = name;
@@ -79,17 +95,28 @@ public class ListOfTimers extends Activity {
         private LayoutInflater lf;
         private List<ViewHolder> lstHolders;
         private Handler mHandler = new Handler();
+
         private Runnable updateRemainingTimeRunnable = new Runnable() {
             @Override
             public void run() {
                 synchronized (lstHolders) {
                     long currentTime = System.currentTimeMillis();
                     for (ViewHolder holder : lstHolders) {
-                        if (holder.mProduct.isRunning)
-                            holder.updateTimeRemaining(currentTime);
-                        else if (!holder.mProduct.isRunning)
-                            holder.setOriginalTime();
-                            mHandler.removeCallbacks(updateRemainingTimeRunnable);
+                        if (holder.mProduct.isRunning) {
+                            if (holder.mProduct.wasPaused){
+                                holder.updateTimeAfterPaused(currentTime);
+                            }else {
+                                holder.updateTimeRemaining(currentTime);
+                            }
+                        } else if (!holder.mProduct.isRunning) {
+                            if (!holder.mProduct.isPaused) {
+                                holder.setOriginalTime();
+                                //mHandler.removeCallbacksAndMessages(updateRemainingTimeRunnable);
+                            } else if (holder.mProduct.isPaused) {
+                                holder.updateTimeRemaining(currentTime);
+                                //mHandler.removeCallbacksAndMessages(updateRemainingTimeRunnable);
+                            }
+                        }
                     }
                 }
             }
@@ -148,9 +175,17 @@ public class ListOfTimers extends Activity {
                 @Override
                 public void onClick(View view) {
                     finalHolder.mProduct.isRunning = true;
+                    if (finalHolder.mProduct.isPaused || finalHolder.mProduct.wasPaused){
+                        finalHolder.mProduct.timeWithCurrent = System.currentTimeMillis() + finalHolder.mProduct.timeToCountWhenPaused;
+                    }else {
+                        finalHolder.mProduct.timeWithCurrent = System.currentTimeMillis() + finalHolder.mProduct.originalTime;
+                    }
+
                     finalHolder.startB.setClickable(false);
+                    finalHolder.pauseB.setClickable(true);
                     finalHolder.stopB.setClickable(true);
-                    finalHolder.mProduct.timeWithCurrent = System.currentTimeMillis() + finalHolder.mProduct.originalTime;
+                    finalHolder.mProduct.timeWhenDone = System.currentTimeMillis() + finalHolder.mProduct.timeToCountWhenPaused;
+                    finalHolder.mProduct.isPaused = false;
                     startUpdateTimer();
                     Log.d("startB", position+"start");
                 }
@@ -159,8 +194,12 @@ public class ListOfTimers extends Activity {
                 @Override
                 public void onClick(View view) {
                     finalHolder.mProduct.isRunning = false;
+                    finalHolder.mProduct.isPaused = false;
                     finalHolder.stopB.setClickable(false);
+                    finalHolder.pauseB.setClickable(false);
                     finalHolder.startB.setClickable(true);
+                    mHandler.removeCallbacks(updateRemainingTimeRunnable);
+                    finalHolder.mProduct.wasPaused = false;
                     startUpdateTimer();
                     Log.d("stopB", position+"stop");
                 }
@@ -168,7 +207,15 @@ public class ListOfTimers extends Activity {
             holder.pauseB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO: pause
+                    finalHolder.mProduct.isPaused = true;
+                    finalHolder.mProduct.wasPaused = true;
+                    finalHolder.mProduct.isRunning = false;
+                    finalHolder.stopB.setClickable(true);
+                    finalHolder.startB.setClickable(true);
+                    finalHolder.pauseB.setClickable(false);
+                    finalHolder.mProduct.timeToCountWhenPaused = finalHolder.mProduct.timeWithCurrent - System.currentTimeMillis();
+                    mHandler.removeCallbacks(updateRemainingTimeRunnable);
+                    startUpdateTimer();
                     Log.d("pauseB", position+"pause");
                 }
             });
@@ -198,8 +245,24 @@ public class ListOfTimers extends Activity {
             tvTimeRemaining.setText(text);
         }
 
+        public void updateTimeAfterPaused(long currentTime){
+
+            long timeDiff = mProduct.timeWhenDone - currentTime;
+            Log.d("timeWhenPaused", String.valueOf(timeDiff));
+            setTime(timeDiff);
+        }
+
         public void updateTimeRemaining(long currentTime) {
             long timeDiff =  mProduct.timeWithCurrent - currentTime;
+            if (mProduct.isPaused) {
+                //mProduct.timeToCountWhenPaused = timeDiff;
+                //Log.d("mProduct.timeToCountWhenPaused", String.valueOf(mProduct.timeToCountWhenPaused));
+            }else {
+                setTime(timeDiff);
+            }
+        }
+
+        public void setTime(long timeDiff){
             if (timeDiff > 0) {
                 int seconds = (int) (timeDiff / 1000) % 60;
                 int minutes = (int) ((timeDiff / (1000 * 60)) % 60);
@@ -207,10 +270,11 @@ public class ListOfTimers extends Activity {
                 String text = String.format("%02d:%02d:%02d", hours, minutes, seconds);
                 tvTimeRemaining.setText(text);
             } else {
-                if (mProduct.isRunning == false){
+                if (mProduct.isRunning == false) {
                     setOriginalTime();
-                }else
-                    tvTimeRemaining.setText("Expired!!");
+                } else {
+                    tvTimeRemaining.setText("00:00:00");
+                }
             }
         }
     }

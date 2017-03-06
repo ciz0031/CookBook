@@ -12,7 +12,7 @@
     android:theme="@style/AppTheme">
 
 
-    <ProgressBar
+    <!--<ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
         android:id="@+id/addOneMinuteButton"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
-        android:background="@drawable/btn_style"/>
+        android:background="@drawable/btn_style"/>-->
 
     <TimePicker
         android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
         android:theme="@style/MyTimePickerStyle"
         android:id="@+id/timePicker" />
 
-    <ImageButton
+    <!--<ImageButton
         android:text="Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -56,14 +56,23 @@
         android:background="@drawable/stop2"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="37dp" />
+        android:layout_marginBottom="37dp" />-->
 
-    <ImageButton
-        android:text="Button"
-        android:layout_width="wrap_content"
+    <Button
+        android:text="Přidat časovač"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:id="@+id/startButton"
-        android:background="@drawable/start2"
-        android:layout_alignTop="@+id/stopButton"
-        android:layout_alignStart="@+id/stopButton" />
+        android:layout_marginTop="27dp"
+        android:layout_below="@+id/timePicker"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/btn_style"
+        android:shadowColor="#FFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="10"/>
+    <!--android:background="@drawable/start2"
+    android:layout_alignTop="@+id/stopButton"
+    android:layout_alignStart="@+id/stopButton" -->
+
 </RelativeLayout>

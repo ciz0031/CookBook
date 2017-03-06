@@ -37,13 +37,13 @@ import java.util.concurrent.TimeUnit;
 
 public class CountdownTimer extends Activity {
     private Bundle extras;
-    public TextView dobaPeceniTV;
+    //public TextView dobaPeceniTV;
     private TimePicker dobaPeceniTP;
-    private ImageButton startButton;
-    private ImageButton stopButton;
+    private Button startButton;
+    //private ImageButton stopButton;
     private RelativeLayout RL;
-    private ProgressBar progressBar;
-    private Button addOneMinuteButton;
+    //private ProgressBar progressBar;
+    //private Button addOneMinuteButton;
     int dobaPeceni, dobaPeceniExtras;
     public NotificationManager manager;
 
@@ -53,8 +53,8 @@ public class CountdownTimer extends Activity {
         setContentView(R.layout.activity_countdown_timer);
 
         RL = (RelativeLayout) findViewById(R.id.activity_countdown_timer);
-        startButton = (ImageButton) findViewById(R.id.startButton);
-        stopButton = (ImageButton) findViewById(R.id.stopButton);
+        startButton = (Button) findViewById(R.id.startButton);
+        /*stopButton = (ImageButton) findViewById(R.id.stopButton);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         addOneMinuteButton = (Button) findViewById(R.id.addOneMinuteButton);
         stopButton.setVisibility(View.INVISIBLE);
@@ -66,7 +66,7 @@ public class CountdownTimer extends Activity {
         dobaPeceniTV.setText("");
         dobaPeceniTV.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
         dobaPeceniTV.setTextSize(35);
-        RL.addView(dobaPeceniTV);
+        RL.addView(dobaPeceniTV);*/
 
         manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -81,7 +81,7 @@ public class CountdownTimer extends Activity {
 
         //podle toho odkud se aktivita vola se vytvori UI - kdyz z receptu, bude tam textView, kdyz z menu, bude tam timePicker
 
-        if (isMyServiceRunning(MyService.class) == true){
+        /*if (isMyServiceRunning(MyService.class) == true){
             progressBar.setVisibility(View.VISIBLE);
             addOneMinuteButton.setVisibility(View.VISIBLE);
             startButton.setVisibility(View.INVISIBLE);
@@ -99,15 +99,12 @@ public class CountdownTimer extends Activity {
                 startButton.setClickable(true);
                 addOneMinuteButton.setVisibility(View.VISIBLE);
                 addOneMinuteButton.setClickable(true);
-            }
+            }*/
 
             extras = getIntent().getExtras();
             if(extras != null){
                 dobaPeceniExtras = extras.getInt("doba_peceni");
                 dobaPeceni = dobaPeceniExtras;
-                /*dobaPeceniTV.setText(String.valueOf(dobaPeceni)+"min");
-                progressBar.setMax(dobaPeceniExtras);
-                progressBar.setProgress(0);*/
                 dobaPeceniTP.setVisibility(View.VISIBLE);
                 int hour = dobaPeceni / 60;
                 int minutes = dobaPeceni % 60;
@@ -115,47 +112,53 @@ public class CountdownTimer extends Activity {
 
                 dobaPeceniTP.setCurrentHour(hour);
                 dobaPeceniTP.setCurrentMinute(minutes);
-                progressBar.setVisibility(View.INVISIBLE);
-                dobaPeceniTV.setVisibility(View.INVISIBLE);
+                //progressBar.setVisibility(View.INVISIBLE);
+                //dobaPeceniTV.setVisibility(View.INVISIBLE);
             }else {
-                progressBar.setVisibility(View.INVISIBLE);
+                //progressBar.setVisibility(View.INVISIBLE);
                 dobaPeceniTP.setVisibility(View.VISIBLE);
                 dobaPeceni = 0;
                 dobaPeceniTP.setCurrentHour(0);
                 dobaPeceniTP.setCurrentMinute(1);
 
             }
-        }
+        //}
 
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
+                /*progressBar.setVisibility(View.VISIBLE);
                 addOneMinuteButton.setVisibility(View.VISIBLE);
                 addOneMinuteButton.setClickable(true);
+                dobaPeceniTV.setVisibility(View.VISIBLE);*/
                 dobaPeceniTP.setVisibility(View.INVISIBLE);
-                dobaPeceniTV.setVisibility(View.VISIBLE);
+
                 //Log.d("dobaPeceni", dobaPeceni);
                 Bundle dataDobaPeceni = new Bundle();
                 int hour = dobaPeceniTP.getCurrentHour();
                 int minutes = dobaPeceniTP.getCurrentMinute();
                 dobaPeceni = (hour * 60) + minutes;
                 dataDobaPeceni.putInt("doba_peceni", dobaPeceni*60*1000);
+                dataDobaPeceni.putString("nazev", dobaPeceni+" minut");
                 dobaPeceniTP.setVisibility(View.INVISIBLE);
                 startButton.setVisibility(View.INVISIBLE);
                 startButton.setClickable(false);
-                stopButton.setVisibility(View.VISIBLE);
+                /*stopButton.setVisibility(View.VISIBLE);
                 stopButton.setClickable(true);
                 progressBar.setMax(dobaPeceni * 60);
 
                 Intent i = new Intent(CountdownTimer.this, MyService.class);
                 i.putExtras(dataDobaPeceni);
-                startService(i);
+                startService(i);*/
+
+                Intent i = new Intent(CountdownTimer.this, ListOfTimers.class);
+                i.putExtras(dataDobaPeceni);
+                startActivity(i);
             }
         });
 
-        stopButton.setOnClickListener(new View.OnClickListener() {
+        /*stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 stopService(new Intent(CountdownTimer.this, MyService.class));
@@ -209,31 +212,16 @@ public class CountdownTimer extends Activity {
                 i.putExtras(dataDobaPeceni);
                 startService(i);
             }
-        });
+        });*/
 
     }
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateGUI(intent); // or whatever method used to update your GUI fields
+            //updateGUI(intent); // or whatever method used to update your GUI fields
         }
     };
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_countdown_timer, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id== R.id.action_settings){
-            Intent Settings = new Intent(this, Settings.class);
-            startActivity(Settings);
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public void onBackPressed() {
@@ -241,16 +229,16 @@ public class CountdownTimer extends Activity {
         //registerReceiver(broadcastReceiver, new IntentFilter(MyService.str_receiver));
     }
 
-    @Override
+    /*@Override
     public void onResume() {
         super.onResume();
         registerReceiver(broadcastReceiver, new IntentFilter(MyService.str_receiver));
         if (isMyServiceRunning(MyService.class)==false) {
             stopButton.setVisibility(View.INVISIBLE);
-            startButton.setVisibility(View.VISIBLE);
             stopButton.setClickable(false);
-            startButton.setClickable(true);
             progressBar.setProgress(progressBar.getMax());
+            startButton.setVisibility(View.VISIBLE);
+            startButton.setClickable(true);
             int hour = dobaPeceni / 60;
             int minutes = dobaPeceni % 60;
             dobaPeceniTP.setCurrentHour(hour);
@@ -319,6 +307,6 @@ public class CountdownTimer extends Activity {
                 }
             }
         }
-    }
+    }*/
 
 }
