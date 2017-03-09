@@ -50,8 +50,9 @@
             android:label="@string/title_activity_eandb_manager"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".CountdownTimer"
+            android:name=".NewCountdownTimer"
             android:label="@string/title_activity_timer"
+            android:noHistory="true"
             android:screenOrientation="portrait" />
 
         <service android:name=".MyService" />
@@ -71,6 +72,7 @@
         <activity android:name=".FullScreenImage" />
         <activity android:name=".ListOfTimers"
             android:label="@string/title_activity_listOfTimers"
+            android:noHistory="true"
             android:parentActivityName=".MainActivity"></activity>
     </application>
 

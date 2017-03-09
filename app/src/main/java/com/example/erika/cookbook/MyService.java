@@ -7,8 +7,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -17,11 +15,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
-
-import java.io.IOException;
-import java.util.Timer;
 
 /**
  * Created by Erika on 7. 1. 2017.
@@ -55,7 +49,7 @@ public class MyService extends Service {
             //Log.d("Extras delivered", String.valueOf(extras.getInt("doba_peceni")));
             dobaPeceni = extras.getInt("doba_peceni");
 
-            Intent notificationIntent = new Intent(this, CountdownTimer.class);
+            Intent notificationIntent = new Intent(this, NewCountdownTimer.class);
 
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                     notificationIntent, 0);
@@ -133,7 +127,7 @@ public class MyService extends Service {
         // The PendingIntent to launch our activity if the user selects
         // this notification
         CharSequence title = "Kuchařka";
-        Intent notificationIntent = new Intent(this, CountdownTimer.class);
+        Intent notificationIntent = new Intent(this, NewCountdownTimer.class);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, 0);

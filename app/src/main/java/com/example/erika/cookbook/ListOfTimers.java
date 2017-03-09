@@ -3,8 +3,11 @@ package com.example.erika.cookbook;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,9 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class ListOfTimers extends Activity {
             listOfTimers.add(new Timers(nazev, doba, false));
         }
         listOfTimersLV.setAdapter(new CountdownAdapter(ListOfTimers.this, listOfTimers));
+        loadSavedPreferences();
     }
 
     @Override
@@ -64,13 +66,76 @@ public class ListOfTimers extends Activity {
     }
 
     @Override
-    protected void onStart() {
+    protected void onPause() {
+        clearPref();
+        long doba_peceni = 0;
+        Log.d("listOfTimers.size", String.valueOf(listOfTimers.size()));
+        for (int i = 2; i < listOfTimers.size(); i++){
+            Timers timers = listOfTimers.get(i);
+            doba_peceni = timers.originalTime;
+            savePreferences(String.valueOf(i), doba_peceni);
+        }
+        super.onPause();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        clearPref();
+        long doba_peceni = 0;
+        Log.d("listOfTimers.size", String.valueOf(listOfTimers.size()));
+        for (int i = 2; i < listOfTimers.size(); i++){
+            Timers timers = listOfTimers.get(i);
+            doba_peceni = timers.originalTime;
+            savePreferences(String.valueOf(i), doba_peceni);
+        }
+
+        super.onBackPressed();
+    }
+
+    private void loadSavedPreferences() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("listOfTimers", MODE_PRIVATE);
+        int sizeOfSharedPref = sharedPreferences.getAll().size();
+        Log.d("sizeOfSharedPref", "velikost " + sizeOfSharedPref);
+        long value;
+
+        for (int i = 0; i <= sizeOfSharedPref+1; i++){
+            value = sharedPreferences.getLong(String.valueOf(i), 0);
+            if (value != 0) {
+                listOfTimers.add(new Timers(value/60/1000 + " minut", value, false));
+            }
+        }
+        listOfTimersLV.setAdapter(new CountdownAdapter(ListOfTimers.this, listOfTimers));
+
+    }
+
+    private void savePreferences(String key, long value) {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("listOfTimers", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(key, value);
+        editor.commit();
+    }
+
+    public void clearPref(){
+        SharedPreferences sharedPreferences = this.getSharedPreferences("listOfTimers", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
+
+    @Override
+    protected void onStart() {
         super.onStart();
     }
 
+    @Override
+    protected void onResume() {
+        //loadSavedPreferences();
+        super.onResume();
+    }
+
     private void createNewTimer(){
-        Intent timer = new Intent(this, CountdownTimer.class);
+        Intent timer = new Intent(this, NewCountdownTimer.class);
         startActivity(timer);
     }
 
@@ -124,7 +189,7 @@ public class ListOfTimers extends Activity {
 
         public CountdownAdapter(Context context, List<Timers> objects) {
             super(context, 0, objects);
-            lf = LayoutInflater.from(context);
+            lf = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);//LayoutInflater.from(context);
             lstHolders = new ArrayList<>();
         }
 
@@ -149,23 +214,28 @@ public class ListOfTimers extends Activity {
                 holder.startB = (ImageButton) convertView.findViewById(R.id.startB);
                 holder.stopB = (ImageButton) convertView.findViewById(R.id.stopB);
                 holder.pauseB = (ImageButton) convertView.findViewById(R.id.pauseB);
+                holder.deleteB = (ImageButton) convertView.findViewById(R.id.deleteB);
 
                 holder.startB.setImageResource(R.drawable.ic_action_play_arrow);
                 holder.pauseB.setImageResource(R.drawable.ic_action_pause);
                 holder.stopB.setImageResource(R.drawable.ic_action_stop);
+                holder.deleteB.setImageResource(R.drawable.ic_action_delete_forever);
 
                 holder.tvTimeRemaining.setTag(position+"timer");
                 holder.startB.setTag(position+"start");
                 holder.stopB.setTag(position+"stop");
                 holder.pauseB.setTag(position+"pause");
+                holder.deleteB.setTag(position+"delete");
 
                 holder.startB.setClickable(true);
                 holder.stopB.setClickable(false);
                 holder.pauseB.setClickable(false);
+                holder.deleteB.setClickable(true);
 
                 synchronized (lstHolders) {
                     lstHolders.add(holder);
                 }
+                convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
@@ -219,15 +289,29 @@ public class ListOfTimers extends Activity {
                     Log.d("pauseB", position+"pause");
                 }
             });
+            holder.deleteB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listOfTimers.remove(position);
+                    notifyDataSetChanged();
+                }
+            });
             holder.setData(getItem(position));
             return convertView;
         }
+
+        @Nullable
+        @Override
+        public Timers getItem(int position) {
+            return listOfTimers.get(position);
+        }
+
     }
 
     private class ViewHolder {
         TextView tvProduct;
         TextView tvTimeRemaining;
-        ImageButton startB, stopB, pauseB;
+        ImageButton startB, stopB, pauseB, deleteB;
         Timers mProduct;
 
         public void setData(Timers item) {

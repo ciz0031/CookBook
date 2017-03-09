@@ -58,7 +58,6 @@ public class NakupniSeznam extends Activity {
         //nacteni ulozenych shared pref.
         loadSavedPreferences();
 
-
         //posilani suroviny z receptu do nakupniho seznamu
         Bundle extras = getIntent().getExtras();
         if (extras != null){
@@ -181,7 +180,7 @@ public class NakupniSeznam extends Activity {
         String value;
         EditText polozka;
         clearPref();
-        Log.d("pocet polozek", String.valueOf(pocetPolozek));
+        //Log.d("pocet polozek", String.valueOf(pocetPolozek));
         for (int i = 0; i <= pocetPolozek; i++){
             polozka = (EditText) mainLL.findViewWithTag("polozkaSeznamuET" + i);
             if (polozka != null){

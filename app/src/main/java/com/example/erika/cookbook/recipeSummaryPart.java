@@ -1,21 +1,12 @@
 package com.example.erika.cookbook;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,22 +14,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 
 
 /**
@@ -131,7 +108,7 @@ public class recipeSummaryPart extends Fragment{
                 //otevreni aktivity s countdownTimerem (s moznosti spustit odpocet) + poslat hodnotu DobaPeceni
                 Bundle bundle = new Bundle();
                 bundle.putInt("doba_peceni", Integer.valueOf(stringDobaPeceni));
-                Intent countdownTimer = new Intent(getActivity(), CountdownTimer.class);
+                Intent countdownTimer = new Intent(getActivity(), NewCountdownTimer.class);
                 countdownTimer.putExtras(bundle);
                 startActivity(countdownTimer);
             }

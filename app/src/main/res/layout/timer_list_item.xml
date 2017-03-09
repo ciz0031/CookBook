@@ -18,6 +18,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/ic_action_delete_forever"
+            android:id="@+id/deleteB"
+            android:layout_weight="34.64"
+            android:background="@android:color/transparent" />
+
         <TextView
             android:id="@+id/tvTimeRemaining"
             android:layout_width="172dp"
@@ -29,7 +37,6 @@
 
         <ImageButton
             android:layout_width="40dp"
-            app:srcCompat="@drawable/ic_action_play_arrow"
             android:id="@+id/startB"
             android:layout_weight="0.22"
             android:layout_height="40dp"
@@ -38,7 +45,6 @@
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:srcCompat="@drawable/ic_action_pause"
             android:id="@+id/pauseB"
             android:layout_weight="0.32"
             android:background="@android:color/transparent" />
@@ -46,7 +52,6 @@
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="40dp"
-            app:srcCompat="@drawable/ic_action_stop"
             android:id="@+id/stopB"
             android:layout_weight="1"
             android:background="@android:color/transparent" />
