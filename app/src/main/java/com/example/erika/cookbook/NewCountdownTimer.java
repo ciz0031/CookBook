@@ -56,7 +56,7 @@ public class NewCountdownTimer extends Activity {
                 int minutes = dobaPeceniTP.getCurrentMinute();
                 dobaPeceni = (hour * 60) + minutes;
                 dataDobaPeceni.putInt("doba_peceni", dobaPeceni*60*1000);
-                dataDobaPeceni.putString("nazev", dobaPeceni+" minut");
+                dataDobaPeceni.putString("nazev", dobaPeceni+"min");
                 dobaPeceniTP.setVisibility(View.INVISIBLE);
                 startButton.setVisibility(View.INVISIBLE);
                 startButton.setClickable(false);

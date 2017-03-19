@@ -8,6 +8,8 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowBackup="true"
@@ -56,7 +58,8 @@
             android:screenOrientation="portrait" />
 
         <service android:name=".MyService" />
-
+        <receiver android:name=".AlarmManagerBroadcastReceiver">
+        </receiver>
         <activity
             android:name=".HodnoceniReceptu"
             android:label="@string/action_rate"
@@ -72,6 +75,7 @@
         <activity android:name=".FullScreenImage" />
         <activity android:name=".ListOfTimers"
             android:label="@string/title_activity_listOfTimers"
+            android:launchMode="singleTask"
             android:noHistory="true"
             android:parentActivityName=".MainActivity"></activity>
     </application>

@@ -74,7 +74,7 @@ public class NakupniSeznam extends Activity {
         }
     }
     private void loadSavedPreferences() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = getSharedPreferences("shopping_list", MODE_PRIVATE);
         int sizeOfSharedPref = sharedPreferences.getAll().size();
         Log.d("sizeOfSharedPref", "velikost " + sizeOfSharedPref);
         String value;
@@ -90,14 +90,14 @@ public class NakupniSeznam extends Activity {
     }
 
     private void savePreferences(String key, String value) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = getSharedPreferences("shopping_list", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(key, value);
         editor.commit();
     }
 
     public void clearPref(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = getSharedPreferences("shopping_list", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.commit();
