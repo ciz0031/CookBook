@@ -76,7 +76,7 @@
         <activity android:name=".ListOfTimers"
             android:label="@string/title_activity_listOfTimers"
             android:launchMode="singleTask"
-            android:noHistory="true"
+
             android:parentActivityName=".MainActivity"></activity>
     </application>
 

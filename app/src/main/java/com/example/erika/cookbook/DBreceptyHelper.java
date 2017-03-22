@@ -83,7 +83,8 @@ public class DBreceptyHelper extends SQLiteOpenHelper {
      */
     public boolean checkDataBase(){
         File databaseFile = new File(DB_PATH + DATABASE_NAME);
-        return databaseFile.exists();
+        boolean exists = databaseFile.exists();
+        return exists;
     }
 
     /**

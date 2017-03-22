@@ -30,7 +30,7 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK |
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                 PowerManager.ACQUIRE_CAUSES_WAKEUP |
                 PowerManager.ON_AFTER_RELEASE, "TAG");
         wl.acquire();
@@ -46,27 +46,35 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         boolean nekonecnePrehravani = SP.getBoolean("nekonecnePrehravani", false);
         String vyzvaneni = SP.getString("vyzvaneni", "content://settings/system/notification_sound");
 
+        final Bundle extras = intent.getExtras();
+        final int notificationID = extras.getInt("ID");
+        manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.cancel(notificationID);
+
+
         if (vibrace == true) {
-            long[] pattern = {500, 500, 500, 500/*, 500, 500, 500, 500, 500*/};
+            long[] pattern = {500, 500, 500, 500, 500, 500, 500, 500, 500};
             builder.setVibrate(pattern);
         }
         builder.setStyle(new NotificationCompat.InboxStyle());
         Uri alarmSound = Uri.parse(vyzvaneni);
         builder.setSound(alarmSound);
+        builder.setSmallIcon(R.mipmap.ic_stat_onesignal_default);
+        builder.setContentTitle("Kuchařka");
+        builder.setContentText("Odpočet času hotov!");
         final Notification myNotification = builder.build();
+
         if (nekonecnePrehravani == true) {
             myNotification.flags |= Notification.FLAG_INSISTENT;
             builder.setAutoCancel(true);
         }else {
             myNotification.flags |= Notification.FLAG_AUTO_CANCEL | Notification.FLAG_ONLY_ALERT_ONCE;
         }
-        builder.setSound(alarmSound);
-        manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Random random = new Random();
-        final int notificationID = random.nextInt();
+        //builder.setSound(alarmSound);
+
         manager.notify(notificationID, myNotification);
         Toast.makeText(context, R.string.done, Toast.LENGTH_LONG).show();
-        final Bundle extras = intent.getExtras();
+
 
         Thread closeActivity = new Thread(new Runnable() {
             @Override
@@ -83,13 +91,13 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
             }
         });
         if (nekonecnePrehravani == false)
-            closeActivity.run();
+            closeActivity.start();
 
         wl.release();
     }
 
     public void setTimer(Context context, long timeWhenDone, int _id){
-        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager am = (AlarmManager)context.getSystemService(context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
         intent.putExtra("ID", _id);
         PendingIntent pi = PendingIntent.getBroadcast(context, _id, intent, 0);
@@ -107,20 +115,20 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         notification.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(_id, notification.build());
     }
 
     public void cancelAlarm(Context context, int _id){
         Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
         PendingIntent sender = PendingIntent.getBroadcast(context, _id, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
         alarmManager.cancel(sender);
 
         NotificationManager mNotificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         mNotificationManager.cancel(_id);
-        Log.d("CancelAlarm", "notification canceled");
+        Log.d("CancelAlarm", "notification canceled"+_id);
     }
 
 

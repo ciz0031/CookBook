@@ -27,6 +27,7 @@ import java.util.TimerTask;
 public class ListOfTimers extends Activity {
     private ListView listOfTimersLV;
     private ArrayList<Timers> listOfTimers;
+    CountdownAdapter countdownAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,15 +37,20 @@ public class ListOfTimers extends Activity {
 
         listOfTimers = new ArrayList<>();
 
-        listOfTimers.add(new Timers("2min", (2 * 60 * 1000), false, 0, 0));//2minuty
-        listOfTimers.add(new Timers("10min", (10 * 60 * 1000), false, 0, 0));//10minut
+
         loadSavedPreferences();
+        if (listOfTimers.size() < 1){
+            listOfTimers.add(new Timers("2min", (2 * 60 * 1000), false, 0, 0));//2minuty
+            listOfTimers.add(new Timers("10min", (10 * 60 * 1000), false, 0, 0));//10minut
+            listOfTimers.add(new Timers("10sec", (10 * 1000), false, 0, 0));//10sec
+        }
         if (extras != null){
             String nazev = extras.getString("nazev");
             int doba = extras.getInt("doba_peceni");
             listOfTimers.add(new Timers(nazev, doba, false, 0, 0));
         }
-
+        countdownAdapter = new CountdownAdapter(ListOfTimers.this, listOfTimers);
+        listOfTimersLV.setAdapter(countdownAdapter);
 
         //clearPref();
     }
@@ -58,8 +64,8 @@ public class ListOfTimers extends Activity {
             if (timers.isRunning && timers.timeWhenDone != 0 && timers.timeWhenDone - time > 0){
                 //TODO timer is running so it needs to be updated in listView
                 //
-                listOfTimersLV.setAdapter(new CountdownAdapter(ListOfTimers.this, listOfTimers));
-                CountdownAdapter countdownAdapter = new CountdownAdapter(this, listOfTimers);
+
+                //CountdownAdapter countdownAdapter = new CountdownAdapter(this, listOfTimers);
                 countdownAdapter.startUpdateTimer();
             }
         }
@@ -92,7 +98,7 @@ public class ListOfTimers extends Activity {
         boolean isRunning = false;
         long timeWhenTimerDone = 0, timeWithCurrent = 0;
         Log.d("listOfTimers.size", String.valueOf(listOfTimers.size()));
-        for (int i = 2; i < listOfTimers.size(); i++){
+        for (int i = 0; i < listOfTimers.size(); i++){
             Timers timers = listOfTimers.get(i);
             doba_peceni = timers.originalTime;
             isRunning = timers.isRunning;
@@ -102,40 +108,20 @@ public class ListOfTimers extends Activity {
             saveIsRunning(String.valueOf(i), isRunning);
             saveTimeWhenDone(String.valueOf(i), timeWhenTimerDone);
             saveTimeWithCurrent(String.valueOf(i), timeWithCurrent);
-
         }
+        //CountdownAdapter countdownAdapter = new CountdownAdapter(this, listOfTimers);
+        countdownAdapter.mHandler.removeCallbacks(countdownAdapter.updateRemainingTimeRunnable);
         super.onPause();
 
     }
 
     @Override
     protected void onDestroy() {
-        CountdownAdapter countdownAdapter = new CountdownAdapter(this, listOfTimers);
+        //CountdownAdapter countdownAdapter = new CountdownAdapter(this, listOfTimers);
         countdownAdapter.mHandler.removeCallbacks(countdownAdapter.updateRemainingTimeRunnable);
         super.onDestroy();
     }
 
-    @Override
-    public void onBackPressed() {
-        clearPref();
-        long doba_peceni = 0;
-        long timeWhenTimerDone = 0, timeWithCurrent = 0;
-        boolean isRunning;
-        Log.d("listOfTimers.size", String.valueOf(listOfTimers.size()));
-        for (int i = 2; i < listOfTimers.size(); i++){
-            Timers timers = listOfTimers.get(i);
-            doba_peceni = timers.originalTime;
-            isRunning = timers.isRunning;
-            timeWhenTimerDone = timers.timeWhenDone;
-            timeWithCurrent = timers.timeWithCurrent;
-            savePreferences(String.valueOf(i), doba_peceni);
-            saveIsRunning(String.valueOf(i), isRunning);
-            saveTimeWhenDone(String.valueOf(i), timeWhenTimerDone);
-            saveTimeWithCurrent(String.valueOf(i), timeWithCurrent);
-        }
-
-        super.onBackPressed();
-    }
 
     private void loadSavedPreferences() {
         SharedPreferences sharedPreferences = this.getSharedPreferences("listOfTimers", MODE_PRIVATE);
@@ -249,37 +235,38 @@ public class ListOfTimers extends Activity {
         public Runnable updateRemainingTimeRunnable = new Runnable() {
             @Override
             public void run() {
-                synchronized (lstHolders) {
-                    long currentTime = System.currentTimeMillis();
-                    for (ViewHolder holder : lstHolders) {
-                        if (holder.mProduct.isRunning) {
-                            if (holder.mProduct.wasPaused){
-                                if (holder.mProduct.timeWhenDone - currentTime < 0){
-                                    holder.mProduct.timeWhenDone = 0;
-                                    mHandler.removeCallbacks(updateRemainingTimeRunnable);
-                                }else {
-                                    holder.updateTimeAfterPaused(currentTime);
+                    synchronized (lstHolders) {
+                        long currentTime = System.currentTimeMillis();
+                        for (ViewHolder holder : lstHolders) {
+                            if (holder.mProduct.isRunning) {
+                                if (holder.mProduct.wasPaused) {
+                                    if (holder.mProduct.timeWhenDone - currentTime < 0) {
+                                        holder.mProduct.timeWhenDone = 0;
+                                        mHandler.removeCallbacks(updateRemainingTimeRunnable);
+                                    } else {
+                                        holder.updateTimeAfterPaused(currentTime);
+                                    }
+                                } else {
+                                    if (holder.mProduct.timeWithCurrent - currentTime < 0) {
+                                        holder.mProduct.timeWhenDone = 0;
+                                        mHandler.removeCallbacks(updateRemainingTimeRunnable);
+                                    } else {
+                                        holder.updateTimeRemaining(currentTime);
+                                        //poresit kolikrat se toto vola !!
+                                    }
                                 }
-                            }else {
-                                if (holder.mProduct.timeWithCurrent - currentTime < 0){
+                            } else if (!holder.mProduct.isRunning) {
+                                if (!holder.mProduct.isPaused) {
                                     holder.mProduct.timeWhenDone = 0;
-                                    mHandler.removeCallbacks(updateRemainingTimeRunnable);
-                                }else {
-                                    holder.updateTimeRemaining(currentTime);
-                                    //poresit kolikrat se toto vola !!
+                                    holder.setOriginalTime();
+                                    mHandler.removeCallbacksAndMessages(updateRemainingTimeRunnable);
+                                } else if (holder.mProduct.isPaused) {
+                                    //holder.updateTimeRemaining(currentTime);
+                                    mHandler.removeCallbacksAndMessages(updateRemainingTimeRunnable);
                                 }
-                            }
-                        } else if (!holder.mProduct.isRunning) {
-                            if (!holder.mProduct.isPaused) {
-                                holder.setOriginalTime();
-                                mHandler.removeCallbacksAndMessages(updateRemainingTimeRunnable);
-                            } else if (holder.mProduct.isPaused) {
-                                //holder.updateTimeRemaining(currentTime);
-                                mHandler.removeCallbacksAndMessages(updateRemainingTimeRunnable);
                             }
                         }
                     }
-                }
             }
         };
 
@@ -406,6 +393,7 @@ public class ListOfTimers extends Activity {
             return convertView;
         }
 
+
         @Nullable
         @Override
         public Timers getItem(int position) {
@@ -433,7 +421,7 @@ public class ListOfTimers extends Activity {
             int hours = (int) ((timeDiff / (1000 * 60 * 60)) % 24);
             String text = String.format("%02d:%02d:%02d", hours, minutes, seconds);
             tvTimeRemaining.setText(text);
-            mProduct.timeWhenDone = 0;
+            //mProduct.timeWhenDone = 0;
         }
 
         public void updateTimeAfterPaused(long currentTime){
