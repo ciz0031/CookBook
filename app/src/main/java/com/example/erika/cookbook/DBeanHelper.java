@@ -30,8 +30,6 @@ public class DBeanHelper extends SQLiteOpenHelper {
     private static DBeanHelper sInstance = null;
     private int mOpenCounter = 0;
 
-    public static ArrayList<String> arrayList = new ArrayList<String>();
-
     private DBeanHelper(Context context){
         super(context, DATABASE_NAME, null, 1);
         this.context = context;
@@ -55,7 +53,7 @@ public class DBeanHelper extends SQLiteOpenHelper {
         if(databaseExist){
 
             this.getWritableDatabase();
-            copyDataBase();
+            //copyDataBase();
         }else{
             this.getWritableDatabase();
             this.close();
@@ -114,25 +112,23 @@ public class DBeanHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean insertSurovinaEAN(int ean, String name)
+    public boolean insertSurovinaEAN(long ean, String name)
     {
         SQLiteDatabase db = this.getInstance(context).getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_EAN, ean);
         contentValues.put(COLUMN_NAME, name);
         db.insert(EANS_TABLE_NAME, null, contentValues);
-        db.close();
         return true;
     }
 
     public ArrayList<EANsurovinaO> getSurovina(String ean){
         SQLiteDatabase db = this.getInstance(context).getReadableDatabase();
-        String query = "select * from " + EANS_TABLE_NAME + " where " + COLUMN_EAN + " = " + ean;
+        String query = "select * from " + EANS_TABLE_NAME + " where " + COLUMN_EAN + " = '" + ean +"'";
         Cursor suroviny =  db.rawQuery(query, null);
         suroviny.moveToFirst();
         ArrayList<EANsurovinaO> eanSurovina = ReadEANsurovina(suroviny);
         suroviny.close();
-        db.close();
         return eanSurovina;
     }
 
@@ -140,8 +136,8 @@ public class DBeanHelper extends SQLiteOpenHelper {
         ArrayList<EANsurovinaO> EANreceptObj = new ArrayList<>();
         while(res.isAfterLast() == false){
             EANsurovinaO eanSurovinaO = new EANsurovinaO();
-            eanSurovinaO.eanNumber = Integer.parseInt(res.getString(res.getColumnIndex(COLUMN_EAN)));
-            eanSurovinaO.surovina = res.getString(res.getColumnIndex(COLUMN_NAME));
+            eanSurovinaO.eanNumber = Long.parseLong(res.getString(res.getColumnIndex(COLUMN_EAN)));
+            eanSurovinaO.foodstuff = res.getString(res.getColumnIndex(COLUMN_NAME));
             EANreceptObj.add(eanSurovinaO);
             res.moveToNext();
         }

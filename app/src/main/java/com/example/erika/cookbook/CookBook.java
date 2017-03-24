@@ -6,17 +6,14 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,83 +21,78 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class MainActivity extends Activity implements View.OnClickListener {
-    private ImageButton snidane, obed, vecere, zakusky, napoje, svacina;
-    private Button hledatButton, zobrazitKategorieButton;
-    private EditText hledatEditText;
-    private LinearLayout kategorieLL, vyhledaneReceptyLL, zobrazitKategorieLL;
-    private ListView vyhledaneReceptyListView;
-    private String receptProVyhledani;
-    private ArrayList al;
+public class CookBook extends Activity implements View.OnClickListener {
+    private ImageButton breakfast, lunch, dinner, desserts, drinks, snack;
+    private Button searchButton, showCategoriesButton;
+    private EditText searchEditText;
+    private LinearLayout categoryLL, searchedRecipesLL, showCategoriesLL;
+    private ListView searchedRecipesLV;
+    private String recipeToSearch;
+    private ArrayList arrayListOfRecipes;
     public ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        al = new ArrayList();
+        arrayListOfRecipes = new ArrayList();
 
-        snidane = (ImageButton) findViewById(R.id.snidane);
-        obed = (ImageButton) findViewById(R.id.obed);
-        vecere = (ImageButton) findViewById(R.id.vecere);
-        zakusky = (ImageButton) findViewById(R.id.zakusky);
-        napoje = (ImageButton) findViewById(R.id.napoje);
-        svacina = (ImageButton) findViewById(R.id.svacina);
-        hledatButton = (Button) findViewById(R.id.hledejButton);
-        hledatEditText = (EditText) findViewById(R.id.hledejEditText);
-        kategorieLL = (LinearLayout) findViewById(R.id.kategorieLL);
-        vyhledaneReceptyLL = (LinearLayout) findViewById(R.id.vyhledaneReceptyLL);
-        zobrazitKategorieLL = (LinearLayout) findViewById(R.id.zobrazitKategorieLL);
-        zobrazitKategorieButton = (Button) findViewById(R.id.zobrazitKategorieButton);
+        breakfast = (ImageButton) findViewById(R.id.snidane);
+        lunch = (ImageButton) findViewById(R.id.obed);
+        dinner = (ImageButton) findViewById(R.id.vecere);
+        desserts = (ImageButton) findViewById(R.id.zakusky);
+        drinks = (ImageButton) findViewById(R.id.napoje);
+        snack = (ImageButton) findViewById(R.id.svacina);
+        searchButton = (Button) findViewById(R.id.hledejButton);
+        searchEditText = (EditText) findViewById(R.id.hledejEditText);
+        categoryLL = (LinearLayout) findViewById(R.id.kategorieLL);
+        searchedRecipesLL = (LinearLayout) findViewById(R.id.vyhledaneReceptyLL);
+        showCategoriesLL = (LinearLayout) findViewById(R.id.zobrazitKategorieLL);
+        showCategoriesButton = (Button) findViewById(R.id.zobrazitKategorieButton);
 
-        zobrazitKategorieLL.setVisibility(View.INVISIBLE);
-        snidane.setOnClickListener(this);
-        obed.setOnClickListener(this);
-        vecere.setOnClickListener(this);
-        zakusky.setOnClickListener(this);
-        napoje.setOnClickListener(this);
-        svacina.setOnClickListener(this);
+        showCategoriesLL.setVisibility(View.INVISIBLE);
+        breakfast.setOnClickListener(this);
+        lunch.setOnClickListener(this);
+        dinner.setOnClickListener(this);
+        desserts.setOnClickListener(this);
+        drinks.setOnClickListener(this);
+        snack.setOnClickListener(this);
 
 
     }
 
     @Override
     protected void onStart() {
-        hledatButton.setOnClickListener(new View.OnClickListener() {
+        searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //hledani receptu
-                al.clear();
-                kategorieLL.setVisibility(View.INVISIBLE);
-                zobrazitKategorieLL.setVisibility(View.VISIBLE);
-                if(vyhledaneReceptyLL.getChildCount() > 0)
-                    vyhledaneReceptyLL.removeAllViews();
+                arrayListOfRecipes.clear();
+                categoryLL.setVisibility(View.INVISIBLE);
+                showCategoriesLL.setVisibility(View.VISIBLE);
+                if(searchedRecipesLL.getChildCount() > 0)
+                    searchedRecipesLL.removeAllViews();
 
-                receptProVyhledani = hledatEditText.getText().toString();
+                recipeToSearch = searchEditText.getText().toString();
 
                 LongOperationsThread MyLongOperations = new LongOperationsThread();
-                MyLongOperations.execute(receptProVyhledani);
+                MyLongOperations.execute(recipeToSearch);
 
             }
         });
-        zobrazitKategorieButton.setOnClickListener(new View.OnClickListener() {
+        showCategoriesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (vyhledaneReceptyLL.getChildCount() > 0)
-                    vyhledaneReceptyLL.removeAllViews();
-                kategorieLL.setVisibility(View.VISIBLE);
-                zobrazitKategorieLL.setVisibility(View.INVISIBLE);
+                if (searchedRecipesLL.getChildCount() > 0)
+                    searchedRecipesLL.removeAllViews();
+                categoryLL.setVisibility(View.VISIBLE);
+                showCategoriesLL.setVisibility(View.INVISIBLE);
             }
         });
         super.onStart();
@@ -206,23 +198,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         try {
-            // check if any view exists on current view
-            hledatButton = (Button) findViewById(R.id.hledejButton);
+            searchButton = (Button) findViewById(R.id.hledejButton);
         }catch (Exception e){
-            // Button was not found
-            // It means, your button doesn't exist on the "current" view
-            // It was freed from the memory, therefore stop of activity was performed
-            // In this case I restart my app
             Intent i = new Intent();
-            i.setClass(getApplicationContext(), MainActivity.class);
+            i.setClass(getApplicationContext(), CookBook.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
         }
     }
 
     private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<ReceptO>> {
-        ReceptyTable DBrecepty = ReceptyTable.getInstance(MainActivity.this);
-        DBreceptyHelper DBreceptyHelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(MainActivity.this);
+        ReceptyTable DBrecepty = ReceptyTable.getInstance(CookBook.this);
+        DBreceptyHelper DBreceptyHelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(CookBook.this);
         final Handler handler = new Handler();
 
         @Override
@@ -233,7 +220,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         final Runnable pdRunnable = new Runnable() {
             @Override
             public void run() {
-                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog = new ProgressDialog(CookBook.this);
                 progressDialog.setMessage("Loading...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
@@ -248,9 +235,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            DBreceptyHelper.getInstance(MainActivity.this).openDataBase();
-
-            //final ArrayList<ReceptO> arrayList = DBrecepty.getReceptPodleNazvu(params[0]);
+            DBreceptyHelper.getInstance(CookBook.this).openDataBase();
 
             SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String razeniReceptu = SP.getString("razeniReceptu","1");
@@ -269,22 +254,22 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             if(arrayList.size() == 0){
                 //nenalezeni zadneho receptu odpovidajiciho nazvu - vypis 'Recept neexistuje. Vytvořit?' - ANO/NE
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(CookBook.this);
                 builder.setMessage(R.string.dialog_message_neexistujici_recept)
                         .setTitle(R.string.dialog_title_neexistujici_recept);
                 builder.setPositiveButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User cancelled the dialog - vratit zpet pred vyhledavani
-                        hledatEditText.setText("");
-                        kategorieLL.setVisibility(View.VISIBLE);
+                        searchEditText.setText("");
+                        categoryLL.setVisibility(View.VISIBLE);
                     }
                 });
                 builder.setNegativeButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User clicked OK button - vytvorit novy recept
                         Bundle nazev_receptu = new Bundle();
-                        nazev_receptu.putString("nazev_receptu", receptProVyhledani);
-                        Intent novyRecept = new Intent(MainActivity.this, NovyRecept.class);
+                        nazev_receptu.putString("nazev_receptu", recipeToSearch);
+                        Intent novyRecept = new Intent(CookBook.this, NovyRecept.class);
                         novyRecept.putExtras(nazev_receptu);
                         startActivity(novyRecept);
                     }
@@ -293,7 +278,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 dialog.show();
             }else{//nalezeny recepty - vypsani do arraylistu
                 for(ReceptO recept : arrayList){
-                    al.add(recept.nazev_receptu);
+                    CookBook.this.arrayListOfRecipes.add(recept.nazev_receptu);
                 }
 
                 //seradit recepty podle nazvu, nehlede na diakritiku
@@ -301,19 +286,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 String razeniReceptu = SP.getString("razeniReceptu","1");
                 if (razeniReceptu.equals("1")) {
                     Collator collator = Collator.getInstance(new Locale("pt"));
-                    Collections.sort(al, collator);
+                    Collections.sort(CookBook.this.arrayListOfRecipes, collator);
                 }
 
-                final ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, al);
-                vyhledaneReceptyListView = new ListView(MainActivity.this);
-                vyhledaneReceptyListView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                vyhledaneReceptyListView.setPadding(0,0,0,100);
-                vyhledaneReceptyListView.setAdapter(arrayAdapter);
-                vyhledaneReceptyLL.addView(vyhledaneReceptyListView);
-                vyhledaneReceptyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                final ArrayAdapter arrayAdapter = new ArrayAdapter(CookBook.this, android.R.layout.simple_list_item_1, CookBook.this.arrayListOfRecipes);
+                searchedRecipesLV = new ListView(CookBook.this);
+                searchedRecipesLV.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                searchedRecipesLV.setPadding(0,0,0,100);
+                searchedRecipesLV.setAdapter(arrayAdapter);
+                searchedRecipesLL.addView(searchedRecipesLV);
+                searchedRecipesLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String clickedItem = String.valueOf(vyhledaneReceptyListView.getItemAtPosition(i));
+                        String clickedItem = String.valueOf(searchedRecipesLV.getItemAtPosition(i));
                         Intent intent = new Intent(getApplicationContext(), Recept.class);
                         Bundle dataBundle = new Bundle();
                         dataBundle.putString("nazev_receptu", clickedItem);
@@ -321,7 +306,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         startActivity(intent);
                     }
                 });
-                //DBreceptyHelper.close();
             }
         }
 

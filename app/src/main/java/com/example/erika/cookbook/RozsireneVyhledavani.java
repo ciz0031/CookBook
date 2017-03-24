@@ -3,7 +3,7 @@ package com.example.erika.cookbook;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -77,7 +77,7 @@ public class RozsireneVyhledavani extends Activity {
         surovinaLL = (LinearLayout) findViewById(R.id.surovinaLL);
 
         pocetSurovin = 0;
-        pridatSurovinu();
+
         //našeptávač na surovinu
         LongOperationsThread MyLongOperations = new LongOperationsThread();
         MyLongOperations.execute();
@@ -85,20 +85,74 @@ public class RozsireneVyhledavani extends Activity {
         pridatSurovinuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pridatSurovinu();
+                pridatSurovinu("");
             }
         });
-
         pridatSurovinuLL.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pridatSurovinu();
+                pridatSurovinu("");
             }
         });
 
+        loadSavedPreferences();
+        if (surovinaLL.getChildCount() < 1) {
+            pridatSurovinu("");
+        }
+
     }
 
-    public void pridatSurovinu(){
+    private void loadSavedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("foodstuff_list", MODE_PRIVATE);
+        String pocetUlozenychPolozek = sharedPreferences.getString("pocetSurovin", "0");
+        int sizeOfSharedPref = Integer.valueOf(pocetUlozenychPolozek);
+
+        for (int i = 0; i <= sizeOfSharedPref; i++){
+            if (sharedPreferences.getString("surovinaACTV"+i, null) != null) {
+                pridatSurovinu(sharedPreferences.getString("surovinaACTV"+i, ""));
+            }
+        }
+    }
+
+    private void savePreferences(String key, String value) {
+        SharedPreferences sharedPreferences = getSharedPreferences("foodstuff_list", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    public void clearPref(){
+        SharedPreferences sharedPreferences = getSharedPreferences("foodstuff_list", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
+
+    @Override
+    protected void onPause() {
+        clearPref();
+        for (int i = 0; i <= pocetSurovin; i++){
+            LinearLayout linearLayout = (LinearLayout) surovinaLL.findViewWithTag("polozkaSeznamuSurovinLL"+i);
+
+            if (linearLayout != null){
+                AutoCompleteTextView actv = (AutoCompleteTextView) linearLayout.findViewWithTag("surovinaACTV"+i);
+                if (actv != null) {
+                    String value = actv.getText().toString();
+                    savePreferences("surovinaACTV"+i, value);
+                }
+            }
+        }
+        savePreferences("pocetSurovin", String.valueOf(pocetSurovin));
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        clearPref();
+        super.onStop();
+    }
+
+    public void pridatSurovinu(String surovina){
         pocetSurovin++;
         polozkaLL = new LinearLayout(RozsireneVyhledavani.this);
         polozkaLL.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -118,6 +172,7 @@ public class RozsireneVyhledavani extends Activity {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, MARGIN_PX, 0);
         hledatACTV.setLayoutParams(params);
+        hledatACTV.setText(surovina);
         hledatACTV.setTag("surovinaACTV" + pocetSurovin);
 
         hledatPodleEANu = new ImageButton(RozsireneVyhledavani.this);
@@ -132,7 +187,6 @@ public class RozsireneVyhledavani extends Activity {
         polozkaLL.addView(smazatSurovinuButton);
         polozkaLL.addView(hledatACTV);
         polozkaLL.addView(hledatPodleEANu);
-        Log.d("addView", "polozkaLL addView called!" + pocetSurovin);
 
         smazatSurovinuButton.setOnClickListener(handleClick(smazatSurovinuButton));
         hledatPodleEANu.setOnClickListener(handleClickImageButton(hledatPodleEANu));
@@ -163,7 +217,6 @@ public class RozsireneVyhledavani extends Activity {
                 //instantiate ZXing integration class
                 IntentIntegrator scanIntegrator = new IntentIntegrator(RozsireneVyhledavani.this);
                 //start scanning
-                scanIntegrator.addExtra("IDtextView", idPolozky);
                 scanIntegrator.initiateScan();
             }
         };
@@ -174,8 +227,6 @@ public class RozsireneVyhledavani extends Activity {
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
 
         String scanContent = scanningResult.getContents();
-//        int positionID = scanningResult.getPosition();
-      //  Log.d("positionID extras", positionID+"");
         if (scanContent != null) {
             if(scanContent.length() > 0){
                 LongOperationsThreadEANs MyLongOperations = new LongOperationsThreadEANs();
@@ -362,10 +413,8 @@ public class RozsireneVyhledavani extends Activity {
             }
 
             for (EANsurovinaO ean : eanSurovinaOs){
-                String surovina = ean.surovina;
-
+                String surovina = ean.foodstuff;
                 hledatACTV.setText(surovina);
-                //TODO: aby byla spravna surovina ve spravnem policku - pri cteni pres EAN
             }
         }
 

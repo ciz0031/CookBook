@@ -72,5 +72,14 @@
             android:layout_gravity="center"
             android:paddingLeft="15dp"
             android:paddingRight="15dp" />
+
+        <TextView
+            android:text="-takovýto záznam již v databázi existuje-"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/existingInDB"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:paddingTop="10dp" />
     </LinearLayout>
 </RelativeLayout>

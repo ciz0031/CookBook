@@ -138,7 +138,7 @@ public class recipeIngredientsPart extends Fragment {
 
                 Intent intent = new Intent(getActivity(), NakupniSeznam.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("surovina", surovinaSubSubString);
+                bundle.putString("foodstuff", surovinaSubSubString);
                 intent.putExtras(bundle);
                 startActivity(intent);
             }

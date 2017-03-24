@@ -61,7 +61,7 @@ public class NakupniSeznam extends Activity {
         //posilani suroviny z receptu do nakupniho seznamu
         Bundle extras = getIntent().getExtras();
         if (extras != null){
-            String surovina = extras.getString("surovina");
+            String surovina = extras.getString("foodstuff");
             if (surovina.length() > 1){
                 pridatPolozkuDoSeznamu(surovina);
             }
@@ -75,11 +75,12 @@ public class NakupniSeznam extends Activity {
     }
     private void loadSavedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("shopping_list", MODE_PRIVATE);
-        int sizeOfSharedPref = sharedPreferences.getAll().size();
+        String pocetUlozenychPolozek = sharedPreferences.getString("pocetPolozek", "0");
+        int sizeOfSharedPref = Integer.valueOf(pocetUlozenychPolozek);
         Log.d("sizeOfSharedPref", "velikost " + sizeOfSharedPref);
         String value;
 
-        for (int i = 0; i <= sizeOfSharedPref+1; i++){
+        for (int i = 0; i <= sizeOfSharedPref; i++){
             value = sharedPreferences.getString(String.valueOf(i), "");
             if (value == "" || value == " "){
                 //doNothing
@@ -187,8 +188,8 @@ public class NakupniSeznam extends Activity {
                 value = polozka.getText().toString();
                 savePreferences(String.valueOf(i), value);
             }
-
         }
+        savePreferences("pocetPolozek", String.valueOf(pocetPolozek));
         Toast toast = Toast.makeText(this, "Nákupní seznam aktualizován.", Toast.LENGTH_SHORT);
         toast.show();
         super.onBackPressed();

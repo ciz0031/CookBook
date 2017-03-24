@@ -3,13 +3,11 @@ package com.example.erika.cookbook;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,11 +22,12 @@ import java.util.ArrayList;
 
 public class EANdbManager extends Activity {
     private ImageButton scanEANbutton;
-    private Button ulozitButton;
-    private TextView numberTV;
-    private EditText surovinaET;
-    private DBeanHelper db;
+    private Button saveButton;
+    private TextView numberTV, alreadyInDB;
+    private EditText foodstuffET;
+    private DBeanHelper dbHelper;
     public ProgressDialog progressDialog;
+    private boolean isClickable = true;
     final Handler handler = new Handler();
 
     @Override
@@ -37,26 +36,28 @@ public class EANdbManager extends Activity {
         setContentView(R.layout.activity_eandb_manager);
 
         scanEANbutton = (ImageButton) findViewById(R.id.scanEANbutton);
-        ulozitButton = (Button) findViewById(R.id.ulozitDoDBeanuButton);
+        saveButton = (Button) findViewById(R.id.ulozitDoDBeanuButton);
         numberTV = (TextView) findViewById(R.id.numberTV);
-        surovinaET = (EditText) findViewById(R.id.surovinaET);
+        alreadyInDB = (TextView) findViewById(R.id.existingInDB);
+        foodstuffET = (EditText) findViewById(R.id.surovinaET);
 
+        alreadyInDB.setVisibility(View.INVISIBLE);
 
-        ulozitButton.setOnClickListener(new View.OnClickListener() {
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (numberTV.getText() == "-vyfoť pro získání čísla-"){
+                if (numberTV.getText() == "-vyfoť EAN pro získání čísla-"){
                     Toast toast = Toast.makeText(getApplicationContext(), R.string.invalid_string, Toast.LENGTH_SHORT);
                     toast.show();
-                }else if (surovinaET.getText().length() <= 1){
+                }else if (foodstuffET.getText().length() <= 1){
                     Toast toast = Toast.makeText(getApplicationContext(), R.string.string_too_short, Toast.LENGTH_SHORT);
                     toast.show();
                 }
                 else {
-                    if(db.insertSurovinaEAN(Integer.parseInt(numberTV.getText().toString()), surovinaET.getText().toString())){
+                    if(dbHelper.insertSurovinaEAN(Long.parseLong(numberTV.getText().toString()), foodstuffET.getText().toString())){
                         Toast.makeText(getApplicationContext(), R.string.new_item_saved, Toast.LENGTH_SHORT).show();
-                        numberTV.setText("-vyfoť pro získání čísla-");
-                        surovinaET.setText("");
+                        numberTV.setText("-vyfoť EAN pro získání čísla-");
+                        foodstuffET.setText("");
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.item_not_saved, Toast.LENGTH_SHORT).show();
                     }
@@ -73,14 +74,39 @@ public class EANdbManager extends Activity {
                 scanIntegrator.initiateScan();
             }
         });
+    }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("EAN", numberTV.getText().toString());
+        outState.putString("NAME", foodstuffET.getText().toString());
+        outState.putBoolean("isClickable", isClickable);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        numberTV.setText(savedInstanceState.getString("EAN"));
+        foodstuffET.setText(savedInstanceState.getString("NAME"));
+        isClickable = savedInstanceState.getBoolean("isClickable");
+
+        if (!isClickable){
+            saveButton.setClickable(false);
+            saveButton.setBackgroundColor(getResources().getColor(R.color.grey));
+            alreadyInDB.setVisibility(View.VISIBLE);
+        }
+        else {
+            saveButton.setClickable(true);
+            alreadyInDB.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         //retrieve result of scanning - instantiate ZXing object
         IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        db = DBeanHelper.getInstance(this);
-        db.openDataBase();
+        dbHelper = DBeanHelper.getInstance(this);
+        dbHelper.openDataBase();
         String scanContent = scanningResult.getContents();
         if (scanContent != null) {
             if(scanContent.length() > 0){
@@ -92,10 +118,11 @@ public class EANdbManager extends Activity {
         }
         else{
             //invalid scan data or scan canceled
-            Toast toast = Toast.makeText(getApplicationContext(), "Scan canceled.", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(getApplicationContext(), "Scanování zrušeno.", Toast.LENGTH_SHORT);
             toast.show();
         }
     }
+
 
     private class LongOperationsThreadEANs extends AsyncTask<String, Void, ArrayList<EANsurovinaO>> {
         @Override
@@ -112,22 +139,26 @@ public class EANdbManager extends Activity {
             }
 
             if (eanSurovinaOs.size() == 0){
-                ulozitButton.setClickable(true);
+                isClickable = true;
+                saveButton.setClickable(true);
+                alreadyInDB.setVisibility(View.INVISIBLE);
             }
 
             for (EANsurovinaO ean : eanSurovinaOs){
-                String surovina = ean.surovina;
-                surovinaET.setText(surovina);
-                ulozitButton.setClickable(false);
-                ulozitButton.setBackgroundColor(getResources().getColor(R.color.grey));
+                isClickable = false;
+                String surovina = ean.foodstuff;
+                foodstuffET.setText(surovina);
+                saveButton.setClickable(false);
+                saveButton.setBackgroundColor(getResources().getColor(R.color.grey));
+                alreadyInDB.setVisibility(View.VISIBLE);
             }
-            db.getInstance(getApplication()).close();
+            dbHelper.getInstance(getApplication()).close();
         }
 
         @Override
         protected ArrayList<EANsurovinaO> doInBackground(String... strings) {
             handler.postDelayed(pdRunnable, 500);
-            final ArrayList<EANsurovinaO> arrayListSurovin = db.getSurovina(strings[0]);
+            final ArrayList<EANsurovinaO> arrayListSurovin = dbHelper.getSurovina(strings[0]);
             return arrayListSurovin;
         }
 

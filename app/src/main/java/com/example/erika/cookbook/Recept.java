@@ -3,14 +3,12 @@ package com.example.erika.cookbook;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,12 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
@@ -35,7 +28,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -160,7 +152,7 @@ public class Recept extends FragmentActivity {
                     DBsurovina_recept.deleteSurovinaRecept(nazev_receptu);
 
                     Toast.makeText(getApplicationContext(), R.string.item_deleted + " (" + nazev_receptu + ").", Toast.LENGTH_SHORT).show();
-                    Intent mainActivity = new Intent(Recept.this, MainActivity.class);
+                    Intent mainActivity = new Intent(Recept.this, CookBook.class);
                     startActivity(mainActivity);
                 }
             });

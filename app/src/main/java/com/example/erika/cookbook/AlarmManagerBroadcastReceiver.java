@@ -35,36 +35,35 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
                 PowerManager.ON_AFTER_RELEASE, "TAG");
         wl.acquire();
         //upozorneni na vyprseni doby
-        Log.d("countdowntimer finished", "ding dong");
+        //Log.d("countdowntimer finished", "ding dong");
         Intent listOfTimers = new Intent(context, ListOfTimers.class);
         listOfTimers.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(listOfTimers);
         builder = new NotificationCompat.Builder(context);
 
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean vibrace = SP.getBoolean("vibrovat",true);
-        boolean nekonecnePrehravani = SP.getBoolean("nekonecnePrehravani", false);
-        String vyzvaneni = SP.getString("vyzvaneni", "content://settings/system/notification_sound");
+        boolean vibrate = SP.getBoolean("vibrovat",true);
+        boolean infiniteLoop = SP.getBoolean("nekonecnePrehravani", false);
+        String ringtone = SP.getString("vyzvaneni", "content://settings/system/notification_sound");
 
         final Bundle extras = intent.getExtras();
         final int notificationID = extras.getInt("ID");
         manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(notificationID);
 
-
-        if (vibrace == true) {
+        if (vibrate == true) {
             long[] pattern = {500, 500, 500, 500, 500, 500, 500, 500, 500};
             builder.setVibrate(pattern);
         }
         builder.setStyle(new NotificationCompat.InboxStyle());
-        Uri alarmSound = Uri.parse(vyzvaneni);
+        Uri alarmSound = Uri.parse(ringtone);
         builder.setSound(alarmSound);
         builder.setSmallIcon(R.mipmap.ic_stat_onesignal_default);
         builder.setContentTitle("Kuchařka");
         builder.setContentText("Odpočet času hotov!");
         final Notification myNotification = builder.build();
 
-        if (nekonecnePrehravani == true) {
+        if (infiniteLoop == true) {
             myNotification.flags |= Notification.FLAG_INSISTENT;
             builder.setAutoCancel(true);
         }else {
@@ -90,18 +89,18 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
                 }
             }
         });
-        if (nekonecnePrehravani == false)
+        if (infiniteLoop == false)
             closeActivity.start();
 
         wl.release();
     }
 
     public void setTimer(Context context, long timeWhenDone, int _id){
-        AlarmManager am = (AlarmManager)context.getSystemService(context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmManagerBroadcastReceiver.class);
         intent.putExtra("ID", _id);
-        PendingIntent pi = PendingIntent.getBroadcast(context, _id, intent, 0);
-        am.setExact(AlarmManager.RTC_WAKEUP, timeWhenDone, pi);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, _id, intent, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeWhenDone, pendingIntent);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_stat_onesignal_default)
@@ -128,7 +127,7 @@ public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
         NotificationManager mNotificationManager =
                 (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         mNotificationManager.cancel(_id);
-        Log.d("CancelAlarm", "notification canceled"+_id);
+        //Log.d("CancelAlarm", "notification canceled"+_id);
     }
 
 

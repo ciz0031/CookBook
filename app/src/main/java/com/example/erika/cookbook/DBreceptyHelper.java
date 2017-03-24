@@ -31,8 +31,6 @@ public class DBreceptyHelper extends SQLiteOpenHelper {
 
     private static DBreceptyHelper sInstance = null;
     private int mOpenCounter = 0;
-    private static SQLiteOpenHelper mDatabaseHelper;
-
 
     public static synchronized DBreceptyHelper getInstance(Context context) {
         // Use the application context, which will ensure that you

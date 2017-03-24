@@ -42,7 +42,7 @@ public class SurovinaReceptTable {
     public void insertSurovinaRecept(SurovinaReceptO SurovinaReceptO){
         SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("surovina", SurovinaReceptO.surovina);
+        cv.put("foodstuff", SurovinaReceptO.surovina);
         cv.put("recept", SurovinaReceptO.nazev_receptu);
         cv.put("mnozstvi", SurovinaReceptO.mnozstvi);
         cv.put("typ_mnozstvi", SurovinaReceptO.typ_mnozstvi);
@@ -76,7 +76,7 @@ public class SurovinaReceptTable {
             for (String item : items) {
                 Log.d("SUROVINA", item);
                 surovina = surovina + "'" + item + "'" + partOfQuery;
-                //select recept from surovina_recept where surovina = "brambory" intersect select recept from surovina_recept where surovina = "polohrubá mouka"
+                //select recept from surovina_recept where foodstuff = "brambory" intersect select recept from surovina_recept where foodstuff = "polohrubá mouka"
             }
             surovina = surovina.substring(0, surovina.length() - partOfQuery.length());
             query = "select distinct " + COLUMN_RECEPT + " from " + TABLE_NAME + " where " + COLUMN_SUROVINA + " = " + surovina;

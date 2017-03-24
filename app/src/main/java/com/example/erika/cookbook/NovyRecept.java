@@ -4,12 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -17,16 +12,12 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class NovyRecept extends Activity {
     private ReceptyTable DBrecepty;
@@ -208,7 +199,7 @@ public class NovyRecept extends Activity {
                                             Spinner typ_mn;
                                             LinearLayout LL;
                                             LL = (LinearLayout) containerLayout.findViewWithTag("LL" + i);
-                                            sur = (EditText) LL.findViewWithTag("surovina" + i);
+                                            sur = (EditText) LL.findViewWithTag("foodstuff" + i);
                                             mnozs = (EditText) LL.findViewWithTag("mnozstvi" + i);
                                             typ_mn = (Spinner) LL.findViewWithTag("spinnerTyp_mnozstvi" + i);
 
@@ -220,7 +211,7 @@ public class NovyRecept extends Activity {
                                                 novaSurovinaRecept.typ_mnozstvi = typ_mn.getSelectedItem().toString();
                                                 DBsurovinaRecept.insertSurovinaRecept(novaSurovinaRecept);
                                                 Toast.makeText(getApplicationContext(), "Záznam byl aktualizován :)", Toast.LENGTH_SHORT).show();
-                                                Intent zpet = new Intent(getApplicationContext(), MainActivity.class);
+                                                Intent zpet = new Intent(getApplicationContext(), CookBook.class);
                                                 startActivity(zpet);
                                             }else{
                                                 Toast.makeText(getApplicationContext(), "Recept není kompletní, je potřeba vyplnit ingredience.", Toast.LENGTH_SHORT).show();
@@ -279,7 +270,7 @@ public class NovyRecept extends Activity {
                                     Spinner typ_mn;
                                     LinearLayout LL;
                                     LL = (LinearLayout) containerLayout.findViewWithTag("LL" + i);
-                                    sur = (EditText) LL.findViewWithTag("surovina" + i);
+                                    sur = (EditText) LL.findViewWithTag("foodstuff" + i);
                                     mnozs = (EditText) LL.findViewWithTag("mnozstvi" + i);
                                     typ_mn = (Spinner) LL.findViewWithTag("spinnerTyp_mnozstvi" + i);
 
@@ -293,7 +284,7 @@ public class NovyRecept extends Activity {
                                 }
                                 Toast.makeText(getApplicationContext(), R.string.new_item_saved, Toast.LENGTH_SHORT).show();
                                 //DBrecepty.close();
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                Intent i = new Intent(getApplicationContext(), CookBook.class);
                                 startActivity(i);
                             } catch (SQLException exception) {
                                 Toast.makeText(getApplicationContext(), R.string.item_not_saved, Toast.LENGTH_SHORT).show();
@@ -389,7 +380,7 @@ public class NovyRecept extends Activity {
         typM.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typ_mnozstvi.setAdapter(typM);
 
-        surovina.setTag("surovina" + totalEditTexts);
+        surovina.setTag("foodstuff" + totalEditTexts);
         mnozstvi.setTag("mnozstvi" + totalEditTexts);
         typ_mnozstvi.setTag("spinnerTyp_mnozstvi" + totalEditTexts);
         LL.setTag("LL" + totalEditTexts);
