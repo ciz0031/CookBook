@@ -4,18 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
  * Created by Erika on 10. 9. 2016.
  */
-public class ReceptyTable {
+public class RecipeTable {
     static DBreceptyHelper DBrecepty;
     static Context context;
     public static String TABLE_NAME = "recept";
@@ -34,38 +30,38 @@ public class ReceptyTable {
     public static String COLUMN_HODNOCENI = "hodnoceni";
     public static String COLUMN_KOMENTAR = "komentar";
 
-    private static ReceptyTable sInstance = null;
+    private static RecipeTable sInstance = null;
 
-    private ReceptyTable(Context context) {
+    private RecipeTable(Context context) {
         this.context = context;
         //DBrecepty = new DBreceptyHelper(context);
     }
-    public static synchronized ReceptyTable getInstance(Context context) {
+    public static synchronized RecipeTable getInstance(Context context) {
         // Use the application context, which will ensure that you
         // don't accidentally leak an Activity's context.
         // See this article for more information: http://bit.ly/6LRzfx
         if (sInstance == null) {
-            sInstance = new ReceptyTable(context.getApplicationContext());
+            sInstance = new RecipeTable(context.getApplicationContext());
         }
         return sInstance;
     }
-    public static boolean insertRecept(ReceptO ReceptO){
+    public static boolean insertRecept(RecipeObject RecipeObject){
         SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put("nazev_receptu", ReceptO.nazev_receptu);
-        contentValues.put("postup", ReceptO.postup);
-        contentValues.put("doba_pripravy", ReceptO.doba_pripravy);
-        contentValues.put("doba_peceni", ReceptO.doba_peceni);
-        contentValues.put("stupne", ReceptO.stupne);
-        contentValues.put("prilohy", ReceptO.prilohy);
-        contentValues.put("ID_kategorie", ReceptO.ID_kategorie);
-        contentValues.put("ID_podkategorie", ReceptO.ID_podkategorie);
-        contentValues.put("foto", ReceptO.foto);
-        contentValues.put("pocet_porci", ReceptO.pocet_porci);
-        contentValues.put("oblibeny", ReceptO.oblibeny);
-        contentValues.put("hodnoceni", ReceptO.hodnoceni);
-        contentValues.put("komentar", ReceptO.komentar);
+        contentValues.put("nazev_receptu", RecipeObject.nazev_receptu);
+        contentValues.put("postup", RecipeObject.postup);
+        contentValues.put("doba_pripravy", RecipeObject.doba_pripravy);
+        contentValues.put("doba_peceni", RecipeObject.doba_peceni);
+        contentValues.put("stupne", RecipeObject.stupne);
+        contentValues.put("prilohy", RecipeObject.prilohy);
+        contentValues.put("ID_kategorie", RecipeObject.ID_kategorie);
+        contentValues.put("ID_podkategorie", RecipeObject.ID_podkategorie);
+        contentValues.put("foto", RecipeObject.foto);
+        contentValues.put("pocet_porci", RecipeObject.pocet_porci);
+        contentValues.put("oblibeny", RecipeObject.oblibeny);
+        contentValues.put("hodnoceni", RecipeObject.hodnoceni);
+        contentValues.put("komentar", RecipeObject.komentar);
         db.insert(TABLE_NAME, null, contentValues);
         return true;
     }
@@ -88,7 +84,7 @@ public class ReceptyTable {
         c.close();
     }
 
-    public static ArrayList<ReceptO> getRecipeFromDB(int ID_kategorie, String razeni){ //podle kategorie
+    public static ArrayList<RecipeObject> getRecipeFromDB(int ID_kategorie, String razeni){ //podle kategorie
         SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "";
         if (razeni.equals("1")){
@@ -101,9 +97,9 @@ public class ReceptyTable {
         }
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
-        ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
+        ArrayList<RecipeObject> RecipeObject = ReadRecepty(cursor);
         cursor.close();
-        return ReceptO;
+        return RecipeObject;
     }
 
     public void insertImagePath(String recept, String image) {
@@ -123,7 +119,7 @@ public class ReceptyTable {
         return cur;
     }
 
-    public static ArrayList<ReceptO> getOrderedRecipe(String nazev_receptu, String razeni){ //podle nazvu receptu
+    public static ArrayList<RecipeObject> getOrderedRecipe(String nazev_receptu, String razeni){ //podle nazvu receptu
         SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "";
         if (razeni.equals("1")){
@@ -138,42 +134,42 @@ public class ReceptyTable {
 
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
-        ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
+        ArrayList<RecipeObject> RecipeObject = ReadRecepty(cursor);
         cursor.close();
-        return ReceptO;
+        return RecipeObject;
     }
 
-    public static ArrayList<ReceptO> getFavouriteRecipe(){ //podle oblibenosti receptu
+    public static ArrayList<RecipeObject> getFavouriteRecipe(){ //podle oblibenosti receptu
         SQLiteDatabase db = DBrecepty.getInstance(context).getWritableDatabase();
         String query = "select * from recept where " + COLUMN_OBLIBENY + " = 1";
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
-        ArrayList<ReceptO> ReceptO = ReadRecepty(cursor);
+        ArrayList<RecipeObject> RecipeObject = ReadRecepty(cursor);
         cursor.close();
-        return ReceptO;
+        return RecipeObject;
     }
 
-    private static ArrayList<ReceptO> ReadRecepty(Cursor cursor)
+    private static ArrayList<RecipeObject> ReadRecepty(Cursor cursor)
     {
-        ArrayList<ReceptO> ReceptyO = new ArrayList<ReceptO>();
+        ArrayList<RecipeObject> ReceptyO = new ArrayList<RecipeObject>();
         while (cursor.isAfterLast() == false)
         {
-            ReceptO ReceptO = new ReceptO();
-            ReceptO.ID_receptu = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
-            ReceptO.nazev_receptu = cursor.getString(cursor.getColumnIndex(COLUMN_NAZEV_RECEPTU));
-            ReceptO.postup = cursor.getString(cursor.getColumnIndex(COLUMN_POSTUP));
-            ReceptO.doba_pripravy = cursor.getInt(cursor.getColumnIndex(COLUMN_DOBA_PRIPRAVY));
-            ReceptO.doba_peceni = cursor.getInt(cursor.getColumnIndex(COLUMN_DOBA_PECENI));
-            ReceptO.stupne = cursor.getInt(cursor.getColumnIndex(COLUMN_STUPNE));
-            ReceptO.prilohy = cursor.getString(cursor.getColumnIndex(COLUMN_PRILOHY));
-            ReceptO.ID_kategorie = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_KATEGORIE));
+            RecipeObject RecipeObject = new RecipeObject();
+            RecipeObject.ID_receptu = cursor.getInt(cursor.getColumnIndex(COLUMN_ID));
+            RecipeObject.nazev_receptu = cursor.getString(cursor.getColumnIndex(COLUMN_NAZEV_RECEPTU));
+            RecipeObject.postup = cursor.getString(cursor.getColumnIndex(COLUMN_POSTUP));
+            RecipeObject.doba_pripravy = cursor.getInt(cursor.getColumnIndex(COLUMN_DOBA_PRIPRAVY));
+            RecipeObject.doba_peceni = cursor.getInt(cursor.getColumnIndex(COLUMN_DOBA_PECENI));
+            RecipeObject.stupne = cursor.getInt(cursor.getColumnIndex(COLUMN_STUPNE));
+            RecipeObject.prilohy = cursor.getString(cursor.getColumnIndex(COLUMN_PRILOHY));
+            RecipeObject.ID_kategorie = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_KATEGORIE));
             //ReceptO.ID_podkategorie = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_PODKATEGORIE));
-            ReceptO.foto = cursor.getString(cursor.getColumnIndex(COLUMN_FOTO));
-            ReceptO.pocet_porci = cursor.getInt(cursor.getColumnIndex(COLUMN_POCET_PORCI));
-            ReceptO.oblibeny = cursor.getInt(cursor.getColumnIndex(COLUMN_OBLIBENY));
-            ReceptO.hodnoceni = cursor.getInt(cursor.getColumnIndex(COLUMN_HODNOCENI));
-            ReceptO.komentar = cursor.getString(cursor.getColumnIndex(COLUMN_KOMENTAR));
-            ReceptyO.add(ReceptO);
+            RecipeObject.foto = cursor.getString(cursor.getColumnIndex(COLUMN_FOTO));
+            RecipeObject.pocet_porci = cursor.getInt(cursor.getColumnIndex(COLUMN_POCET_PORCI));
+            RecipeObject.oblibeny = cursor.getInt(cursor.getColumnIndex(COLUMN_OBLIBENY));
+            RecipeObject.hodnoceni = cursor.getInt(cursor.getColumnIndex(COLUMN_HODNOCENI));
+            RecipeObject.komentar = cursor.getString(cursor.getColumnIndex(COLUMN_KOMENTAR));
+            ReceptyO.add(RecipeObject);
             cursor.moveToNext();
         }
         return ReceptyO;

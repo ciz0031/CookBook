@@ -1,14 +1,10 @@
 package com.example.erika.cookbook;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
-public class Favourites extends Activity {
+public class FavouriteRecipes extends Activity {
     private String nazev_receptu = "";
     public ProgressDialog progressDialog;
     private LinearLayout oblibeneReceptyLL;
@@ -42,9 +38,9 @@ public class Favourites extends Activity {
         LongOperationsThread longOperationsThread = new LongOperationsThread();
         longOperationsThread.execute();
     }
-    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<ReceptO>> {
-        ReceptyTable DBrecepty = ReceptyTable.getInstance(Favourites.this);
-        DBreceptyHelper DBreceptyHelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(Favourites.this);
+    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<RecipeObject>> {
+        RecipeTable DBrecepty = RecipeTable.getInstance(FavouriteRecipes.this);
+        DBreceptyHelper DBreceptyHelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(FavouriteRecipes.this);
         final Handler handler = new Handler();
 
         @Override
@@ -55,7 +51,7 @@ public class Favourites extends Activity {
         final Runnable pdRunnable = new Runnable() {
             @Override
             public void run() {
-                progressDialog = new ProgressDialog(Favourites.this);
+                progressDialog = new ProgressDialog(FavouriteRecipes.this);
                 progressDialog.setMessage("Loading...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
@@ -72,14 +68,14 @@ public class Favourites extends Activity {
             }
             DBreceptyHelper.openDataBase();
 
-            final ArrayList<ReceptO> arrayList = DBrecepty.getFavouriteRecipe();
+            final ArrayList<RecipeObject> arrayList = DBrecepty.getFavouriteRecipe();
 
             return arrayList;
 
         }
 
         @Override
-        protected void onPostExecute(final ArrayList<ReceptO> arrayList) {
+        protected void onPostExecute(final ArrayList<RecipeObject> arrayList) {
             super.onPostExecute(arrayList);
             // Dismiss the progress dialog
             handler.removeCallbacks(pdRunnable);
@@ -89,11 +85,11 @@ public class Favourites extends Activity {
 
             if (arrayList.size() == 0) {
                 //nenalezeni zadneho oblibeneho receptu
-                chybovaHlaska = new TextView(Favourites.this);
+                chybovaHlaska = new TextView(FavouriteRecipes.this);
                 chybovaHlaska.setText("Nenalezen žádný oblíbený recept.");
                 oblibeneReceptyLL.addView(chybovaHlaska);
             } else {//nalezeny recepty - vypsani do arraylistu
-                for (ReceptO recept : arrayList) {
+                for (RecipeObject recept : arrayList) {
                     al.add(recept.nazev_receptu);
                 }
 
@@ -101,8 +97,8 @@ public class Favourites extends Activity {
                 Collator collator = Collator.getInstance(new Locale("pt"));
                 Collections.sort(al, collator);
 
-                final ArrayAdapter arrayAdapter = new ArrayAdapter(Favourites.this, android.R.layout.simple_list_item_1, al);
-                oblibeneReceptyLV = new ListView(Favourites.this);
+                final ArrayAdapter arrayAdapter = new ArrayAdapter(FavouriteRecipes.this, android.R.layout.simple_list_item_1, al);
+                oblibeneReceptyLV = new ListView(FavouriteRecipes.this);
                 oblibeneReceptyLV.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 oblibeneReceptyLV.setPadding(0, 0, 0, 100);
                 oblibeneReceptyLV.setAdapter(arrayAdapter);
@@ -111,7 +107,7 @@ public class Favourites extends Activity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         String clickedItem = String.valueOf(oblibeneReceptyLV.getItemAtPosition(i));
-                        Intent intent = new Intent(getApplicationContext(), Recept.class);
+                        Intent intent = new Intent(getApplicationContext(), Recipe.class);
                         Bundle dataBundle = new Bundle();
                         dataBundle.putString("nazev_receptu", clickedItem);
                         intent.putExtras(dataBundle);

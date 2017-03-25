@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 /**
  * Created by Erika on 10. 9. 2016.
  */
-public class ReceptO {
+public class RecipeObject {
     public int ID_receptu;
     public String nazev_receptu;
     public String postup;
@@ -21,11 +21,11 @@ public class ReceptO {
     public int hodnoceni;
     public String komentar;
 
-    public ReceptO(){}
+    public RecipeObject(){}
 
-    public ReceptO(int ID_receptu, String nazev_receptu, String postup, int doba_pripravy, int doba_peceni, int stupne,
-                   String prilohy, int ID_kategorie, int ID_podkategorie, String foto, int pocet_porci, int oblibeny, int hodnoceni,
-                   String komentar){
+    public RecipeObject(int ID_receptu, String nazev_receptu, String postup, int doba_pripravy, int doba_peceni, int stupne,
+                        String prilohy, int ID_kategorie, int ID_podkategorie, String foto, int pocet_porci, int oblibeny, int hodnoceni,
+                        String komentar){
         this.setID_receptu(ID_receptu);
         this.setNazev_receptu(nazev_receptu);
         this.setPostup(postup);

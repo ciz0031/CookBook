@@ -25,7 +25,7 @@ public class recipeSummaryPart extends Fragment{
     private TextView TVpocetPorci, TVdobaPripravy, TVdobaPeceni, TVstupne, TVkategorie, TVnazev_receptu;
     private String stringPocetPorci, stringDobaPripravy, stringDobaPeceni, stringStupne, stringPodkategorie,
             stringKategorie, nazev_receptu;
-    private ReceptyTable DBrecepty;
+    private RecipeTable DBrecepty;
     private DBreceptyHelper DBhelper;
     private int ID_receptu,ID_podkategorie, ID_kategorie;
     private Cursor recept, podkategorie, kategorie;
@@ -53,7 +53,7 @@ public class recipeSummaryPart extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DBrecepty = ReceptyTable.getInstance(getActivity());
+        DBrecepty = RecipeTable.getInstance(getActivity());
         DBhelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(getActivity());
     }
 

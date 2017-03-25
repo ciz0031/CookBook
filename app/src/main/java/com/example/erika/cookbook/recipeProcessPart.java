@@ -1,12 +1,10 @@
 package com.example.erika.cookbook;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +15,7 @@ import android.widget.TextView;
  * Created by Erika on 10. 11. 2016.
  */
 public class recipeProcessPart extends Fragment{
-    private ReceptyTable DBrecepty;
+    private RecipeTable DBrecepty;
     private TextView TVpostup, TVprilohy;
     private int ID_receptu;
     private String stringPostup, stringPrilohy, nazev_receptu;
@@ -37,7 +35,7 @@ public class recipeProcessPart extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DBrecepty = ReceptyTable.getInstance(getActivity());
+        DBrecepty = RecipeTable.getInstance(getActivity());
 
 
 

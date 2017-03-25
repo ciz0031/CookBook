@@ -113,7 +113,7 @@ public class CookBook extends Activity implements View.OnClickListener {
         int id = item.getItemId();
         if (id == R.id.action_new)//novy recept
         {
-            Intent NovyRecept = new Intent(getApplicationContext(), NovyRecept.class);
+            Intent NovyRecept = new Intent(getApplicationContext(), NewRecipe.class);
             startActivity(NovyRecept);
         }
         else if (id == R.id.action_timer) {//casovac
@@ -121,16 +121,16 @@ public class CookBook extends Activity implements View.OnClickListener {
             startActivity(Casovac);
         }
         else if (id == R.id.action_search) {//rozsirene vyhledavani - podle potravin
-            Intent RozsireneVyhledavani = new Intent(getApplicationContext(), RozsireneVyhledavani.class);
+            Intent RozsireneVyhledavani = new Intent(getApplicationContext(), ExtendedSearch.class);
             startActivity(RozsireneVyhledavani);
         }
         else if(id == R.id.action_shoppingList){ //nakupni seznam
-            Intent NakupniSeznam = new Intent(getApplicationContext(), NakupniSeznam.class);
+            Intent NakupniSeznam = new Intent(getApplicationContext(), ShoppingList.class);
             startActivity(NakupniSeznam);
         }
 
         else if (id== R.id.action_favourites){
-            Intent favourites = new Intent(getApplicationContext(), Favourites.class);
+            Intent favourites = new Intent(getApplicationContext(), FavouriteRecipes.class);
             startActivity(favourites);
         }
         else if (id== R.id.action_settings){
@@ -143,7 +143,7 @@ public class CookBook extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.snidane: {
-                Intent SeznamReceptu = new Intent(getApplicationContext(), SeznamReceptu.class);
+                Intent SeznamReceptu = new Intent(getApplicationContext(), ListOfRecipes.class);
                 Bundle kategorie = new Bundle();
                 kategorie.putInt("id", 1);
                 SeznamReceptu.putExtras(kategorie);
@@ -151,7 +151,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.obed: {
-                Intent SeznamReceptu = new Intent(getApplicationContext(), SeznamReceptu.class);
+                Intent SeznamReceptu = new Intent(getApplicationContext(), ListOfRecipes.class);
                 Bundle kategorie = new Bundle();
                 kategorie.putInt("id", 2);
                 SeznamReceptu.putExtras(kategorie);
@@ -159,7 +159,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.vecere: {
-                Intent SeznamReceptu = new Intent(getApplicationContext(), SeznamReceptu.class);
+                Intent SeznamReceptu = new Intent(getApplicationContext(), ListOfRecipes.class);
                 Bundle kategorie = new Bundle();
                 kategorie.putInt("id", 3);
                 SeznamReceptu.putExtras(kategorie);
@@ -167,7 +167,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.svacina: {
-                Intent SeznamReceptu = new Intent(getApplicationContext(), SeznamReceptu.class);
+                Intent SeznamReceptu = new Intent(getApplicationContext(), ListOfRecipes.class);
                 Bundle kategorie = new Bundle();
                 kategorie.putInt("id", 4);
                 SeznamReceptu.putExtras(kategorie);
@@ -175,7 +175,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.zakusky: {
-                Intent SeznamReceptu = new Intent(getApplicationContext(), SeznamReceptu.class);
+                Intent SeznamReceptu = new Intent(getApplicationContext(), ListOfRecipes.class);
                 Bundle kategorie = new Bundle();
                 kategorie.putInt("id", 5);
                 SeznamReceptu.putExtras(kategorie);
@@ -183,7 +183,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                 break;
             }
             case R.id.napoje: {
-                Intent SeznamReceptu = new Intent(getApplicationContext(), SeznamReceptu.class);
+                Intent SeznamReceptu = new Intent(getApplicationContext(), ListOfRecipes.class);
                 Bundle kategorie = new Bundle();
                 kategorie.putInt("id", 6);
                 SeznamReceptu.putExtras(kategorie);
@@ -207,8 +207,8 @@ public class CookBook extends Activity implements View.OnClickListener {
         }
     }
 
-    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<ReceptO>> {
-        ReceptyTable DBrecepty = ReceptyTable.getInstance(CookBook.this);
+    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<RecipeObject>> {
+        RecipeTable DBrecepty = RecipeTable.getInstance(CookBook.this);
         DBreceptyHelper DBreceptyHelper = com.example.erika.cookbook.DBreceptyHelper.getInstance(CookBook.this);
         final Handler handler = new Handler();
 
@@ -239,12 +239,12 @@ public class CookBook extends Activity implements View.OnClickListener {
 
             SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String razeniReceptu = SP.getString("razeniReceptu","1");
-            ArrayList<ReceptO> arrayList = DBrecepty.getOrderedRecipe(params[0], razeniReceptu);
+            ArrayList<RecipeObject> arrayList = DBrecepty.getOrderedRecipe(params[0], razeniReceptu);
             return arrayList;
         }
 
         @Override
-        protected void onPostExecute(final ArrayList<ReceptO> arrayList) {
+        protected void onPostExecute(final ArrayList<RecipeObject> arrayList) {
             super.onPostExecute(arrayList);
             // Dismiss the progress dialog
             handler.removeCallbacks(pdRunnable);
@@ -269,7 +269,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                         // User clicked OK button - vytvorit novy recept
                         Bundle nazev_receptu = new Bundle();
                         nazev_receptu.putString("nazev_receptu", recipeToSearch);
-                        Intent novyRecept = new Intent(CookBook.this, NovyRecept.class);
+                        Intent novyRecept = new Intent(CookBook.this, NewRecipe.class);
                         novyRecept.putExtras(nazev_receptu);
                         startActivity(novyRecept);
                     }
@@ -277,7 +277,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{//nalezeny recepty - vypsani do arraylistu
-                for(ReceptO recept : arrayList){
+                for(RecipeObject recept : arrayList){
                     CookBook.this.arrayListOfRecipes.add(recept.nazev_receptu);
                 }
 
@@ -299,7 +299,7 @@ public class CookBook extends Activity implements View.OnClickListener {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         String clickedItem = String.valueOf(searchedRecipesLV.getItemAtPosition(i));
-                        Intent intent = new Intent(getApplicationContext(), Recept.class);
+                        Intent intent = new Intent(getApplicationContext(), Recipe.class);
                         Bundle dataBundle = new Bundle();
                         dataBundle.putString("nazev_receptu", clickedItem);
                         intent.putExtras(dataBundle);

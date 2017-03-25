@@ -37,11 +37,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
-public class Recept extends FragmentActivity {
+public class Recipe extends FragmentActivity {
     private TextView TVnazev_receptu;
     private String stringNazevReceptu = "", nazev_receptu;
-    private ReceptyTable DBrecepty;
-    private SurovinaReceptTable DBsurovina_recept;
+    private RecipeTable DBrecepty;
+    private IngredientOfRecipeTable DBsurovina_recept;
     private int ID_receptu;
     private Cursor recept, image;
     private ImageView foto;
@@ -57,8 +57,8 @@ public class Recept extends FragmentActivity {
         setContentView(R.layout.activity_recept);
 
         TVnazev_receptu = (TextView) findViewById(R.id.nazev_receptuTV);
-        DBrecepty = ReceptyTable.getInstance(this);
-        DBsurovina_recept = SurovinaReceptTable.getInstance(this);
+        DBrecepty = RecipeTable.getInstance(this);
+        DBsurovina_recept = IngredientOfRecipeTable.getInstance(this);
         foto = (ImageView) findViewById(R.id.imageViewFoto);
 
         if (savedInstanceState == null) {
@@ -112,7 +112,7 @@ public class Recept extends FragmentActivity {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_rate) {
-            Intent hodnoceni = new Intent(getApplicationContext(), HodnoceniReceptu.class);
+            Intent hodnoceni = new Intent(getApplicationContext(), EvaluationOfRecipe.class);
             Bundle recept = new Bundle();
             recept.putString("nazev_receptu", nazev_receptu);
             hodnoceni.putExtras(recept);
@@ -123,7 +123,7 @@ public class Recept extends FragmentActivity {
             selectImage();
         }
         else if (id == R.id.action_update){
-            Intent intent = new Intent(getApplicationContext(), NovyRecept.class);
+            Intent intent = new Intent(getApplicationContext(), NewRecipe.class);
             Bundle dataBundle = new Bundle();
             dataBundle.putString("nazev_receptu", nazev_receptu);
             intent.putExtras(dataBundle);
@@ -131,7 +131,7 @@ public class Recept extends FragmentActivity {
         }
         else if(id == R.id.action_deleteRecept){
             //smazani receptu - alert dialog na potvrzeni + pokud ano tak smazat polozku z DB
-            AlertDialog.Builder builder = new AlertDialog.Builder(Recept.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(Recipe.this);
             builder.setMessage(R.string.dialog_message)
                     .setTitle(R.string.dialog_title);
             builder.setPositiveButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
@@ -151,8 +151,8 @@ public class Recept extends FragmentActivity {
                     DBrecepty.deleteRecept(ID_receptu);
                     DBsurovina_recept.deleteSurovinaRecept(nazev_receptu);
 
-                    Toast.makeText(getApplicationContext(), R.string.item_deleted + " (" + nazev_receptu + ").", Toast.LENGTH_SHORT).show();
-                    Intent mainActivity = new Intent(Recept.this, CookBook.class);
+                    Toast.makeText(getApplicationContext(), "Recept byl smazán (" + nazev_receptu + ").", Toast.LENGTH_SHORT).show();
+                    Intent mainActivity = new Intent(Recipe.this, CookBook.class);
                     startActivity(mainActivity);
                 }
             });
@@ -160,7 +160,7 @@ public class Recept extends FragmentActivity {
             dialog.show();
         }
         else if (id == R.id.action_shoppingList){
-            Intent nakupniSeznam = new Intent(getApplicationContext(), NakupniSeznam.class);
+            Intent nakupniSeznam = new Intent(getApplicationContext(), ShoppingList.class);
             startActivity(nakupniSeznam);
         }
         else if (id == R.id.action_share){
@@ -174,7 +174,7 @@ public class Recept extends FragmentActivity {
     private void selectImage() {
         final CharSequence[] items = { "Vyfoť nový obrázek", "Vyber obrázek z galerie",
                 "Zrušit" };
-        AlertDialog.Builder builder = new AlertDialog.Builder(Recept.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(Recipe.this);
         builder.setTitle("Přidat obrázek ...");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
@@ -305,7 +305,7 @@ public class Recept extends FragmentActivity {
         }
 
         if (intentShareList.isEmpty()) {
-            Toast.makeText(Recept.this, "Nenalezeny žádné aplikace, pomocí kterých lze recept sdílet", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Recipe.this, "Nenalezeny žádné aplikace, pomocí kterých lze recept sdílet", Toast.LENGTH_SHORT).show();
         } else {
             Intent chooserIntent = Intent.createChooser(intentShareList.remove(0), "Sdílej recept pomocí ...");
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentShareList.toArray(new Parcelable[]{}));
@@ -325,8 +325,8 @@ public class Recept extends FragmentActivity {
             ingredientsOfRecipe = "Recept je na " + pocetPorci + " porcí." + "\n\n" + "Ingredience: ";
         }
 
-        final ArrayList<SurovinaReceptO> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(nazev_receptu);
-        for (SurovinaReceptO surovinaReceptObj : ALsurovinaRecept){
+        final ArrayList<IngredientOfRecipeObject> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(nazev_receptu);
+        for (IngredientOfRecipeObject surovinaReceptObj : ALsurovinaRecept){
             ingredientsOfRecipe = ingredientsOfRecipe + "\n" +
                     surovinaReceptObj.mnozstvi + surovinaReceptObj.typ_mnozstvi + " " + surovinaReceptObj.surovina;
         }
@@ -395,7 +395,7 @@ public class Recept extends FragmentActivity {
                     foto.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(Recept.this, FullScreenImage.class);
+                            Intent intent = new Intent(Recipe.this, FullScreenImage.class);
                             intent.putExtra("image", imagePathString);
                             startActivity(intent);
                         }
@@ -453,7 +453,7 @@ public class Recept extends FragmentActivity {
         final Runnable pdRunnable = new Runnable() {
             @Override
             public void run() {
-                progressDialog = new ProgressDialog(Recept.this);
+                progressDialog = new ProgressDialog(Recipe.this);
                 progressDialog.setMessage("Loading...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
@@ -484,7 +484,7 @@ public class Recept extends FragmentActivity {
         @Override
         protected Cursor doInBackground(String... strings) {
             //
-            DBrecepty = ReceptyTable.getInstance(Recept.this);
+            DBrecepty = RecipeTable.getInstance(Recipe.this);
             recept = DBrecepty.getReceptAccordingToName(nazev_receptu);
             recept.moveToFirst();
             ID_receptu = recept.getInt(recept.getColumnIndex(DBrecepty.COLUMN_ID));
@@ -494,7 +494,7 @@ public class Recept extends FragmentActivity {
         final Runnable pdRunnable = new Runnable() {
             @Override
             public void run() {
-                progressDialog = new ProgressDialog(Recept.this);
+                progressDialog = new ProgressDialog(Recipe.this);
                 progressDialog.setMessage("Loading...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();

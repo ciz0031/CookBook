@@ -3,14 +3,14 @@ package com.example.erika.cookbook;
 /**
  * Created by Erika on 10. 9. 2016.
  */
-public class SurovinaReceptO {
+public class IngredientOfRecipeObject {
     public String surovina;
     public String nazev_receptu;
     public float mnozstvi;
     public String typ_mnozstvi;
 
-    public SurovinaReceptO(){}
-    public SurovinaReceptO(String surovina, String nazev_receptu, float mnozstvi, String typ_mnozstvi){
+    public IngredientOfRecipeObject(){}
+    public IngredientOfRecipeObject(String surovina, String nazev_receptu, float mnozstvi, String typ_mnozstvi){
         this.setSurovina(surovina);
         this.setNazev_receptu(nazev_receptu);
         this.setMnozstvi(mnozstvi);

@@ -1,24 +1,21 @@
 package com.example.erika.cookbook;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class NakupniSeznam extends Activity {
+public class ShoppingList extends Activity {
     private Button pridatPolozkuB;
     public Button smazatPolozkuB;
     public EditText polozkaSeznamuET;
@@ -106,12 +103,12 @@ public class NakupniSeznam extends Activity {
 
     public void pridatPolozkuDoSeznamu(String polozkaSeznamu){
         pocetPolozek++;
-        polozkaSeznamuLL = new LinearLayout(NakupniSeznam.this);
+        polozkaSeznamuLL = new LinearLayout(ShoppingList.this);
         polozkaSeznamuLL.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         polozkaSeznamuLL.setOrientation(LinearLayout.HORIZONTAL);
         polozkaSeznamuLL.setTag("polozkaSeznamuLL" + pocetPolozek);
 
-        polozkaSeznamuET = new EditText(NakupniSeznam.this);
+        polozkaSeznamuET = new EditText(ShoppingList.this);
         polozkaSeznamuET.setLayoutParams(new ViewGroup.LayoutParams(POLOZKA_SEZNAMU_ET_WIDTH_PX, ViewGroup.LayoutParams.WRAP_CONTENT));//width 300dp
         polozkaSeznamuET.setTag("polozkaSeznamuET" + pocetPolozek);
         polozkaSeznamuET.setText(polozkaSeznamu);
@@ -120,7 +117,7 @@ public class NakupniSeznam extends Activity {
         //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
-        smazatPolozkuB = new Button(NakupniSeznam.this);
+        smazatPolozkuB = new Button(ShoppingList.this);
         smazatPolozkuB.setLayoutParams(new ViewGroup.LayoutParams(SMAZAT_POLOZKU_B_PX, SMAZAT_POLOZKU_B_PX));//40x40dp
         smazatPolozkuB.setTag("smazatPolozkuB" + pocetPolozek);
         smazatPolozkuB.setId(pocetPolozek);

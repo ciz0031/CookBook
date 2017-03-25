@@ -2,11 +2,9 @@ package com.example.erika.cookbook;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +13,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class HodnoceniReceptu extends Activity {
+public class EvaluationOfRecipe extends Activity {
     private RatingBar hodnoceni;
     private TextView nazev_receptu;
     private EditText komentar;
@@ -23,7 +21,7 @@ public class HodnoceniReceptu extends Activity {
     Bundle data;
     String nazev_receptuS ="";
     private DBreceptyHelper DBreceptyHelper;
-    private ReceptyTable DBrecepty;
+    private RecipeTable DBrecepty;
     final Handler handler = new Handler();
     public ProgressDialog progressDialog;
     Cursor recept;
@@ -33,7 +31,7 @@ public class HodnoceniReceptu extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hodnoceni_receptu);
 
-        DBrecepty = ReceptyTable.getInstance(this);
+        DBrecepty = RecipeTable.getInstance(this);
         DBreceptyHelper = DBreceptyHelper.getInstance(this);
         final LongOperationsThread MyThreadRecept = new LongOperationsThread();
 
@@ -49,7 +47,7 @@ public class HodnoceniReceptu extends Activity {
                 nazev_receptu.setText(nazev_receptuS);
             }
         }else {
-            Toast.makeText(HodnoceniReceptu.this, "Něco se nepovedlo..", Toast.LENGTH_SHORT);
+            Toast.makeText(EvaluationOfRecipe.this, "Něco se nepovedlo..", Toast.LENGTH_SHORT);
         }
 
         MyThreadRecept.execute();
@@ -97,7 +95,7 @@ public class HodnoceniReceptu extends Activity {
         final Runnable pdRunnable = new Runnable() {
             @Override
             public void run() {
-                progressDialog = new ProgressDialog(HodnoceniReceptu.this);
+                progressDialog = new ProgressDialog(EvaluationOfRecipe.this);
                 progressDialog.setMessage("Loading...");
                 progressDialog.setCancelable(false);
                 progressDialog.show();

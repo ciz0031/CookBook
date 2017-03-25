@@ -1,15 +1,12 @@
 package com.example.erika.cookbook;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +24,8 @@ import java.util.ArrayList;
 public class recipeIngredientsPart extends Fragment {
     private ImageButton nakupniSeznamB,minusArrowB, plusArrowB;
     private LinearLayout ingredienceLL, surovinaLL;
-    private SurovinaReceptTable DBsurovina_recept;
-    private ReceptyTable DBrecepty;
+    private IngredientOfRecipeTable DBsurovina_recept;
+    private RecipeTable DBrecepty;
     private String nazev_receptu, stringPocetPorci;
     private TextView TVingredience, TVpocetPorci;
     private int pocetSurovin = 0;
@@ -55,8 +52,8 @@ public class recipeIngredientsPart extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DBsurovina_recept = SurovinaReceptTable.getInstance(getActivity());
-        DBrecepty = ReceptyTable.getInstance(getActivity());
+        DBsurovina_recept = IngredientOfRecipeTable.getInstance(getActivity());
+        DBrecepty = RecipeTable.getInstance(getActivity());
 
         scale = getResources().getDisplayMetrics().density;
         INGREDIENCE_PX_WIDTH = (int) (INGREDIENCE_DP_WIDTH * scale + 0.5f);
@@ -136,7 +133,7 @@ public class recipeIngredientsPart extends Fragment {
                 String surovinaSubString = surovinaString.substring(surovinaString.indexOf(' ') + 1);
                 String surovinaSubSubString = surovinaSubString.substring(surovinaSubString.indexOf(" ") + 1);
 
-                Intent intent = new Intent(getActivity(), NakupniSeznam.class);
+                Intent intent = new Intent(getActivity(), ShoppingList.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("foodstuff", surovinaSubSubString);
                 intent.putExtras(bundle);
@@ -146,7 +143,7 @@ public class recipeIngredientsPart extends Fragment {
     }
 
 
-    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<SurovinaReceptO>> {
+    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<IngredientOfRecipeObject>> {
 
         @Override
         protected void onPreExecute() {
@@ -155,14 +152,14 @@ public class recipeIngredientsPart extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<SurovinaReceptO> ALsurovinaRecept) {
+        protected void onPostExecute(ArrayList<IngredientOfRecipeObject> ALsurovinaRecept) {
             super.onPostExecute(ALsurovinaRecept);
             handler.removeCallbacks(pdRunnable);
             if (progressDialog!=null) {
                 progressDialog.dismiss();
             }
 
-            for (SurovinaReceptO surovinaReceptObj : ALsurovinaRecept){
+            for (IngredientOfRecipeObject surovinaReceptObj : ALsurovinaRecept){
                 pocetSurovin++;
                 surovinaLL = new LinearLayout(getActivity());
                 surovinaLL.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -192,9 +189,9 @@ public class recipeIngredientsPart extends Fragment {
         }
 
         @Override
-        protected ArrayList<SurovinaReceptO> doInBackground(String... strings) {
+        protected ArrayList<IngredientOfRecipeObject> doInBackground(String... strings) {
 
-            final ArrayList<SurovinaReceptO> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(strings[0]);
+            final ArrayList<IngredientOfRecipeObject> ALsurovinaRecept = DBsurovina_recept.getSurovinaRecept(strings[0]);
             return ALsurovinaRecept;
         }
     }

@@ -26,25 +26,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Recept"
+            android:name=".Recipe"
             android:label="@string/title_activity_recept"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".NovyRecept"
+            android:name=".NewRecipe"
             android:label="@string/title_activity_novy_recept"
             android:parentActivityName=".CookBook"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".SeznamReceptu"
+            android:name=".ListOfRecipes"
             android:label="@string/title_activity_seznam_receptu"
             android:parentActivityName=".CookBook"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".NakupniSeznam"
+            android:name=".ShoppingList"
             android:label="@string/title_activity_nakupni_seznam"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".RozsireneVyhledavani"
+            android:name=".ExtendedSearch"
             android:label="@string/title_activity_rozsirene_vyhledavani"
             android:parentActivityName=".CookBook" />
         <activity
@@ -57,15 +57,14 @@
             android:noHistory="true"
             android:screenOrientation="portrait" />
 
-        <service android:name=".MyService" />
         <receiver android:name=".AlarmManagerBroadcastReceiver">
         </receiver>
         <activity
-            android:name=".HodnoceniReceptu"
+            android:name=".EvaluationOfRecipe"
             android:label="@string/action_rate"
             android:parentActivityName=".CookBook" />
         <activity
-            android:name=".Favourites"
+            android:name=".FavouriteRecipes"
             android:label="@string/title_activity_favourites"
             android:parentActivityName=".CookBook" />
         <activity

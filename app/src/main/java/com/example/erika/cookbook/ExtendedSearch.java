@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
-public class RozsireneVyhledavani extends Activity {
-    private SurovinaReceptTable DBrecepty;
+public class ExtendedSearch extends Activity {
+    private IngredientOfRecipeTable DBrecepty;
     private DBeanHelper dbEanHelper;
     private ArrayList al, suroviny;
     private Button hledatButton, pridatSurovinuButton, smazatSurovinuButton;
@@ -58,7 +58,7 @@ public class RozsireneVyhledavani extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rozsirene_vyhledavani);
 
-        DBrecepty = SurovinaReceptTable.getInstance(this);
+        DBrecepty = IngredientOfRecipeTable.getInstance(this);
         dbEanHelper = DBeanHelper.getInstance(this);
 
         al = new ArrayList();
@@ -154,12 +154,12 @@ public class RozsireneVyhledavani extends Activity {
 
     public void pridatSurovinu(String surovina){
         pocetSurovin++;
-        polozkaLL = new LinearLayout(RozsireneVyhledavani.this);
+        polozkaLL = new LinearLayout(ExtendedSearch.this);
         polozkaLL.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         polozkaLL.setOrientation(LinearLayout.HORIZONTAL);
         polozkaLL.setTag("polozkaSeznamuSurovinLL" + pocetSurovin);
 
-        smazatSurovinuButton = new Button(RozsireneVyhledavani.this);
+        smazatSurovinuButton = new Button(ExtendedSearch.this);
         smazatSurovinuButton.setLayoutParams(new ViewGroup.LayoutParams(SMAZAT_POLOZKU_B_PX, SMAZAT_POLOZKU_B_PX));
         smazatSurovinuButton.setTag("odebratSurovinuButton" + pocetSurovin);
         smazatSurovinuButton.setId(pocetSurovin);
@@ -168,14 +168,14 @@ public class RozsireneVyhledavani extends Activity {
         smazatSurovinuButton.setBackgroundColor(Color.TRANSPARENT);
         smazatSurovinuButton.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
 
-        hledatACTV = new AutoCompleteTextView(RozsireneVyhledavani.this);
+        hledatACTV = new AutoCompleteTextView(ExtendedSearch.this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, MARGIN_PX, 0);
         hledatACTV.setLayoutParams(params);
         hledatACTV.setText(surovina);
         hledatACTV.setTag("surovinaACTV" + pocetSurovin);
 
-        hledatPodleEANu = new ImageButton(RozsireneVyhledavani.this);
+        hledatPodleEANu = new ImageButton(ExtendedSearch.this);
         LinearLayout.LayoutParams paramsIB = new LinearLayout.LayoutParams(EAN_IB_PX, EAN_IB_PX);
         paramsIB.setMargins(NEGATIVE_MARGIN_PX, 0, 0, 0);
         hledatPodleEANu.setLayoutParams(paramsIB);
@@ -215,7 +215,7 @@ public class RozsireneVyhledavani extends Activity {
                 LinearLayout polozkaSeznamuLinearLayout;
                 int idPolozky = button.getId();
                 //instantiate ZXing integration class
-                IntentIntegrator scanIntegrator = new IntentIntegrator(RozsireneVyhledavani.this);
+                IntentIntegrator scanIntegrator = new IntentIntegrator(ExtendedSearch.this);
                 //start scanning
                 scanIntegrator.initiateScan();
             }
@@ -269,7 +269,7 @@ public class RozsireneVyhledavani extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<SurovinaReceptO>> {
+    private class LongOperationsThread extends AsyncTask<String, Void, ArrayList<IngredientOfRecipeObject>> {
 
         @Override
         protected void onPreExecute() {
@@ -277,7 +277,7 @@ public class RozsireneVyhledavani extends Activity {
         }
 
         @Override
-        protected void onPostExecute(final ArrayList<SurovinaReceptO> arrayListVsechSurovin) {
+        protected void onPostExecute(final ArrayList<IngredientOfRecipeObject> arrayListVsechSurovin) {
             super.onPostExecute(arrayListVsechSurovin);
             handler.removeCallbacks(pdRunnable);
             if (progressDialog!=null) {
@@ -285,14 +285,14 @@ public class RozsireneVyhledavani extends Activity {
             }
 
             if (arrayListVsechSurovin.size() > 0){
-                for (SurovinaReceptO surovina : arrayListVsechSurovin){
+                for (IngredientOfRecipeObject surovina : arrayListVsechSurovin){
                     if (!IsInListByName(suroviny, surovina.surovina)){
                         suroviny.add(surovina.surovina);
                     }
                 }
             }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(RozsireneVyhledavani.this, android.R.layout.simple_dropdown_item_1line, suroviny);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(ExtendedSearch.this, android.R.layout.simple_dropdown_item_1line, suroviny);
             hledatACTV.setAdapter(adapter);
 
             hledatButton.setOnClickListener(new View.OnClickListener() {
@@ -313,25 +313,25 @@ public class RozsireneVyhledavani extends Activity {
 
                     }
                     Log.d("SUROVINY", surovina);
-                        final ArrayList<SurovinaReceptO> arrayList = DBrecepty.getSurovinaRecepty(surovina);
+                        final ArrayList<IngredientOfRecipeObject> arrayList = DBrecepty.getSurovinaRecepty(surovina);
 
                         if (arrayList.size() == 0) { //nenalezeni zadneho receptu odpovidajiciho surovinam
                             vyhledaneReceptyLL.removeAllViews();
-                            chyboveHlaseni = new TextView(RozsireneVyhledavani.this);
+                            chyboveHlaseni = new TextView(ExtendedSearch.this);
                             chyboveHlaseni.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                             chyboveHlaseni.setPadding(20, 20, 0, 0);
                             chyboveHlaseni.setText(R.string.no_recipe_found);
                             vyhledaneReceptyLL.addView(chyboveHlaseni);
                         } else {//nalezeny recepty - vypsani do arraylistu
-                            for (SurovinaReceptO recept : arrayList) {
+                            for (IngredientOfRecipeObject recept : arrayList) {
                                 al.add(recept.nazev_receptu);
                             }
 
                             Collator collator = Collator.getInstance(new Locale("pt"));
                             Collections.sort(al, collator);
 
-                            final ArrayAdapter arrayAdapter = new ArrayAdapter(RozsireneVyhledavani.this, android.R.layout.simple_list_item_1, al);
-                            vyhledaneReceptyListView = new ListView(RozsireneVyhledavani.this);
+                            final ArrayAdapter arrayAdapter = new ArrayAdapter(ExtendedSearch.this, android.R.layout.simple_list_item_1, al);
+                            vyhledaneReceptyListView = new ListView(ExtendedSearch.this);
                             vyhledaneReceptyListView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                             vyhledaneReceptyListView.setPadding(0, 0, 0, 0);
                             vyhledaneReceptyListView.setAdapter(arrayAdapter);
@@ -340,7 +340,7 @@ public class RozsireneVyhledavani extends Activity {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                     String clickedObj = String.valueOf(vyhledaneReceptyListView.getItemAtPosition(i));
-                                    Intent intent = new Intent(getApplicationContext(), Recept.class);
+                                    Intent intent = new Intent(getApplicationContext(), Recipe.class);
                                     Bundle dataBundle = new Bundle();
                                     dataBundle.putString("nazev_receptu", clickedObj);
                                     intent.putExtras(dataBundle);
@@ -357,7 +357,7 @@ public class RozsireneVyhledavani extends Activity {
                 @Override
                 public void onClick(View view) {
                     //instantiate ZXing integration class
-                    IntentIntegrator scanIntegrator = new IntentIntegrator(RozsireneVyhledavani.this);
+                    IntentIntegrator scanIntegrator = new IntentIntegrator(ExtendedSearch.this);
                     //start scanning
                     scanIntegrator.initiateScan();
                 }
@@ -365,8 +365,8 @@ public class RozsireneVyhledavani extends Activity {
         }
 
         @Override
-        protected ArrayList<SurovinaReceptO> doInBackground(String... strings) {
-            final ArrayList<SurovinaReceptO> arrayListVsechSurovin;
+        protected ArrayList<IngredientOfRecipeObject> doInBackground(String... strings) {
+            final ArrayList<IngredientOfRecipeObject> arrayListVsechSurovin;
             handler.postDelayed(pdRunnable, 500);
             try {
                 dbEanHelper.createDataBase();

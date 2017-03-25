@@ -19,10 +19,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class NovyRecept extends Activity {
-    private ReceptyTable DBrecepty;
+public class NewRecipe extends Activity {
+    private RecipeTable DBrecepty;
     private DBreceptyHelper DBreceptyHelper;
-    private SurovinaReceptTable DBsurovinaRecept;
+    private IngredientOfRecipeTable DBsurovinaRecept;
     private EditText nazev_receptu, postup, doba_pripravy, doba_peceni, stupne, prilohy, pocet_porci, surovina, mnozstvi;
     private Spinner kategorie, podkategorie, typ_mnozstvi;
     private Button ulozit, pridat, odebrat;
@@ -32,7 +32,7 @@ public class NovyRecept extends Activity {
     int lastAdded = 0;
     private Bundle extras;
     private ArrayAdapter<String> spinnerArrayAdapter;
-    private ArrayList<SurovinaReceptO> surovinaReceptArrayList;
+    private ArrayList<IngredientOfRecipeObject> surovinaReceptArrayList;
     private static final float ET_MNOZSTVI_DP_WIDTH = 60.0f;
     private static final float ET_TYP_MNOZSTVI_DP_WIDTH = 75.0f;
     private static final float ET_SUROVINA_DP_WIDTH = 210.0f;
@@ -47,8 +47,8 @@ public class NovyRecept extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_novy_recept);
         this.setTitle("Vytvořit nový recept");
-        DBrecepty = ReceptyTable.getInstance(this);
-        DBsurovinaRecept = SurovinaReceptTable.getInstance(this);
+        DBrecepty = RecipeTable.getInstance(this);
+        DBsurovinaRecept = IngredientOfRecipeTable.getInstance(this);
         DBreceptyHelper = DBreceptyHelper.getInstance(this);
         surovinaReceptArrayList = new ArrayList();
 
@@ -79,7 +79,7 @@ public class NovyRecept extends Activity {
         kat.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         kategorie.setAdapter(kat);
 
-        spinnerArrayAdapter = new ArrayAdapter<>(NovyRecept.this, android.R.layout.simple_spinner_item, android.R.id.text1);
+        spinnerArrayAdapter = new ArrayAdapter<>(NewRecipe.this, android.R.layout.simple_spinner_item, android.R.id.text1);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         podkategorie.setAdapter(spinnerArrayAdapter);
 
@@ -113,7 +113,7 @@ public class NovyRecept extends Activity {
 
                 //suroviny - nacteni surovin z DB, vytvoreni edittextu a naplneni
                 surovinaReceptArrayList = DBsurovinaRecept.getSurovinaRecept(recept.getString(recept.getColumnIndex(DBrecepty.COLUMN_NAZEV_RECEPTU)));
-                for (SurovinaReceptO surovinaReceptObj : surovinaReceptArrayList){
+                for (IngredientOfRecipeObject surovinaReceptObj : surovinaReceptArrayList){
                     loadAndFill(surovinaReceptObj);
                     odebrat.setVisibility(View.VISIBLE);
                 }
@@ -170,7 +170,7 @@ public class NovyRecept extends Activity {
                                     staryNazevReceptuCursor.moveToFirst();
                                     String staryNazevReceptu = staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_NAZEV_RECEPTU));
 
-                                    ReceptO recept = new ReceptO();
+                                    RecipeObject recept = new RecipeObject();
                                     recept.ID_receptu = ID_receptu;
                                     recept.nazev_receptu = nazev_receptu.getText().toString();
                                     recept.postup = postup.getText().toString();
@@ -181,7 +181,10 @@ public class NovyRecept extends Activity {
                                     recept.ID_kategorie = (kategorie.getSelectedItemPosition() + 1);
                                     recept.ID_podkategorie = podkat;
                                     recept.pocet_porci = Integer.parseInt(pocet_porci.getText().toString());
-                                    recept.oblibeny = 0;
+                                    recept.oblibeny = Integer.parseInt(staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_OBLIBENY)));
+                                    recept.hodnoceni = Integer.parseInt(staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_HODNOCENI)));
+                                    recept.komentar = staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_KOMENTAR));
+                                    recept.foto = staryNazevReceptuCursor.getString(staryNazevReceptuCursor.getColumnIndex(DBrecepty.COLUMN_FOTO));
                                     DBrecepty.deleteRecept(String.valueOf(ID_receptu));
                                     DBrecepty.insertRecept(recept);
                                     //DBrecepty.updateRecept(recept);
@@ -203,7 +206,7 @@ public class NovyRecept extends Activity {
                                             mnozs = (EditText) LL.findViewWithTag("mnozstvi" + i);
                                             typ_mn = (Spinner) LL.findViewWithTag("spinnerTyp_mnozstvi" + i);
 
-                                            SurovinaReceptO novaSurovinaRecept = new SurovinaReceptO();
+                                            IngredientOfRecipeObject novaSurovinaRecept = new IngredientOfRecipeObject();
                                             if (sur.getText().toString().length() != 0 || mnozs.getText().toString().length() != 0){
                                                 novaSurovinaRecept.surovina = sur.getText().toString();
                                                 novaSurovinaRecept.nazev_receptu = nazev_receptu.getText().toString();
@@ -252,7 +255,7 @@ public class NovyRecept extends Activity {
                                     }
                                 }
 
-                                ReceptO recept = new ReceptO();
+                                RecipeObject recept = new RecipeObject();
                                 recept.nazev_receptu = nazev_receptu.getText().toString();
                                 recept.postup = postup.getText().toString();
                                 recept.doba_pripravy = Integer.parseInt(doba_pripravy.getText().toString());
@@ -274,7 +277,7 @@ public class NovyRecept extends Activity {
                                     mnozs = (EditText) LL.findViewWithTag("mnozstvi" + i);
                                     typ_mn = (Spinner) LL.findViewWithTag("spinnerTyp_mnozstvi" + i);
 
-                                    SurovinaReceptO surovinaRecept = new SurovinaReceptO();
+                                    IngredientOfRecipeObject surovinaRecept = new IngredientOfRecipeObject();
                                     surovinaRecept.surovina = sur.getText().toString();
                                     surovinaRecept.nazev_receptu = nazev_receptu.getText().toString();
                                     surovinaRecept.mnozstvi = Integer.parseInt(mnozs.getText().toString());
@@ -361,12 +364,12 @@ public class NovyRecept extends Activity {
         });
     }
 
-    private void loadAndFill(SurovinaReceptO surovinaReceptObj){
+    private void loadAndFill(IngredientOfRecipeObject surovinaReceptObj){
         totalEditTexts++;
-        LinearLayout LL = new LinearLayout(NovyRecept.this);
-        mnozstvi = new EditText(NovyRecept.this);
-        surovina = new EditText(NovyRecept.this);
-        typ_mnozstvi = new Spinner(NovyRecept.this);
+        LinearLayout LL = new LinearLayout(NewRecipe.this);
+        mnozstvi = new EditText(NewRecipe.this);
+        surovina = new EditText(NewRecipe.this);
+        typ_mnozstvi = new Spinner(NewRecipe.this);
 
         LL.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         LL.setOrientation(LinearLayout.HORIZONTAL);
@@ -376,7 +379,7 @@ public class NovyRecept extends Activity {
         mnozstvi.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         typ_mnozstvi.setLayoutParams(new LinearLayout.LayoutParams(ET_TYP_MNOZSTVI_PX_WIDTH, ET_TYP_MNOZSTVI_PX_HEIGHT));//width, height 75,45
 
-        ArrayAdapter<CharSequence> typM = ArrayAdapter.createFromResource(NovyRecept.this, R.array.typ_mnozstvi_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> typM = ArrayAdapter.createFromResource(NewRecipe.this, R.array.typ_mnozstvi_array, android.R.layout.simple_spinner_item);
         typM.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typ_mnozstvi.setAdapter(typM);
 

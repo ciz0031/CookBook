@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.erika.cookbook.RozsireneVyhledavani">
+    tools:context="com.example.erika.cookbook.ExtendedSearch">
     <item android:id="@+id/action_dbEANs" android:title="@string/action_dbEANs"
         android:orderInCategory="100" android:showAsAction="never" />
 </menu>

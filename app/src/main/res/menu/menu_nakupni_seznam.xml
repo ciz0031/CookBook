@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.example.erika.cookbook.NakupniSeznam">
+    tools:context="com.example.erika.cookbook.ShoppingList">
     <item android:id="@+id/action_deleteShoppingList" android:title="@string/action_deleteShoppingList"
         android:orderInCategory="100" android:showAsAction="never" />
 </menu>
